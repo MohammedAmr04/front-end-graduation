@@ -1,0 +1,18 @@
+:root {
+  --box-Shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+.login form,
+.register form {
+  width: 400px;
+  box-shadow: var(--box-Shadow);
+  p:last-of-type {
+    font-size: 12px;
+  }
+}
+.register form {
+  width: 600px;
+}
+/* .register form input,
+.register form select {
+  width: 220px;
+} */
