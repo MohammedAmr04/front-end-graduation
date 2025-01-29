@@ -1,10 +1,13 @@
 import { Outlet } from "react-router";
-import { Container } from "react-bootstrap";
+import Header from "../components/common/Header/Header";
 
 export default function MainLayout() {
   return (
-    <Container>
-      <Outlet />
-    </Container>
+    <>
+      <Header />
+      <div className="">
+        <Outlet />
+      </div>
+    </>
   );
 }

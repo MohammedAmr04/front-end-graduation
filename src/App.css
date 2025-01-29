@@ -1,18 +1,84 @@
+/* Root Variables */
 :root {
-  --box-Shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  --box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+  --header-color: #ffffff;
+  --section-color: #f1f0f0;
+  --main-transition-duration: 3ms;
 }
+
+/* Global Styles */
+* {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Login & Register Forms */
 .login form,
 .register form {
   width: 400px;
-  box-shadow: var(--box-Shadow);
-  p:last-of-type {
-    font-size: 12px;
-  }
+  box-shadow: var(--box-shadow);
 }
+
+.login form p:last-of-type,
+.register form p:last-of-type {
+  font-size: 12px;
+}
+
 .register form {
   width: 600px;
 }
-/* .register form input,
-.register form select {
-  width: 220px;
-} */
+
+/* Navbar Styles */
+.navbar {
+  background-color: var(--header-color);
+}
+.header {
+  box-shadow: var(--box-shadow);
+}
+
+.navbar-nav .nav-link {
+  margin: 0 10px;
+  position: relative;
+  transition: var(--main-transition-duration);
+}
+
+/* Active Link Styling */
+.active {
+  border-bottom: solid 2px black;
+  font-weight: 600;
+  width: fit-content;
+}
+
+/* About Section */
+.about {
+  background-color: var(--section-color);
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+}
+@media (max-width: 768px) {
+  .about {
+    display: block;
+  }
+}
+
+/* Buttons inside About Section */
+.about .btn.sign-up {
+  background-color: #000000;
+  color: #ffffff;
+  padding: 10px 50px;
+}
+
+.about .btn.login {
+  background-color: #fff;
+  color: #000000;
+  left: 65px;
+  padding: 10px 50px 10px 120px;
+}
+
+/* Image inside About Section */
+.about img {
+  border-top-left-radius: 50%;
+  border-bottom-left-radius: 50%;
+  position: relative;
+  width: 100%;
+}
