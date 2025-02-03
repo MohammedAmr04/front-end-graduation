@@ -30,8 +30,8 @@ export default function Login() {
     setUser((prev) => ({ ...prev, [name]: value }));
   };
   return (
-    <div className="login w-100 d-flex justify-content-center align-items-center my-5">
-      <Form className="p-5 rounded-3" onSubmit={handleSubmit}>
+    <div className="login justify-content-center align-items-center overflow-hidden">
+      <Form className="p-5 rounded-3 mx-auto" onSubmit={handleSubmit}>
         <p className=" fw-bold fs-5 text-center">Login to your account</p>
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
@@ -63,6 +63,9 @@ export default function Login() {
           <Link to="/register">Register now</Link>
         </p>
       </Form>
+      <div className="d-xl-block d-none">
+        <img src="/src/assets/forms.jpg" alt="" className="" />
+      </div>
     </div>
   );
 }

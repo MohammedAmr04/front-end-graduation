@@ -60,7 +60,12 @@
     display: block;
   }
 }
-
+.login {
+  background-color: var(--section-color);
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+}
 /* Buttons inside About Section */
 .about .btn.sign-up {
   background-color: #000000;
@@ -76,7 +81,8 @@
 }
 
 /* Image inside About Section */
-.about img {
+.about img,
+.login img {
   border-top-left-radius: 50%;
   border-bottom-left-radius: 50%;
   position: relative;

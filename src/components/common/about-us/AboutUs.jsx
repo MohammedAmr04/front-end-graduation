@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 export default function AboutUs() {
   return (
     <div className="about py-5 overflow-hidden">
-      <div className="">
+      <div>
         <div className="text ps-5 mt-3 ms-4 position-relative">
           <h1 className="pt-5">Who are we?</h1>
           <div className="pt-2 px-2 my-3 fs-4">
@@ -30,7 +30,7 @@ export default function AboutUs() {
           </div>
         </div>
       </div>
-      <div className="cont">
+      <div>
         <img src="/src/assets/about.jpg" alt="" className="" />
       </div>
     </div>
