@@ -1,0 +1,62 @@
+:root {
+  --main-transition: 0.3s;
+  --main-color: white;
+  --section-color: #f1f0f0;
+}
+.main-header {
+  text-align: center;
+  border: solid 1px black;
+  width: fit-content;
+  padding: 10px 20px;
+  color: gray;
+  margin: 0 auto;
+  position: relative;
+  transition: var(--main-transition);
+}
+.main-header::after,
+.main-header::before {
+  content: " ";
+  height: 15px;
+  width: 15px;
+  background-color: var(--main-color);
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: var(--main-transition);
+}
+.main-header::before {
+  right: -30px;
+}
+.main-header::after {
+  left: -30px;
+}
+.main-header:hover {
+  border-color: transparent;
+  color: black;
+  background-color: var(--main-color);
+}
+.main-header:hover::after {
+  left: 50%;
+  width: 50%;
+  height: 100%;
+  border-radius: 0;
+  z-index: -1;
+  transform: translateY(0);
+  top: 0;
+}
+.main-header:hover::before {
+  right: 50%;
+  width: 50%;
+  height: 100%;
+  border-radius: 0;
+  z-index: -1;
+  transform: translateY(0);
+  top: 0;
+}
+.move-up {
+  transition: 0.3s;
+}
+.move-up:hover {
+  transform: translateY(-10px);
+}

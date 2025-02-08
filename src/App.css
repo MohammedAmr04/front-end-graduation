@@ -5,7 +5,9 @@
   --section-color: #f1f0f0;
   --main-transition-duration: 3ms;
 }
-
+body {
+  background-color: var(--section-color);
+}
 /* Global Styles */
 * {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -60,7 +62,7 @@
     display: block;
   }
 }
-.login {
+div.login {
   background-color: var(--section-color);
   position: relative;
   display: grid;
