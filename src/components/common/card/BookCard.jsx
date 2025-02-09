@@ -30,13 +30,12 @@ export default function BookCard({ item, setSelectedId, selectedId }) {
       {/* زر التفاصيل */}
       <button
         className="btn px-3 py-2"
-        style={{ backgroundColor: "white", color: "black", fontWeight: "bold" }}
+        style={{ backgroundColor: "#ccc", color: "black", fontWeight: "bold" }}
         onClick={handleClick}
       >
         Details
       </button>
 
-      {/* نافذة التفاصيل */}
       {selectedId === id && (
         <div
           className="modal-overlay position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
@@ -47,7 +46,7 @@ export default function BookCard({ item, setSelectedId, selectedId }) {
             className="modal-content position-relative rounded-3 p-3"
             style={{
               backgroundColor: "white",
-              width: "330px",
+              width: "400px",
               zIndex: 1050,
             }}
             onClick={(e) => e.stopPropagation()}
@@ -59,8 +58,8 @@ export default function BookCard({ item, setSelectedId, selectedId }) {
                   alt={title}
                   className="rounded-3"
                   style={{
-                    width: "120px",
-                    height: "180px",
+                    width: "140px",
+                    height: "200px",
                   }}
                 />
               </div>

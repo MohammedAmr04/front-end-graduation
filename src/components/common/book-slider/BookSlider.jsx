@@ -7,6 +7,7 @@ const initData = [
   { id: 2, title: "Title", src: "/src/assets/img/classic3.jpg" },
   { id: 3, title: "Title", src: "/src/assets/img/classic4.jpg" },
   { id: 4, title: "Title", src: "/src/assets/img/classic5.jpg" },
+  { id: 5, title: "Title", src: "/src/assets/img/classic6.jpg" },
 ];
 export default function BookSlider() {
   const [selectedId, setSelectedId] = useState(null);

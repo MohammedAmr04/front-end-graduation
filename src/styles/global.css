@@ -1,6 +1,6 @@
 :root {
   --main-transition: 0.3s;
-  --main-color: white;
+  --main-color: #3c5eca;
   --section-color: #f1f0f0;
 }
 .main-header {
@@ -8,7 +8,7 @@
   border: solid 1px black;
   width: fit-content;
   padding: 10px 20px;
-  color: gray;
+  color: black;
   margin: 0 auto;
   position: relative;
   transition: var(--main-transition);
@@ -33,7 +33,7 @@
 }
 .main-header:hover {
   border-color: transparent;
-  color: black;
+  color: white;
   background-color: var(--main-color);
 }
 .main-header:hover::after {
