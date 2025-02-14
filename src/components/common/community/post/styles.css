@@ -1,0 +1,6 @@
+.post {
+  transition: 0.3s;
+}
+.post:hover {
+  background-color: #f1f1f1;
+}

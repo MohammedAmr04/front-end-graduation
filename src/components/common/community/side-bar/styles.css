@@ -1,0 +1,23 @@
+.sideBarItem {
+  font-size: 24px;
+  position: relative;
+  transition: var(--main-transition-duration);
+}
+.sideBarItem::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  transition: var(--main-transition-duration);
+  height: 100%;
+  background-color: #ccc;
+  z-index: -1;
+}
+
+.sideBarItem:hover::before {
+  width: 100%;
+}
+.sideBarItem:hover {
+  padding-left: 24px !important;
+}
