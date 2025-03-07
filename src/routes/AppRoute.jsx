@@ -8,6 +8,7 @@ import Register from "./../pages/Register";
 import AboutUs from "../components/common/about-us/AboutUs";
 import ContactUs from "./../pages/ContactUs";
 import Community from "../pages/Community";
+import Test from "../test/Test";
 
 const router = createBrowserRouter([
   {
@@ -22,6 +23,10 @@ const router = createBrowserRouter([
       {
         path: "/home",
         element: <Home />,
+      },
+      {
+        path: "/test",
+        element: <Test />,
       },
       {
         path: "/login",
