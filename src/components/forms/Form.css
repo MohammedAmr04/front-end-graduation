@@ -1,0 +1,7 @@
+.form-container form {
+  width: 360px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  box-shadow: var(--box-shadow);
+}
