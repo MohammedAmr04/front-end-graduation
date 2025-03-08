@@ -9,6 +9,7 @@ import AboutUs from "../components/common/about-us/AboutUs";
 import ContactUs from "./../pages/ContactUs";
 import Community from "../pages/Community";
 import Test from "../test/Test";
+import BookSwap from "../pages/BookSwap";
 
 const router = createBrowserRouter([
   {
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
       {
         path: "/home",
         element: <Home />,
+      },
+      {
+        path: "/bookSwap",
+        element: <BookSwap />,
       },
       {
         path: "/test",
