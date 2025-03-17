@@ -24,6 +24,7 @@ function Form({ fields, onSubmit }) {
           name={field.name}
           value={formData[field.name] || ""}
           onChange={handleChange}
+          placeHolder={field.placeHolder}
           error={field.error}
         />
       ))}

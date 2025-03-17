@@ -3,6 +3,7 @@ import { Card, Button, Form } from "react-bootstrap";
 import PropTypes from "prop-types";
 import { HandThumbsUp, Chat } from "react-bootstrap-icons";
 import "./styles.css";
+import PostSlider from "../slider/PostSlider";
 export default function Post({
   profileImage,
   username,
@@ -14,15 +15,13 @@ export default function Post({
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState("");
 
-  // دالة لزيادة عدد الإعجابات
   const handleLike = () => setLikes(likes + 1);
 
-  // دالة لإضافة تعليق جديد
   const handleCommentSubmit = (e) => {
     e.preventDefault();
     if (commentText.trim() !== "") {
       setComments([...comments, commentText]);
-      setCommentText(""); // تفريغ الحقل بعد الإرسال
+      setCommentText("");
     }
   };
 
@@ -50,11 +49,13 @@ export default function Post({
         <div className="py-3 content">
           <p className="px-2">{content}</p>
           {postImage && (
-            <img
-              src={postImage}
-              alt="Post"
-              className="img-fluid w-100 rounded-4"
-            />
+            <PostSlider>
+              <img
+                src={postImage}
+                alt="Post"
+                className="img-fluid w-100 rounded-4"
+              />
+            </PostSlider>
           )}
         </div>
 
@@ -85,7 +86,6 @@ export default function Post({
             </Button>
           </Form>
 
-          {/* عرض التعليقات */}
           {comments.length > 0 && (
             <div className="mt-3">
               <h6>Comments:</h6>

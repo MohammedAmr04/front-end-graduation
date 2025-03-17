@@ -1,5 +1,7 @@
+import { useState } from "react";
 import Post from "../components/common/community/post/Post";
 import SideBar from "../components/common/community/side-bar/SideBar";
+import AddPost from "../components/common/community/add-post/AddPost";
 
 const posts = [
   {
@@ -52,10 +54,29 @@ const posts = [
   },
 ];
 export default function Community() {
+  const [isOpen, setIsOpen] = useState(false);
   return (
     <>
       <SideBar />
       <div className="" style={{ marginLeft: "250px" }}>
+        <div
+          className="px-2 pt-3 mx-5 position-relative"
+          style={{ width: "600px", height: `${isOpen ? "" : "50px"}` }}
+        >
+          <button
+            type="button"
+            className="top-25 btn btn-primary position-absolute rounded-pill  end-0"
+            onClick={() => setIsOpen((prev) => !prev)}
+          >
+            New ➕
+          </button>
+          {isOpen && (
+            <div className="pt-4 mx-auto">
+              {/* <Form fields={fields} onSubmit={() => {}} /> */}
+              <AddPost />
+            </div>
+          )}
+        </div>
         {posts.map((post, index) => (
           <Post key={index} {...post} />
         ))}

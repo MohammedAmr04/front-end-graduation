@@ -32,7 +32,7 @@ export default function Login() {
   return (
     <div className="overflow-hidden login justify-content-center align-items-center">
       <Form className="p-5 mx-auto rounded-3" onSubmit={handleSubmit}>
-        <p className="text-center  fw-bold fs-5">Login to your account</p>
+        <p className="text-center fw-bold fs-5">Login to your account</p>
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
           <Form.Control
