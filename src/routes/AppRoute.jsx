@@ -10,6 +10,8 @@ import ContactUs from "./../pages/ContactUs";
 import Community from "../pages/Community";
 import Test from "../test/Test";
 import BookSwap from "../pages/BookSwap";
+import AddBook from "../admin/pages/AddBook";
+import ManageBook from "../admin/pages/ManageBook";
 import AdminLayout from "../layouts/AdminLayout";
 
 const router = createBrowserRouter([
