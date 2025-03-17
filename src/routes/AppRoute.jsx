@@ -10,6 +10,7 @@ import ContactUs from "./../pages/ContactUs";
 import Community from "../pages/Community";
 import Test from "../test/Test";
 import BookSwap from "../pages/BookSwap";
+import AdminLayout from "../layouts/AdminLayout";
 
 const router = createBrowserRouter([
   {
@@ -60,6 +61,16 @@ const router = createBrowserRouter([
     element: <Community />,
     errorElement: <ErrorPage />,
   },
+  {
+    path: "/admin",
+    element: <AdminLayout />,
+    children: [
+      { path: "addbook", element: <AddBook /> },
+      { path: "managebook", element: <ManageBook /> },
+      
+    ],
+  },
+
 ]);
 export default function AppRoute() {
   return <RouterProvider router={router} />;
