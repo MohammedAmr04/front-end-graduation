@@ -1,16 +1,18 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { FaTachometerAlt, FaBook, FaUser } from "react-icons/fa";
+import { FaTachometerAlt, FaBook, FaUser ,FaUsers } from "react-icons/fa";
 import './AdminSidebar.css';
 
 const AdminSidebar = () => {
 
   const [isBooksOpen, setIsBooksOpen] = useState(false);
   const [isUsersOpen, setIsUsersOpen] = useState(false); 
+  const [isCommunityOpen, setIsCommunityOpen] =useState(false);
 
   return (
     <div className="sidebar">
       <ul>
+
         <ul className="manageBook">
         <li onClick={() => setIsBooksOpen(!isBooksOpen)}>
           <FaBook/>
@@ -23,6 +25,7 @@ const AdminSidebar = () => {
           )}
         </li>
         </ul>
+
         <ul className="manageUser">
         <li onClick={() => setIsUsersOpen(!isUsersOpen)}>
           <FaUser/>
@@ -34,6 +37,20 @@ const AdminSidebar = () => {
           )}
         </li>
         </ul>
+
+        <ul className="manage-community">
+          <li onClick={()=> setIsCommunityOpen(!isCommunityOpen)}>
+            <FaUsers/>
+            <span>  Community</span>
+            {isCommunityOpen && (
+              <ul>
+                <li><Link to="/admin/addcommunity">Add Community</Link></li>
+              </ul>
+            )}
+          </li>
+        </ul>
+
+
       </ul>
     </div>
   );
