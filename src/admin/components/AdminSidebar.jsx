@@ -45,6 +45,7 @@ const AdminSidebar = () => {
             {isCommunityOpen && (
               <ul>
                 <li><Link to="/admin/addcommunity">Add Community</Link></li>
+                <li><Link to="/admin/managecommunity">Manage_community</Link></li>
               </ul>
             )}
           </li>
