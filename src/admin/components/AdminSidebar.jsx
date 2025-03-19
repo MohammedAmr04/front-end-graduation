@@ -1,21 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-<<<<<<< HEAD
-import { FaBook, FaUser } from "react-icons/fa";
-import "./AdminSidebar.css";
-=======
 import { FaTachometerAlt, FaBook, FaUser ,FaUsers } from "react-icons/fa";
 import './AdminSidebar.css';
->>>>>>> c68abd13ef4081493c09208808b76b70745ae492
 
 const AdminSidebar = () => {
   const [isBooksOpen, setIsBooksOpen] = useState(false);
-<<<<<<< HEAD
-  const [isUsersOpen, setIsUsersOpen] = useState(false);
-=======
   const [isUsersOpen, setIsUsersOpen] = useState(false); 
   const [isCommunityOpen, setIsCommunityOpen] =useState(false);
->>>>>>> c68abd13ef4081493c09208808b76b70745ae492
 
   return (
     <div className="sidebar">
