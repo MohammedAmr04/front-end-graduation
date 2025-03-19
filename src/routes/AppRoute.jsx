@@ -13,6 +13,8 @@ import BookSwap from "../pages/BookSwap";
 import AddBook from "../admin/pages/AddBook";
 import ManageBook from "../admin/pages/ManageBook";
 import AdminLayout from "../layouts/AdminLayout";
+import AddCommunity from "../admin/pages/AddCommunity";
+import ManageCommunity from "../admin/pages/ManageCommunity";
 
 const router = createBrowserRouter([
   {
@@ -69,6 +71,8 @@ const router = createBrowserRouter([
     children: [
       { path: "addbook", element: <AddBook /> },
       { path: "managebook", element: <ManageBook /> },
+      { path: "addcommunity", element: <AddCommunity /> },
+      { path: "managecommunity", element: <ManageCommunity /> },
       
     ],
   },
