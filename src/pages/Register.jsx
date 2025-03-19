@@ -1,12 +1,15 @@
 import axios from "axios";
 import { useState } from "react";
 import { Button, Form } from "react-bootstrap";
-
+import { useDispatch } from "react-redux";
+import { login } from "../store/Auth/authSlice";
 export default function Register() {
+  const dispatch = useDispatch();
   const [user, setUser] = useState({
     email: "",
     password: "",
-    username: "",
+    firstName: "",
+    lastName: "",
   });
 
   const handleSubmit = async (e) => {
@@ -15,13 +18,15 @@ export default function Register() {
       const response = await axios.post(
         "https://localhost:7159/api/Account/Register",
         {
-          username: user.username,
+          firstName: user.firstName,
+          lastName: user.lastName,
           email: user.email,
           password: user.password,
         }
       );
 
       console.log("Registration Successful:", response.data);
+      dispatch(login(response.data));
     } catch (error) {
       console.error(
         "Error during registration:",
@@ -36,9 +41,9 @@ export default function Register() {
   };
 
   return (
-    <div className="login justify-content-center align-items-center overflow-hidden">
-      <Form className="p-5 rounded-3 mx-auto" onSubmit={handleSubmit}>
-        <p className=" fw-bold fs-5 text-center">Create New account</p>
+    <div className="overflow-hidden login justify-content-center align-items-center">
+      <Form className="p-5 mx-auto rounded-3" onSubmit={handleSubmit}>
+        <p className="text-center fw-bold fs-5">Create New account</p>
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
           <Form.Control
@@ -50,12 +55,23 @@ export default function Register() {
           />
         </Form.Group>
         <Form.Group className="mb-3">
-          <Form.Label>Username</Form.Label>
+          <Form.Label>First Name</Form.Label>
           <Form.Control
-            name="username"
+            name="firstName"
             type="text"
-            placeholder="Enter your username"
-            value={user.username}
+            placeholder="Enter your first name"
+            value={user.firstName}
+            onChange={handleChange}
+            required
+          />
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Last Name</Form.Label>
+          <Form.Control
+            name="lastName"
+            type="text"
+            placeholder="Enter your last name"
+            value={user.lastName}
             onChange={handleChange}
             required
           />

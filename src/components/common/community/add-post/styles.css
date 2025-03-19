@@ -1,8 +1,19 @@
 .add-post {
   background-color: #f0f2f5;
   border-radius: 10px;
+  width: 100%;
+  max-width: 600px;
 }
 .add-post-buttons {
   border-top: 1px solid #e0e0e0;
   gap: 10px;
+}
+.new-post-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.post-form-container {
+  width: 100%;
+  max-width: 600px;
 }

@@ -53,34 +53,39 @@ const posts = [
       "https://tse2.mm.bing.net/th?id=OIP.WkLjIAYIyZCXq0QpfdsQ0QHaHa&pid=Api&P=0&h=220",
   },
 ];
+
 export default function Community() {
   const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <>
+    <div className="gap-3 d-flex">
       <SideBar />
-      <div className="" style={{ marginLeft: "250px" }}>
-        <div
-          className="px-2 pt-3 mx-5 position-relative"
-          style={{ width: "600px", height: `${isOpen ? "" : "50px"}` }}
-        >
-          <button
-            type="button"
-            className="top-25 btn btn-primary position-absolute rounded-pill  end-0"
-            onClick={() => setIsOpen((prev) => !prev)}
-          >
-            New ➕
-          </button>
-          {isOpen && (
-            <div className="pt-4 mx-auto">
-              {/* <Form fields={fields} onSubmit={() => {}} /> */}
-              <AddPost />
+      <div className="flex-grow-1 community-content">
+        <div className="py-4 container-fluid">
+          <div className="mb-4 post-form-container position-relative">
+            <button
+              type="button"
+              className={`btn btn-primary rounded-pill new-post-btn  ${
+                isOpen ? "active rotate" : ""
+              }`}
+              onClick={() => setIsOpen((prev) => !prev)}
+            >
+              New ➕
+            </button>
+            <div className={`post-form-wrapper ${isOpen ? "show" : ""}`}>
+              {isOpen && <AddPost />}
             </div>
-          )}
+          </div>
+
+          <div className="pt-3 mx-auto mx-md-0 posts-container row flex-column ">
+            {posts.map((post, index) => (
+              <div key={index} className="">
+                <Post {...post} />
+              </div>
+            ))}
+          </div>
         </div>
-        {posts.map((post, index) => (
-          <Post key={index} {...post} />
-        ))}
       </div>
-    </>
+    </div>
   );
 }
