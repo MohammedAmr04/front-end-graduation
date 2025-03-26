@@ -31,7 +31,7 @@ A modern, responsive web application built with React and Vite. This project dem
 1. Clone the repository:
 
 ```bash
-git clone [your-repository-url]
+git clone https://github.com/MohammedAmr04/front-end-graduation
 cd front-end-graduation
 ```
 
