@@ -37,6 +37,13 @@ export default function Header() {
               </Nav.Link>
               <Nav.Link
                 as={Link}
+                to="/bookSwap"
+                className={location.pathname === "/bookSwap" ? "active" : ""}
+              >
+                Book Swap
+              </Nav.Link>
+              <Nav.Link
+                as={Link}
                 to="/community"
                 className={location.pathname === "/community" ? "active" : ""}
               >
