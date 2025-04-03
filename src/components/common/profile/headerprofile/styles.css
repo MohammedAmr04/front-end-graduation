@@ -1,0 +1,89 @@
+.header-profile {
+  background-image: linear-gradient(
+    to top,
+    #fff,
+    rgba(255, 255, 255.9),
+    rgba(255, 255, 255, 0.7),
+    rgba(255, 255, 255, 0.4),
+    rgba(255, 255, 255, 0)
+  );
+}
+.header-profile .container-img {
+  height: 400px;
+  object-fit: cover;
+  border-radius: 20px;
+  overflow: hidden;
+}
+.header-profile .container-img img {
+  width: 100%;
+}
+
+.header-profile .user-info {
+  padding: 20px 30px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: solid 1px #ccc;
+  height: 120px;
+}
+.header-profile .photo-profile {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  position: relative;
+  top: -60px;
+  border: #fff solid 5px;
+}
+.header-profile .photo-profile img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.header-profile .user-info .username {
+  font-weight: 700;
+}
+.header-profile .buttons-profile {
+  display: flex;
+  gap: 20px;
+  align-items: start;
+}
+
+.header-profile .nav-profile {
+  padding: 0px 15px;
+  background: #f5f5f5;
+  display: flex;
+  justify-content: center;
+}
+.header-profile .nav-profile ul {
+  padding: 15px 0px;
+  list-style: none;
+  display: flex;
+
+  gap: 20px;
+  align-items: center;
+}
+
+.header-profile .nav-profile ul li a {
+  overflow: hidden;
+  position: relative;
+  padding: 10px 15px;
+}
+
+.header-profile .nav-profile ul li a::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 2px;
+  background: #333;
+  bottom: 0;
+  left: 0;
+  transition: all 0.3s;
+}
+.header-profile .nav-profile ul li:hover a::after {
+  width: 100%;
+}
+
+.header-profile.nav-profile ul li.active a::after {
+  width: 100%;
+}

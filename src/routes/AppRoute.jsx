@@ -15,6 +15,8 @@ import ManageBook from "../admin/pages/ManageBook";
 import AdminLayout from "../layouts/AdminLayout";
 import AddCommunity from "../admin/pages/AddCommunity";
 import ManageCommunity from "../admin/pages/ManageCommunity";
+import Profile from "./../pages/Profile";
+import PostsProfile from "../components/common/profile/PostsProfile/PostsProfile";
 
 const router = createBrowserRouter([
   {
@@ -58,6 +60,11 @@ const router = createBrowserRouter([
         path: "/community",
         element: <Community />,
       },
+      {
+        path: "/profile",
+        element: <Profile />,
+        children: [{ path: "posts", element: <PostsProfile /> }],
+      },
     ],
   },
   {
@@ -73,10 +80,8 @@ const router = createBrowserRouter([
       { path: "managebook", element: <ManageBook /> },
       { path: "addcommunity", element: <AddCommunity /> },
       { path: "managecommunity", element: <ManageCommunity /> },
-      
     ],
   },
-
 ]);
 export default function AppRoute() {
   return <RouterProvider router={router} />;
