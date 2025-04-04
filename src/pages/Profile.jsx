@@ -5,7 +5,7 @@ export default function Profile() {
   return (
     <div>
       <HeaderProfile />
-      <main>
+      <main className="container">
         <Outlet />
       </main>
     </div>

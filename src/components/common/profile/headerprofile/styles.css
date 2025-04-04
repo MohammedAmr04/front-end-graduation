@@ -84,6 +84,6 @@
   width: 100%;
 }
 
-.header-profile.nav-profile ul li.active a::after {
+.header-profile .nav-profile ul li.active-nav a::after {
   width: 100%;
 }
