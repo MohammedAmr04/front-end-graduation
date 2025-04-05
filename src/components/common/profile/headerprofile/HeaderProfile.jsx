@@ -41,8 +41,12 @@ export default function HeaderProfile() {
             <li>
               <Link>Friends</Link>
             </li>
-            <li>
-              <Link>Dashboard</Link>
+            <li
+              className={
+                location.pathname.endsWith("/dashboard") ? "active-nav" : ""
+              }
+            >
+              <Link to={"dashboard"}>Dashboard</Link>
             </li>
           </ul>
         </div>

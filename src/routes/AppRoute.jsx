@@ -17,6 +17,7 @@ import AddCommunity from "../admin/pages/AddCommunity";
 import ManageCommunity from "../admin/pages/ManageCommunity";
 import Profile from "./../pages/Profile";
 import PostsProfile from "../components/common/profile/PostsProfile/PostsProfile";
+import DashboardProfile from "../components/common/profile/dashboard/DashboardProfile";
 
 const router = createBrowserRouter([
   {
@@ -63,7 +64,10 @@ const router = createBrowserRouter([
       {
         path: "/profile",
         element: <Profile />,
-        children: [{ path: "posts", element: <PostsProfile /> }],
+        children: [
+          { path: "posts", element: <PostsProfile /> },
+          { path: "dashboard", element: <DashboardProfile /> },
+        ],
       },
     ],
   },
