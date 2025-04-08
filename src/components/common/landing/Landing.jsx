@@ -7,7 +7,7 @@ const p2 = `Escape. Learn. Feel.`;
 const p3 = `Discover stories that stay with you — forever.`;
 export default function Landing() {
   return (
-    <div className="landing">
+    <div className="landing" data-aos="fade-down">
       <div className="bg bg1"></div>
       <div className="bg bg2"></div>
       <div className="text">
