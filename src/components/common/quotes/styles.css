@@ -4,11 +4,12 @@
   background-image: url("src/assets/landing/quote.jpg");
   background-size: cover;
   background-position: center center;
+  height: 300px;
 }
 
 .quotes .quoteCard {
   padding: 15px;
-  margin: 0 auto;
+  margin: 40px auto;
   max-width: 600px;
   background-color: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(4px);

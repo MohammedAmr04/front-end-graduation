@@ -1,4 +1,4 @@
-import { RouterProvider } from "react-router";
+import { RouterProvider } from "react-router-dom";
 import { createBrowserRouter } from "react-router-dom";
 import Login from "./../pages/Login";
 import Home from "./../pages/Home";
@@ -18,6 +18,7 @@ import ManageCommunity from "../admin/pages/ManageCommunity";
 import Profile from "./../pages/Profile";
 import PostsProfile from "../components/common/profile/PostsProfile/PostsProfile";
 import DashboardProfile from "../components/common/profile/dashboard/DashboardProfile";
+import Books from "../pages/books/Books";
 
 const router = createBrowserRouter([
   {
@@ -30,63 +31,64 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "/home",
+        path: "home",
         element: <Home />,
       },
       {
-        path: "/bookSwap",
+        path: "books",
+        element: <Books />,
+      },
+      {
+        path: "bookSwap",
         element: <BookSwap />,
       },
       {
-        path: "/test",
+        path: "test",
         element: <Test />,
       },
       {
-        path: "/login",
+        path: "login",
         element: <Login />,
       },
       {
-        path: "/register",
+        path: "register",
         element: <Register />,
       },
       {
-        path: "/about-us",
+        path: "about-us",
         element: <AboutUs />,
       },
       {
-        path: "/contact-us",
+        path: "contact-us",
         element: <ContactUs />,
       },
       {
-        path: "/community",
+        path: "community",
         element: <Community />,
       },
       {
-        path: "/profile",
+        path: "profile",
         element: <Profile />,
         children: [
+          { index: true, element: <PostsProfile /> },
           { path: "posts", element: <PostsProfile /> },
           { path: "dashboard", element: <DashboardProfile /> },
         ],
       },
-    ],
-  },
-  {
-    path: "/community",
-    element: <Community />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: "/admin",
-    element: <AdminLayout />,
-    children: [
-      { path: "addbook", element: <AddBook /> },
-      { path: "managebook", element: <ManageBook /> },
-      { path: "addcommunity", element: <AddCommunity /> },
-      { path: "managecommunity", element: <ManageCommunity /> },
+      {
+        path: "admin",
+        element: <AdminLayout />,
+        children: [
+          { path: "addbook", element: <AddBook /> },
+          { path: "managebook", element: <ManageBook /> },
+          { path: "addcommunity", element: <AddCommunity /> },
+          { path: "managecommunity", element: <ManageCommunity /> },
+        ],
+      },
     ],
   },
 ]);
+
 export default function AppRoute() {
   return <RouterProvider router={router} />;
 }

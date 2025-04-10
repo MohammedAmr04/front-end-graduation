@@ -76,16 +76,15 @@ select:focus {
 }
 
 .main-header {
-  text-align: center;
-  border: solid 1px black;
   width: fit-content;
   padding: 10px 20px;
-  color: black;
-  margin: 0 auto;
+  margin-left: 10px;
+  border-left: var(--success-color) solid 5px;
   position: relative;
   transition: var(--transition-speed);
 }
-.main-header::after,
+
+/* .main-header::after,
 .main-header::before {
   content: " ";
   height: 15px;
@@ -125,7 +124,7 @@ select:focus {
   z-index: -1;
   transform: translateY(0);
   top: 0;
-}
+} */
 .move-up {
   transition: 0.3s;
 }
