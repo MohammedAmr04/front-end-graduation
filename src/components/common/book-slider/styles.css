@@ -1,0 +1,6 @@
+.button-view {
+  width: fit-content;
+  padding-right: 30px;
+  position: absolute;
+  right: 20px;
+}

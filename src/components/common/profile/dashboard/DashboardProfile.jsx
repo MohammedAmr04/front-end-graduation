@@ -1,5 +1,10 @@
 
+import ActivityHeatmap from "../../activityHeatMap/activityHeatMap";
+
 export default function DashboardProfile() {
-  return <div>
-  </div>;
+  return (
+    <div>
+      <ActivityHeatmap />
+    </div>
+  );
 }
