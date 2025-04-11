@@ -92,7 +92,7 @@ const Books = () => {
         {/* Pagination Controls */}
         <nav>
           <ul className="mb-0 pagination">
-            {/* زر Previous */}
+            {/* Previous Button */}
             <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
               <button
                 className="page-link"
@@ -102,28 +102,39 @@ const Books = () => {
               </button>
             </li>
 
-            {Array.from({ length: Math.min(totalPages, 5) }, (_, index) => (
-              <li
-                key={index}
-                className={`page-item ${
-                  currentPage === index + 1 ? "active" : ""
-                }`}
-              >
-                <button
-                  className="page-link"
-                  onClick={() => handlePageChange(index + 1)}
-                >
-                  {index + 1}
-                </button>
-              </li>
-            ))}
+            {/* حساب بداية ونهاية الصفحات */}
+            {(() => {
+              const startPage = Math.max(currentPage - 2, 1);
+              const endPage = Math.min(currentPage + 2, totalPages);
+              const pages = [];
 
-            {totalPages > 5 && (
+              for (let i = startPage; i <= endPage; i++) {
+                pages.push(
+                  <li
+                    key={i}
+                    className={`page-item ${currentPage === i ? "active" : ""}`}
+                  >
+                    <button
+                      className="page-link"
+                      onClick={() => handlePageChange(i)}
+                    >
+                      {i}
+                    </button>
+                  </li>
+                );
+              }
+
+              return pages;
+            })()}
+
+            {/* Ellipsis if there are more pages */}
+            {currentPage + 2 < totalPages && (
               <li className="page-item disabled">
                 <span className="page-link">...</span>
               </li>
             )}
 
+            {/* Next Button */}
             <li
               className={`page-item ${
                 currentPage === totalPages ? "disabled" : ""
