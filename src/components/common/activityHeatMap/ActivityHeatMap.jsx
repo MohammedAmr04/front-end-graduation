@@ -1,6 +1,7 @@
 import { useSelector } from "react-redux";
 import CalendarHeatmap from "react-calendar-heatmap";
 import "react-calendar-heatmap/dist/styles.css";
+import { Tooltip } from "react-tooltip";
 import "./styles.css"; // We'll define custom colors here
 // to test change history to data
 // const Data = {
@@ -87,8 +88,17 @@ const ActivityHeatmap = () => {
             if (value.count >= 10) return "color-github-2";
             return "color-github-1";
           }}
+          tooltipDataAttrs={(value) => {
+            if (!value || !value.date) return null;
+            return {
+              "data-tooltip-id": "heatmap-tooltip",
+              "data-tooltip-content": `${value.date} — ${value.count} minutes`,
+            };
+          }}
+          
           showWeekdayLabels
         />
+        <Tooltip id="heatmap-tooltip" />
       </div>
     </div>
   );
