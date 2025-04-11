@@ -9,7 +9,11 @@ export default function Header() {
       <Navbar expand="lg" className="shadow-sm header fixed-top bg-light">
         <Container>
           <Navbar.Brand as={Link} to="/home">
-            Ktabook
+          <img
+            src="/src/assets/Group 4.svg"
+            alt="logo"
+            style={{ height: "50px", width: "auto" }}
+          />
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
