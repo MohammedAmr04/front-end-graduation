@@ -1,11 +1,3 @@
-/* Root Variables */
-:root {
-  --box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
-  --header-color: #ffffff;
-  --section-color: white;
-  --transition-speed: 0.3s;
-}
-
 /* Global Styles */
 body {
   font-family: "New Amsterdam", serif;

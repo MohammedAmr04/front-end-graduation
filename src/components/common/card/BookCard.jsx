@@ -11,11 +11,12 @@ export default function BookCard({ item, setSelectedId, selectedId }) {
 
   return (
     <div
-      className="my-3 border-0 card"
-      style={{ backgroundColor: "transparent" }}
+      className="my-3 border-0 card move-up"
+      style={{
+        backgroundColor: "transparent",
+      }}
     >
-      {/* صورة الكتاب */}
-      <div className="mb-3 img-container move-up">
+      <div className="mb-3 img-container ">
         <img
           src={src}
           alt={title}
@@ -23,19 +24,33 @@ export default function BookCard({ item, setSelectedId, selectedId }) {
           style={{
             width: "180px",
             height: "240px",
-            filter: "drop-shadow(3px 3px 6px black)",
           }}
         />
       </div>
-
-      {/* زر التفاصيل */}
-      <button
-        className="px-3 py-2 btn"
-        style={{ backgroundColor: "#ccc", color: "black", fontWeight: "bold" }}
-        onClick={handleClick}
-      >
-        Details
-      </button>
+      <div className="gap-2 mt-2 buttons-container d-flex justify-content-between">
+        <button
+          className="px-3 py-2 btn"
+          style={{
+            backgroundColor: "#ccc",
+            color: "black",
+            fontWeight: "bold",
+          }}
+          onClick={handleClick}
+        >
+          Details
+        </button>
+        <button
+          className="px-3 py-2 btn"
+          style={{
+            backgroundColor: "#ccc",
+            color: "black",
+            fontWeight: "bold",
+          }}
+          onClick={handleClick}
+        >
+          Read
+        </button>
+      </div>
 
       <Overlay isOpen={selectedId === id} onClose={() => setSelectedId(null)}>
         <div className="content d-flex align-items-center">

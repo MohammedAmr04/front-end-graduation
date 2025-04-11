@@ -1,0 +1,44 @@
+.container-services {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 30px;
+  justify-content: space-between;
+}
+
+.service {
+  position: relative;
+  overflow: hidden;
+  transition: all var(--transition-speed) ease; /* تحسين تعريف الانتقال */
+  width: 330px;
+  margin-inline: auto;
+  padding: 15px 10px;
+  height: auto; /* إضافة height أساسية */
+}
+
+.service::after,
+.service::before {
+  position: absolute;
+  content: "";
+  width: 0;
+  height: 5px;
+  transition: width var(--transition-speed) ease;
+  background-color: black;
+}
+
+.service::after {
+  top: 0;
+  right: 0;
+}
+
+.service::before {
+  left: 0;
+  bottom: 0;
+}
+
+.service:hover::after,
+.service:hover::before {
+  width: 200%;
+}
+.service .card-text {
+  line-height: 1.2;
+}
