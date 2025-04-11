@@ -12,7 +12,7 @@ export default function Header() {
           <img
             src="/src/assets/Group 4.svg"
             alt="logo"
-            style={{ height: "40px", width: "auto" }}
+            style={{ height: "50px", width: "auto" }}
           />
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
