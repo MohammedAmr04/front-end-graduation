@@ -1,3 +1,9 @@
+import Loader from "../components/common/loader/Loader";
+
 export default function Test() {
-  return <div>Success</div>;
+  return (
+    <div>
+      <Loader />
+    </div>
+  );
 }

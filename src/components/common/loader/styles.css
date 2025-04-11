@@ -12,22 +12,7 @@
   border-radius: 50%;
   animation: rotate-right 2s infinite linear;
 }
-@keyframes rotate-right {
-  from {
-    transform: rotate(0);
-  }
-  to {
-    transform: rotate(1turn);
-  }
-}
-@keyframes rotate-left {
-  to {
-    transform: rotate(0);
-  }
-  from {
-    transform: rotate(1turn);
-  }
-}
+
 .loader-child {
   position: absolute;
   top: 50%;
