@@ -1,5 +1,6 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-
+import "../src/styles/animation.css";
+import "../src/styles/variables.css";
 import "./App.css";
 import AppRoute from "./routes/AppRoute";
 import { useEffect } from "react";
