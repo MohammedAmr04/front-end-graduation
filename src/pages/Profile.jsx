@@ -1,4 +1,4 @@
-import { Outlet } from "react-router";
+import { Outlet } from "react-router-dom";
 import HeaderProfile from "../components/common/profile/headerprofile/HeaderProfile";
 
 export default function Profile() {

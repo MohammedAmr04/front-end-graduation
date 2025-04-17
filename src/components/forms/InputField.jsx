@@ -8,22 +8,40 @@ function InputField({
   type = "text",
   name = "",
   value = "",
-  placeHolder = `Enter Your ${label}`,
+  placeholder = `Enter Your ${label}`,
   onChange = () => {},
   error = "",
 }) {
   return (
     <div className={`input-field ${className}`}>
-      {labelRender && <label className="mb-1 ps-2">{label}</label>}
+      {labelRender && (
+        <label
+          htmlFor={name} // Linking the label with the input using the name
+          className="my-2 ps-2"
+        >
+          {label}
+          {" :"}
+        </label>
+      )}
       <input
-        className="rounded-5"
+        id={name} // Adding an id to match the label
         type={type}
         name={name}
         value={value}
         onChange={onChange}
-        placeholder={placeHolder}
+        placeholder={placeholder}
+        aria-invalid={error ? "true" : "false"} // Adding aria-invalid to indicate an error
       />
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && (
+        <p
+          className="alert alert-danger"
+          style={{ color: "red" }}
+          aria-live="assertive"
+        >
+          {error}
+        </p>
+      )}{" "}
+      {/* aria-live to announce the error immediately */}
     </div>
   );
 }
@@ -31,10 +49,10 @@ function InputField({
 export default InputField;
 
 InputField.propTypes = {
-  label: PropTypes.string.isRequired,
+  label: PropTypes.string,
   type: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  placeHolder: PropTypes.string.isRequired,
+  placeholder: PropTypes.string.isRequired,
   value: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   error: PropTypes.string,

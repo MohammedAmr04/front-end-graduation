@@ -2,7 +2,7 @@ import { useState } from "react";
 import InputField from "./InputField";
 import "./Form.css";
 import PropTypes from "prop-types";
-function Form({ fields, onSubmit }) {
+function Form({ fields, onSubmit, additionalData }) {
   const [formData, setFormData] = useState({});
 
   const handleChange = (e) => {
@@ -11,7 +11,8 @@ function Form({ fields, onSubmit }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    const combinedData = { ...additionalData, ...formData };
+    onSubmit(combinedData);
   };
 
   return (
@@ -28,7 +29,7 @@ function Form({ fields, onSubmit }) {
           error={field.error}
         />
       ))}
-      <div className="justify-content-center d-flex align-items-center">
+      <div className="mt-2 justify-content-center d-flex align-items-center">
         <button className="btn btn-primary" type="submit">
           Submit
         </button>
@@ -42,4 +43,5 @@ export default Form;
 Form.propTypes = {
   fields: PropTypes.array.isRequired,
   onSubmit: PropTypes.func.isRequired,
+  additionalData: PropTypes.object,
 };

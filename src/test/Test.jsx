@@ -1,9 +1,9 @@
-import Loader from "../components/common/loader/Loader";
+import Map from "./../components/common/map/Map";
 
 export default function Test() {
   return (
     <div>
-      <Loader />
+      <Map />
     </div>
   );
 }
