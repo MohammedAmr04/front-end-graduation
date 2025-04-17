@@ -1,4 +1,3 @@
-import { useState } from "react";
 import "../../../styles/global.css";
 import BookCard from "../card/BookCard";
 import { Link } from "react-router-dom";
@@ -16,18 +15,14 @@ const initData = [
   { id: 5, title: "Title", src: "/src/assets/img/classic6.jpg" },
 ];
 export default function BookSlider() {
-  const [selectedId, setSelectedId] = useState(null);
+  // const [selectedId, setSelectedId] = useState(null);
   return (
     <div className="py-5 position-relative">
       <h2 className="mb-3 main-header">Classic</h2>
       <div className="flex-wrap pb-3 d-flex justify-content-between align-items-center ">
         {initData.map((item) => (
           <div className="mx-auto my-3 d-flex my-lg-0" key={item.src}>
-            <BookCard
-              item={item}
-              setSelectedId={setSelectedId}
-              selectedId={selectedId}
-            />
+            <BookCard item={item} />
           </div>
         ))}
       </div>
