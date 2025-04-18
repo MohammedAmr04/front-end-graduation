@@ -1,20 +1,25 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import InputField from "./InputField";
 import "./Form.css";
 import PropTypes from "prop-types";
-function Form({ fields, onSubmit, additionalData }) {
+function Form({ fields, onSubmit, resetTrigger }) {
   const [formData, setFormData] = useState({});
-
+  const initialState = fields.reduce((acc, field) => {
+    acc[field.name] = "";
+    return acc;
+  }, {});
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const combinedData = { ...additionalData, ...formData };
-    onSubmit(combinedData);
+    onSubmit(formData);
   };
-
+  // Reset form when resetTrigger changes
+  useEffect(() => {
+    setFormData(initialState);
+  }, [resetTrigger]);
   return (
     <form className="form rounded-4" onSubmit={handleSubmit}>
       {fields.map((field) => (
@@ -43,5 +48,5 @@ export default Form;
 Form.propTypes = {
   fields: PropTypes.array.isRequired,
   onSubmit: PropTypes.func.isRequired,
-  additionalData: PropTypes.object,
+  resetTrigger: PropTypes.number,
 };

@@ -19,6 +19,7 @@ import Profile from "./../pages/Profile";
 import PostsProfile from "../components/common/profile/PostsProfile/PostsProfile";
 import DashboardProfile from "../components/common/profile/dashboard/DashboardProfile";
 import Books from "../pages/books/Books";
+import Book from "../components/common/book/Book";
 
 const router = createBrowserRouter([
   {
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
       {
         path: "books",
         element: <Books />,
+      },
+      {
+        path: "book/:id",
+        element: <Book />,
       },
       {
         path: "bookSwap",

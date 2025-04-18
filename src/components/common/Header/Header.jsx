@@ -9,11 +9,11 @@ export default function Header() {
       <Navbar expand="lg" className="shadow-sm header fixed-top bg-light">
         <Container>
           <Navbar.Brand as={Link} to="/home">
-          <img
-            src="/src/assets/Group 4.svg"
-            alt="logo"
-            style={{ height: "40px", width: "auto" }}
-          />
+            <img
+              src="/src/assets/Group 4.svg"
+              alt="logo"
+              style={{ height: "40px", color: "var(--color-brand)" }}
+            />
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
@@ -72,7 +72,7 @@ export default function Header() {
         </Container>
       </Navbar>
 
-      <div style={{ paddingTop: "58px" }}></div>
+      <div style={{ paddingTop: "66px" }}></div>
     </>
   );
 }

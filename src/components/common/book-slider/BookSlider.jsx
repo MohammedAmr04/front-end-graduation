@@ -28,7 +28,7 @@ export default function BookSlider() {
       </div>
       <div className="container-arrow-right button-view">
         {" "}
-        <Link>View All </Link>
+        <Link to={"/books"}>View All </Link>
         <FaArrowRight className="arrow-right" />
       </div>
     </div>

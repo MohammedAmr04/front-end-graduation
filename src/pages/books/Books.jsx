@@ -3,11 +3,8 @@ import { useFetchBooks } from "../../hooks/useFetchBooks";
 import { useSearch } from "../../hooks/useSearch";
 
 const Books = () => {
-  // نبدأ بصفحة 1 وبـ limit 9 كتب لكل صفحة
   const [currentPage, setCurrentPage] = useState(1);
   const { books, loading, error, totalPages } = useFetchBooks(currentPage, 9);
-
-  // إعداد البحث باستخدام custom hook الخاص بالبحث
   const [searchInput, setSearchInput] = useState("");
   const {
     results,
@@ -54,7 +51,7 @@ const Books = () => {
           }}
         >
           <h3 className="mb-4">
-            Let's go to start your journey with your books!
+            {`Let's go to start your journey with your books!`}
           </h3>
           <form onSubmit={handleSearchSubmit}>
             <input
@@ -102,7 +99,6 @@ const Books = () => {
               </button>
             </li>
 
-            {/* حساب بداية ونهاية الصفحات */}
             {(() => {
               const startPage = Math.max(currentPage - 2, 1);
               const endPage = Math.min(currentPage + 2, totalPages);
