@@ -76,7 +76,7 @@ const ActivityHeatmap = () => {
   return (
     <div className="container my-4">
       <div className="p-4 shadow-sm card">
-        <h2 className="mb-4 text-center">User Activity Heatmap</h2>
+        <h2 className="mb-4 text-center">Overall Daily Activity</h2>
         <CalendarHeatmap
           startDate={startDate}
           endDate={endDate}
