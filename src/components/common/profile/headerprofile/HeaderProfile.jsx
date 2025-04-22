@@ -19,11 +19,6 @@ export default function HeaderProfile() {
               <h3 className="username">John Doe</h3>
             </div>
           </div>
-          <div className="buttons-profile ">
-            <button className="btn btn-primary">Edit Profile</button>
-            <button className="btn btn-primary">Follow</button>
-            <button className="btn btn-primary">Message</button>
-          </div>
         </div>
         <div className="nav-profile">
           <ul>
@@ -35,11 +30,12 @@ export default function HeaderProfile() {
               <Link to="posts">Posts</Link>
             </li>
 
-            <li>
-              <Link>About</Link>
-            </li>
-            <li>
-              <Link>Friends</Link>
+            <li
+              className={
+                location.pathname.endsWith("/about") ? "active-nav" : ""
+              }
+            >
+              <Link to="about">About</Link>
             </li>
             <li
               className={

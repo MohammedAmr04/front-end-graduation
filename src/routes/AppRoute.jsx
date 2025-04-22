@@ -21,6 +21,7 @@ import DashboardProfile from "../components/common/profile/dashboard/DashboardPr
 import Books from "../pages/books/Books";
 import Book from "../components/common/book/Book";
 
+import AboutMe from "../components/common/profile/aboutuser/AboutMe";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -78,6 +79,7 @@ const router = createBrowserRouter([
           { index: true, element: <PostsProfile /> },
           { path: "posts", element: <PostsProfile /> },
           { path: "dashboard", element: <DashboardProfile /> },
+          { path: "about", element: <AboutMe /> },
         ],
       },
       {
