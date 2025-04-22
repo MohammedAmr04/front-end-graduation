@@ -33,25 +33,33 @@ const fields = [
 export default function BookSwap() {
   const [data, setData] = useState({ createdAt: "", userId: "", position: {} });
   const { position, handleClick } = useGeolocation();
+  const [resetKey, setResetKey] = useState(0); // trigger reset
+
   const handleSubmit = (formData) => {
     const time = createdAt();
-    setData({
+    const combinedData = {
+      ...formData,
       createdAt: time,
       userId: 1,
       position: position,
-    });
-    const combinedData = { ...data, ...formData };
-    console.log(combinedData);
+    };
+    setData(combinedData);
+    setResetKey((prev) => prev + 1);
   };
+
   useEffect(() => {
     handleClick();
-    console.log(position);
-  }, []);
+    console.log(data);
+  }, [data]);
   return (
     <div className="py-5 container-fluid">
       <div className="d-lg-flex d-block justify-content-between align-items-center">
         <div className="w-auto mx-auto form-container d-block d-lg-flex justify-content-center align-items-center rounded-4">
-          <Form fields={fields} onSubmit={handleSubmit} />
+          <Form
+            fields={fields}
+            onSubmit={handleSubmit}
+            resetTrigger={resetKey}
+          />
         </div>
         <div className="w-50 ">
           <Map />

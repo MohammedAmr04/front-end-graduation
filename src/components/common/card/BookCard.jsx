@@ -1,9 +1,10 @@
 import PropTypes from "prop-types";
 import "../../../styles/global.css";
+import { useNavigate } from "react-router-dom";
 
 export default function BookCard({ item }) {
-  const { title, src } = item;
-
+  const { title, src, id } = item;
+  const navigate = useNavigate();
   return (
     <div
       className="my-3 border-0 card move-up"
@@ -23,23 +24,10 @@ export default function BookCard({ item }) {
         />
       </div>
       <div className="gap-2 mt-2 buttons-container d-flex justify-content-between">
+        <button className="button button-primary">Details</button>
         <button
-          className="px-3 py-2 btn"
-          style={{
-            backgroundColor: "#ccc",
-            color: "black",
-            fontWeight: "bold",
-          }}
-        >
-          Details
-        </button>
-        <button
-          className="px-3 py-2 btn"
-          style={{
-            backgroundColor: "#ccc",
-            color: "black",
-            fontWeight: "bold",
-          }}
+          className="button button-second"
+          onClick={() => navigate(`/book/${id}`)}
         >
           Read
         </button>
