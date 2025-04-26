@@ -15,7 +15,7 @@ export default function Landing() {
         <p>{p2}</p>
         <p>{p3}</p>
         <div className="container-arrow-right">
-          <Link>To Start</Link>
+          <Link to={"/books"}>To Start</Link>
           <FontAwesomeIcon className="arrow-right" icon={faArrowRightLong} />
         </div>
       </div>

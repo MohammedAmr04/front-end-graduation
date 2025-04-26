@@ -1,8 +1,19 @@
-import { Container, Nav, Navbar } from "react-bootstrap";
-import { Link, useLocation } from "react-router-dom";
+import { Container, Nav, Navbar, Button } from "react-bootstrap";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../../../store/Auth/authSlice";
 
 export default function Header() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { isLoggedIn } = useSelector((state) => state.auth);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/login");
+  };
 
   return (
     <>
@@ -17,7 +28,7 @@ export default function Header() {
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="ms-auto">
+            <Nav className="ms-auto align-items-center">
               <Nav.Link
                 as={Link}
                 to="/home"
@@ -53,26 +64,37 @@ export default function Header() {
               >
                 Community
               </Nav.Link>
-              <Nav.Link
-                as={Link}
-                to="/login"
-                className={location.pathname === "/login" ? "active" : ""}
-              >
-                Login
-              </Nav.Link>
-              <Nav.Link
-                as={Link}
-                to="/register"
-                className={location.pathname === "/register" ? "active" : ""}
-              >
-                Sign Up
-              </Nav.Link>
+
+              {!isLoggedIn ? (
+                <>
+                  <Nav.Link
+                    as={Link}
+                    to="/login"
+                    className={location.pathname === "/login" ? "active" : ""}
+                  >
+                    Login
+                  </Nav.Link>
+                  <Nav.Link
+                    as={Link}
+                    to="/register"
+                    className={
+                      location.pathname === "/register" ? "active" : ""
+                    }
+                  >
+                    Sign Up
+                  </Nav.Link>
+                </>
+              ) : (
+                <Button variant="outline-danger" onClick={handleLogout}>
+                  Logout
+                </Button>
+              )}
             </Nav>
           </Navbar.Collapse>
         </Container>
       </Navbar>
 
-      <div style={{ paddingTop: "66px" }}></div>
+      <div style={{ paddingTop: "70px" }}></div>
     </>
   );
 }
