@@ -15,11 +15,6 @@ const fields = [
     name: "author",
   },
   {
-    label: "Book Category",
-    type: "text",
-    name: "category",
-  },
-  {
     label: "Book Copy",
     type: "text",
     name: "copy",

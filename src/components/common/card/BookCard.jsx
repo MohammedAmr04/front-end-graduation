@@ -3,7 +3,7 @@ import "../../../styles/global.css";
 import { useNavigate } from "react-router-dom";
 
 export default function BookCard({ item }) {
-  const { title, src, id } = item;
+  const { title, author, id } = item;
   const navigate = useNavigate();
   return (
     <div
@@ -12,9 +12,9 @@ export default function BookCard({ item }) {
         backgroundColor: "transparent",
       }}
     >
-      <div className="mb-3 img-container ">
+      <div className="mx-auto mb-3 img-container ">
         <img
-          src={src}
+          src={`https://www.gutenberg.org/cache/epub/${id}/pg${id}.cover.medium.jpg`}
           alt={title}
           className="rounded-3 position-relative"
           style={{
@@ -23,6 +23,7 @@ export default function BookCard({ item }) {
           }}
         />
       </div>
+      <p>{author}</p>
       <div className="gap-2 mt-2 buttons-container d-flex justify-content-between">
         <button className="button button-primary">Details</button>
         <button
@@ -40,6 +41,6 @@ BookCard.propTypes = {
   item: PropTypes.shape({
     title: PropTypes.string.isRequired,
     id: PropTypes.number.isRequired,
-    src: PropTypes.string.isRequired,
+    author: PropTypes.string.isRequired,
   }).isRequired,
 };

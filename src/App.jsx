@@ -11,6 +11,7 @@ import useTrackActivity from "./hooks/useTrackActivity";
 
 function App() {
   useTrackActivity();
+
   useEffect(() => {
     AOS.init({ duration: 1000 });
   }, []);
