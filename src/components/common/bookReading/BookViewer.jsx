@@ -1,8 +1,6 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import styles from "./BookViewer.module.css";
-
-// هنا نستورد الأيقونات بشكل نظيف:
 import { FaArrowCircleLeft, FaArrowCircleRight } from "react-icons/fa";
 
 const BookViewer = ({ pages }) => {
@@ -53,13 +51,42 @@ const BookViewer = ({ pages }) => {
     }
   };
 
+  // إضافة مستمع حدث لوحة المفاتيح
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "ArrowRight") {
+        goNextPage();
+      } else if (event.key === "ArrowLeft") {
+        goPrevPage();
+      }
+    };
+
+    // إضافة المستمع عند تحميل المكون
+    window.addEventListener("keydown", handleKeyDown);
+
+    // تنظيف المستمع عند إلغاء تحميل المكون
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [currentLocation, numOfPapers, maxLocation]);
+
   return (
     <div className={styles.bookViewerContainer}>
-      <button onClick={goPrevPage} className={styles.navButton}>
+      <button
+        onClick={goPrevPage}
+        className={styles.navButton}
+        aria-label="Previous page"
+        tabIndex="0"
+      >
         <FaArrowCircleLeft />
       </button>
 
-      <div className={styles.book} ref={bookRef}>
+      <div
+        className={styles.book}
+        ref={bookRef}
+        role="document"
+        aria-live="polite"
+      >
         {pages.map((page, index) => (
           <div
             key={index}
@@ -81,7 +108,12 @@ const BookViewer = ({ pages }) => {
         ))}
       </div>
 
-      <button onClick={goNextPage} className={styles.navButton}>
+      <button
+        onClick={goNextPage}
+        className={styles.navButton}
+        aria-label="Next page"
+        tabIndex="0"
+      >
         <FaArrowCircleRight />
       </button>
     </div>

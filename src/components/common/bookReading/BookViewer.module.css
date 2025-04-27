@@ -4,7 +4,7 @@
   margin: auto;
   margin-top: 50px;
   height: 500px;
-  background-color: #f0e6d2; /* خلفية خفيفة */
+  background-color: #f0e6d2;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -38,7 +38,7 @@
   width: 100%;
   height: 100%;
   position: absolute;
-  background-color: #fffdf5; /* لون ورق طبيعي */
+  background-color: #fffdf5;
   backface-visibility: hidden;
   display: flex;
   align-items: center;
@@ -54,7 +54,7 @@
 
 .back {
   transform: rotateY(180deg);
-  background-color: #fefae0; /* لون ظهر الورقة اغمق شويه */
+  background-color: #fefae0;
 }
 
 .flipped {
@@ -80,6 +80,7 @@
   color: #555;
   transform: translateY(-50%);
   transition: color 0.3s ease;
+  padding: 10px;
 }
 
 .navButton:hover {
@@ -87,9 +88,9 @@
 }
 
 .navButton:first-of-type {
-  left: 10px;
+  left: 100px;
 }
 
 .navButton:last-of-type {
-  right: 10px;
+  right: 100px;
 }
