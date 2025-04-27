@@ -9,9 +9,8 @@ const AdminSidebar = () => {
   const [isCommunityOpen, setIsCommunityOpen] =useState(false);
 
   return (
-    <div className="sidebar">
+    <div className="Adminsidebar">
       <ul>
-
         <ul className="manageBook">
           <li onClick={() => setIsBooksOpen(!isBooksOpen)}>
             <FaBook />

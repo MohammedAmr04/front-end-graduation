@@ -3,13 +3,14 @@
     color: rgba(0, 0, 0, 0.605);
     font-size: medium;
     padding-top: 70px;
+
   }
   
   h2 {
     font-size: 60px;
   }
   
-  table {
+  .allCommunities {
     width: 70%;
     background: #fff;
     border-radius: 8px;

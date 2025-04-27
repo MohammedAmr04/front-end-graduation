@@ -70,7 +70,7 @@ const ManageCommunity =() =>{
     return (
         <div className="managecommunities">
       <h2>Manage Communities</h2>
-      <table>
+      <table className="allCommunities">
        <thead>
            <tr>
       <th>ID</th>
