@@ -1,10 +1,16 @@
-import { SpecialZoomLevel, Worker, Viewer } from "@react-pdf-viewer/core";
-import { RenderPage } from "../components/common/book-veiwer-pdf/water-mark/RenderPage";
+import { Worker, Viewer, SpecialZoomLevel } from "@react-pdf-viewer/core";
+// import { RenderPage } from "../components/common/book-veiwer-pdf/water-mark/RenderPage";
+import "@react-pdf-viewer/default-layout/lib/styles/index.css";
+
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
+
 import { DndContext } from "@dnd-kit/core";
 import StickyNote from "./../components/common/stickynotes/StickyNote";
 
 export default function Test() {
+  const defaultLayoutPluginInstance = defaultLayoutPlugin();
+
   const [notes, setNotes] = useState([]);
   const latestNoteRef = useRef(null);
 
@@ -66,7 +72,7 @@ export default function Test() {
   return (
     <div
       style={{
-        height: "90%",
+        height: "100vh",
         position: "relative",
         width: "90%",
         margin: "0px auto",
@@ -96,9 +102,10 @@ export default function Test() {
       <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
         <DndContext onDragEnd={handleDragEnd}>
           <Viewer
-            fileUrl="/Mohammed Amr Cv.pdf"
+            fileUrl="/Cracking-the-Coding-Interview-6th-Edition-189-Programming-Questions-and-Solutions.pdf"
             defaultScale={SpecialZoomLevel.PageWidth}
-            renderPage={RenderPage}
+            // renderPage={RenderPage}
+            plugins={[defaultLayoutPluginInstance]}
           />
           {renderedNotes}
         </DndContext>
