@@ -1,35 +1,25 @@
-import { useState } from "react";
+// import { useState } from "react";
 import styles from "./BookReading.module.css";
-import SidebarBook from "../../components/common/bookReading/SidebarBook";
 import BookViewer from "../../components/common/bookReading/BookViewer";
+import { useParams } from "react-router-dom";
+// import HeaderBook from "../../components/common/bookReading/HeaderBook";
 
 function BookReading() {
-  const [fontSize, setFontSize] = useState("16px");
-  const [fontFamily, setFontFamily] = useState("Arial");
-  const [textColor, setTextColor] = useState("#000");
-  const [bgColor, setBgColor] = useState("#fff");
-
-  const pages = [
-    { front: "مقدمة", back: "فصل 1" },
-    { front: "فصل 2", back: "فصل 3" },
-    { front: "خاتمة", back: "شكراً للقراءة!" },
-  ];
+  // const [fontSize, setFontSize] = useState("16px");
+  // const [fontFamily, setFontFamily] = useState("Arial");
+  // const [textColor, setTextColor] = useState("#000");
+  // const [bgColor, setBgColor] = useState("#fff");
+  const { bookid } = useParams();
 
   return (
     <div className={styles.container}>
-      <SidebarBook
+      {/* <HeaderBook
         setFontSize={setFontSize}
         setFontFamily={setFontFamily}
         setTextColor={setTextColor}
         setBgColor={setBgColor}
-      />
-      <BookViewer
-        pages={pages}
-        bgColor={bgColor}
-        textColor={textColor}
-        fontFamily={fontFamily}
-        fontSize={fontSize}
-      />
+      /> */}
+      <BookViewer bookId={bookid} />
     </div>
   );
 }

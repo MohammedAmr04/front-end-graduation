@@ -19,6 +19,7 @@
   position: relative;
   margin: auto;
   transform-style: preserve-3d;
+  perspective: 1500px; /* لتأثير ثلاثي الأبعاد أفضل */
   transition: transform 1s ease;
 }
 
@@ -27,10 +28,14 @@
   height: 100%;
   position: absolute;
   transform-style: preserve-3d;
-  transform-origin: left;
-  transition: transform 1s ease, z-index 1s;
-  border-left: 1px solid #999;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  transform-origin: left; /* تقليب من اليسار لليمين للكتب الإنجليزية */
+  overflow: hidden;
+  transition: transform 1s ease;
+  border-left: 1px solid #999; /* حدود على الجانب الأيسر */
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1); /* ظل خفيف من اليسار */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .front,
@@ -50,23 +55,27 @@
 
 .front {
   z-index: 2;
+  transform: rotateY(0deg); /* تأكيد الاتجاه */
 }
 
 .back {
-  transform: rotateY(180deg);
+  transform: rotateY(180deg); /* الـ back يظهر بشكل صحيح عند التقليب */
   background-color: #fefae0;
 }
 
 .flipped {
-  transform: rotateY(-180deg);
+  transform: rotateY(-180deg); /* تقليب من اليسار لليمين */
 }
 
 .frontContent,
 .backContent {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 500;
   color: #333;
-  text-align: center;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  direction: ltr; /* دعم النص الإنجليزي من اليسار لليمين */
+  text-align: justify;
 }
 
 .navButton {
@@ -88,9 +97,9 @@
 }
 
 .navButton:first-of-type {
-  left: 100px;
+  left: 20px; /* زر الرجوع على اليسار */
 }
 
 .navButton:last-of-type {
-  right: 100px;
+  right: 20px; /* زر التقدم على اليمين */
 }

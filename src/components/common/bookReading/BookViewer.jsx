@@ -1,57 +1,84 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import PropTypes from "prop-types";
 import styles from "./BookViewer.module.css";
 import { FaArrowCircleLeft, FaArrowCircleRight } from "react-icons/fa";
+import { cleanAndSplitText } from "../../../utils/util";
+import Loader from "./../loader/Loader";
 
-const BookViewer = ({ pages }) => {
+const BookViewer = ({ bookId }) => {
+  const [pages, setPages] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [currentLocation, setCurrentLocation] = useState(1);
-  const numOfPapers = pages.length;
-  const maxLocation = numOfPapers + 1;
+
   const bookRef = useRef(null);
   const papersRef = useRef([]);
 
-  const openBook = () => {
-    bookRef.current.style.transform = "translateX(50%)";
-  };
+  const numOfPapers = pages.length;
+  const maxLocation = numOfPapers + 1;
 
-  const closeBook = (isAtBeginning) => {
+  const openBook = useCallback(() => {
+    bookRef.current.style.transform = "translateX(0%)";
+  }, []);
+
+  const closeBook = useCallback((isAtBeginning) => {
     if (isAtBeginning) {
-      bookRef.current.style.transform = "translateX(0%)";
+      bookRef.current.style.transform = "translateX(-50%)";
     } else {
-      bookRef.current.style.transform = "translateX(100%)";
+      bookRef.current.style.transform = "translateX(50%)";
     }
-  };
+  }, []);
 
-  const goNextPage = () => {
-    if (currentLocation < maxLocation) {
-      if (currentLocation === 1) {
-        openBook();
-      }
-      papersRef.current[currentLocation - 1]?.classList.add(styles.flipped);
-      papersRef.current[currentLocation - 1].style.zIndex = currentLocation;
-      if (currentLocation === numOfPapers) {
-        closeBook(false);
-      }
+  const goNextPage = useCallback(() => {
+    if (
+      currentLocation < maxLocation &&
+      papersRef.current[currentLocation - 1]
+    ) {
+      if (currentLocation === 1) openBook();
+      const paper = papersRef.current[currentLocation - 1];
+      paper.classList.add(styles.flipped);
+      paper.style.zIndex = numOfPapers - currentLocation + 1; // ترتيب الصفحات بشكل طبيعي
+      if (currentLocation === numOfPapers) closeBook(false);
       setCurrentLocation((prev) => prev + 1);
     }
-  };
+  }, [currentLocation, maxLocation, numOfPapers, openBook, closeBook]);
 
-  const goPrevPage = () => {
-    if (currentLocation > 1) {
-      if (currentLocation === 2) {
-        closeBook(true);
-      }
-      papersRef.current[currentLocation - 2]?.classList.remove(styles.flipped);
-      papersRef.current[currentLocation - 2].style.zIndex =
-        numOfPapers - (currentLocation - 2);
-      if (currentLocation === maxLocation) {
-        openBook();
-      }
+  const goPrevPage = useCallback(() => {
+    if (currentLocation > 1 && papersRef.current[currentLocation - 2]) {
+      if (currentLocation === 2) closeBook(true);
+      const paper = papersRef.current[currentLocation - 2];
+      paper.classList.remove(styles.flipped);
+      paper.style.zIndex = currentLocation - 2; // ترتيب الصفحات بشكل طبيعي
+      if (currentLocation === maxLocation) openBook();
       setCurrentLocation((prev) => prev - 1);
     }
-  };
+  }, [currentLocation, maxLocation, numOfPapers, openBook, closeBook]);
 
-  // إضافة مستمع حدث لوحة المفاتيح
+  useEffect(() => {
+    async function fetchBook() {
+      setLoading(true);
+      try {
+        const response = await fetch(
+          `https://localhost:7159/api/Books/GetBookById/${bookId}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch book.");
+        }
+        const data = await response.json();
+        const splitPages = cleanAndSplitText(data.text, 400);
+        setPages(splitPages);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (bookId) {
+      fetchBook();
+    }
+  }, [bookId]);
+
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === "ArrowRight") {
@@ -61,14 +88,21 @@ const BookViewer = ({ pages }) => {
       }
     };
 
-    // إضافة المستمع عند تحميل المكون
     window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [goNextPage, goPrevPage]);
 
-    // تنظيف المستمع عند إلغاء تحميل المكون
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [currentLocation, numOfPapers, maxLocation]);
+  if (loading) {
+    return <Loader />;
+  }
+
+  if (error) {
+    return <div className={styles.error}>Error: {error}</div>;
+  }
+
+  if (!pages.length) {
+    return <div className={styles.noPages}>No pages to display.</div>;
+  }
 
   return (
     <div className={styles.bookViewerContainer}>
@@ -92,17 +126,13 @@ const BookViewer = ({ pages }) => {
             key={index}
             className={styles.paper}
             ref={(el) => (papersRef.current[index] = el)}
-            style={{ zIndex: pages.length - index }}
+            style={{ zIndex: numOfPapers - index }}
           >
             <div className={styles.front}>
-              <div className={styles.frontContent}>
-                <h1>{page.front}</h1>
-              </div>
+              <div className={styles.frontContent}>{page.front}</div>
             </div>
             <div className={styles.back}>
-              <div className={styles.backContent}>
-                <h1>{page.back}</h1>
-              </div>
+              <div className={styles.backContent}>{page.back}</div>
             </div>
           </div>
         ))}
@@ -121,12 +151,7 @@ const BookViewer = ({ pages }) => {
 };
 
 BookViewer.propTypes = {
-  pages: PropTypes.arrayOf(
-    PropTypes.shape({
-      front: PropTypes.string.isRequired,
-      back: PropTypes.string.isRequired,
-    })
-  ).isRequired,
+  bookId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
 };
 
 export default BookViewer;
