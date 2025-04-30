@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { FaTachometerAlt, FaBook, FaUser ,FaUsers } from "react-icons/fa";
+import { MdInsights } from "react-icons/md";
 import './AdminSidebar.css';
 
 const AdminSidebar = () => {
@@ -33,10 +34,9 @@ const AdminSidebar = () => {
             <FaUser />
             <span> Users</span>
             {isUsersOpen && (
-              <ul>
-                <li>
-                  <Link to="/admin/adduser">Add User</Link>
-                </li>
+              <ul>  
+               <li> <Link to="/admin/manageroles">Manage-Roles</Link></li>
+               <li> <Link to="/admin/manageusers">Manage-Users</Link></li>
               </ul>
             )}
           </li>
@@ -53,6 +53,11 @@ const AdminSidebar = () => {
               </ul>
             )}
           </li>
+        </ul>
+        <ul className="adminDashboard">
+         
+         
+          <li><Link to="/admin/admindashboard"><MdInsights size={24} /> System Insights</Link></li>
         </ul>
 
 

@@ -1,0 +1,68 @@
+.manageRoles{
+  padding-left: 270px;
+  color: rgba(0, 0, 0, 0.605);
+  font-size: medium;
+  padding-top: 70px;
+
+}
+
+.rolesTable {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding-left: 270px;
+  }
+
+  th,
+  td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  th {
+    background: #7c7c7cfc;
+    color: rgb(255, 255, 255);
+  }
+  
+  tr:hover {
+    background: #f1f1f1;
+  }
+  
+  button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-right: 5px;
+  }
+  
+  role-btn:hover {
+    background-color: #0056b3;
+    color: white;
+  }
+  
+  
+  select {
+    padding: 6px 12px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    width: 150px;
+    transition: 0.2s;
+  }
+  
+  button {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .role-btn:hover {
+    background-color: #0056b3;
+  }
+  
