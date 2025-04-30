@@ -11,7 +11,8 @@ a {
 }
 /* Login & Register Forms */
 .login form,
-.register form {
+.register form,
+.contact form {
   width: 400px;
   box-shadow: var(--box-shadow);
 }
@@ -85,7 +86,7 @@ div.login {
   width: 100%;
 }
 .contact form {
-  width: 50%;
+  margin-inline: auto;
 }
 @media (max-width: 767px) {
   .contact form {

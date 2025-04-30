@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./styles.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRightLong } from "@fortawesome/free-solid-svg-icons";
@@ -6,6 +6,7 @@ const p1 = `Every book is a new world.`;
 const p2 = `Escape. Learn. Feel.`;
 const p3 = `Discover stories that stay with you — forever.`;
 export default function Landing() {
+  const navigate = useNavigate();
   return (
     <div className="landing" data-aos="fade-down">
       <div className="bg bg1"></div>
@@ -14,8 +15,11 @@ export default function Landing() {
         <p>{p1}</p>
         <p>{p2}</p>
         <p>{p3}</p>
-        <div className="container-arrow-right">
-          <Link>To Start</Link>
+        <div
+          className="container-arrow-right"
+          onClick={() => navigate("/books")}
+        >
+          <Link to={"/books"}>To Start</Link>
           <FontAwesomeIcon className="arrow-right" icon={faArrowRightLong} />
         </div>
       </div>

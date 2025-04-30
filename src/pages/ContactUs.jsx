@@ -39,19 +39,12 @@ export default function ContactUs() {
 
   return (
     <div className="py-5 contact">
-      <Container className="d-flex align-items-center">
-        <div className="image-container d-lg-block d-none text-center ">
-          <img
-            src="/src/assets/Contact.png"
-            className="w-100"
-            alt="Contact Us"
-          />
-        </div>
+      <Container className="d-flex justify-content-between align-items-center">
         <Form
           onSubmit={onSubmit}
-          className="p-5 rounded-3 shadow-lg mx-auto mx-lg-0 bg-light mt-4"
+          className="p-5 mx-auto mt-4 shadow-lg rounded-3 mx-lg-0 bg-light"
         >
-          <p className="fw-bold fs-4 text-center">Get in Touch</p>
+          <p className="text-center fw-bold fs-4">Get in Touch</p>
 
           <Form.Group className="mb-3" controlId="formName">
             <Form.Label>Full Name</Form.Label>
@@ -94,6 +87,13 @@ export default function ContactUs() {
             </Alert>
           )}
         </Form>
+        <div className="text-center image-container w-50 d-lg-block d-none ">
+          <img
+            src="/src/assets/Contact.png"
+            className="w-100"
+            alt="Contact Us"
+          />
+        </div>
       </Container>
     </div>
   );

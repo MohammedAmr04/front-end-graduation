@@ -1,48 +1,17 @@
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
 import styles from "./Book.module.css"; // Importing the CSS module
 import BookSlider from "./../book-slider/BookSlider";
-
-const fakeBooks = {
-  1: {
-    title: "Whispers of the Forgotten",
-    author: "Elena Voss",
-    rate: 4.5,
-    category: "Mystery, Thriller",
-    summary:
-      "A gripping tale of an investigative journalist uncovering secrets buried in a seemingly quiet town, leading to a chain of unexpected events.",
-    cover: "https://www.gutenberg.org/cache/epub/36/pg36.cover.medium.jpg",
-  },
-  2: {
-    title: "Dreams in Digital",
-    author: "Marcus Reed",
-    rate: 4.2,
-    category: "Sci-Fi, Cyberpunk",
-    summary:
-      "In a future where consciousness can be uploaded, one man's search for his missing sister uncovers a shocking conspiracy.",
-    cover: "https://www.gutenberg.org/cache/epub/36/pg36.cover.medium.jpg",
-  },
-  3: {
-    title: "The Paper Garden",
-    author: "Clara Bennett",
-    rate: 4.8,
-    category: "Drama, Romance",
-    summary:
-      "A young widow finds solace and new purpose in restoring a forgotten botanical garden, where every plant tells a story.",
-    cover: "https://www.gutenberg.org/cache/epub/36/pg36.cover.medium.jpg",
-  },
-};
+import { useFetchBook } from "../../../hooks/useFetchBook";
+import Loader from "../loader/Loader";
 
 const Book = () => {
   const { id } = useParams();
-  const [book, setBook] = useState(null);
 
-  useEffect(() => {
-    // Simulating a fetch from local data
-    const foundBook = fakeBooks[id];
-    setBook(foundBook);
-  }, [id]);
+  const { book, loading, error } = useFetchBook(id);
+  console.log(book);
 
+  if (loading) return <Loader />;
+  if (error) return <p className=" text-danger"> {error}</p>;
   if (!book) return <p style={{ textAlign: "center" }}>Book not found.</p>;
 
   return (
@@ -50,7 +19,7 @@ const Book = () => {
       <div className={styles.bookDetailsCard} data-aos="fade-up">
         <div>
           <img
-            src={book.cover}
+            src={`https://www.gutenberg.org/cache/epub/${id}/pg${id}.cover.medium.jpg`}
             alt={book.title}
             className={styles.bookCover}
             data-aos="zoom-in"

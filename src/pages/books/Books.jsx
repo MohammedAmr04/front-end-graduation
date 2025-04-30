@@ -1,11 +1,16 @@
 import { useState } from "react";
 import { useFetchBooks } from "../../hooks/useFetchBooks";
 import { useSearch } from "../../hooks/useSearch";
+import "./styles.css";
+import Loader from "./../../components/common/loader/Loader";
+import BookCard from "./../../components/common/card/BookCard";
 
 const Books = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const { books, loading, error, totalPages } = useFetchBooks(currentPage, 9);
+  const { books, loading, error, totalPages } = useFetchBooks(currentPage, 12);
   const [searchInput, setSearchInput] = useState("");
+  const [isPageChanging, setIsPageChanging] = useState(false);
+
   const {
     results,
     loading: searchLoading,
@@ -23,9 +28,14 @@ const Books = () => {
   const booksToDisplay = results.length > 0 ? results : books;
 
   const handlePageChange = (newPage) => {
-    if (newPage >= 1 && newPage <= totalPages) {
-      setCurrentPage(newPage);
-    }
+    if (isPageChanging || newPage < 1 || newPage > totalPages) return;
+
+    setIsPageChanging(true);
+    setCurrentPage(newPage);
+
+    setTimeout(() => {
+      setIsPageChanging(false);
+    }, 1000);
   };
 
   return (
@@ -88,17 +98,19 @@ const Books = () => {
 
         {/* Pagination Controls */}
         <nav>
-          <ul className="mb-0 pagination">
+          <ul className="gap-1 mb-0 pagination">
             {/* Previous Button */}
             <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
               <button
                 className="page-link"
                 onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1 || isPageChanging}
               >
                 &laquo;
               </button>
             </li>
 
+            {/* Dynamic Pages */}
             {(() => {
               const startPage = Math.max(currentPage - 2, 1);
               const endPage = Math.min(currentPage + 2, totalPages);
@@ -113,6 +125,7 @@ const Books = () => {
                     <button
                       className="page-link"
                       onClick={() => handlePageChange(i)}
+                      disabled={isPageChanging}
                     >
                       {i}
                     </button>
@@ -139,6 +152,7 @@ const Books = () => {
               <button
                 className="page-link"
                 onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages || isPageChanging}
               >
                 &raquo;
               </button>
@@ -148,30 +162,21 @@ const Books = () => {
       </div>
 
       {/* === Books Grid (Cards) === */}
-      <div className="container my-4">
-        {loading || searchLoading ? (
-          <p>Loading books...</p>
-        ) : error || searchError ? (
+      <div className="container my-4 position-relative">
+        {(loading || searchLoading) && <Loader />}
+        {error || searchError ? (
           <p>Error loading books.</p>
         ) : booksToDisplay.length === 0 ? (
           <p className="text-center">No books found.</p>
         ) : (
-          <div className="row">
-            {booksToDisplay.map((book, index) => (
-              <div key={index} className="mb-4 col-md-4">
-                <div className="card h-100">
-                  <img
-                    src={book.imageUrl || "https://via.placeholder.com/150"}
-                    className="card-img-top"
-                    alt="Book Cover"
-                  />
-                  <div className="card-body d-flex flex-column">
-                    <h5 className="card-title">{book.title}</h5>
-                    <p className="card-text text-muted">{book.author}</p>
-                    <p className="card-text">Category: {book.category}</p>
-                    <button className="mt-auto btn btn-primary">Read</button>
-                  </div>
-                </div>
+          <div className="flex-wrap gap-4 mx-auto d-flex ">
+            {booksToDisplay.map((book) => (
+              <div
+                key={book.id}
+                className="mx-auto mb-4 "
+                style={{ width: "260px" }}
+              >
+                <BookCard item={book} />
               </div>
             ))}
           </div>
