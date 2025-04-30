@@ -1,4 +1,4 @@
-import { Button, Form } from "react-bootstrap";
+import { Button, Form, Spinner } from "react-bootstrap"; // 🆕 خلي بالك ضفت Spinner هنا
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { login } from "../store/Auth/authSlice";
 import { useNavigate } from "react-router-dom";
 import Joi from "joi";
+import { useToast } from "../hooks/useToast";
 
 const schema = Joi.object({
   email: Joi.string()
@@ -22,8 +23,11 @@ const schema = Joi.object({
 });
 
 export default function Login() {
-  let [user, setUser] = useState({ email: "", password: "" });
-  let [errors, setErrors] = useState(null);
+  const { showSuccess, showError } = useToast();
+
+  const [user, setUser] = useState({ email: "", password: "" });
+  const [errors, setErrors] = useState(null);
+  const [loading, setLoading] = useState(false); // 🆕 حالة اللودينج
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -46,6 +50,8 @@ export default function Login() {
 
     if (validationErrors) return;
 
+    setLoading(true); // 🆕 أول لما يبدأ الإرسال خلي اللودينج true
+
     try {
       const response = await axios.post(
         "https://localhost:7159/api/Account/Login",
@@ -54,11 +60,13 @@ export default function Login() {
           password: user.password,
         }
       );
-
-      console.log("Login Successful:", response.data);
+      showSuccess("Login Successful");
       dispatch(login(response.data));
-      navigate("/");
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
     } catch (error) {
+      showError("Error during login");
       console.error(
         "Error during login:",
         error.response?.data || error.message
@@ -67,13 +75,14 @@ export default function Login() {
         submit:
           error.response?.data?.message || "Login failed. Please try again.",
       });
+    } finally {
+      setLoading(false); // 🆕 سواء نجح أو فشل رجع اللودينج false
     }
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser((prev) => ({ ...prev, [name]: value }));
-    // Clear errors when user starts typing
     if (errors) {
       setErrors(null);
     }
@@ -94,6 +103,7 @@ export default function Login() {
             placeholder="Enter email"
             onChange={handleChange}
             value={user.email}
+            disabled={loading} // 🆕 متخليش يكتب وقت اللودينج
           />
           {errors?.email && <p className="text-danger">{errors.email}</p>}
         </Form.Group>
@@ -106,17 +116,37 @@ export default function Login() {
             placeholder="Enter your Password"
             onChange={handleChange}
             value={user.password}
+            disabled={loading} // 🆕 نفس الكلام هنا
           />
           {errors?.password && <p className="text-danger">{errors.password}</p>}
         </Form.Group>
-        <Button className="w-100" variant="primary" type="submit">
-          Login now
+
+        <Button
+          className="w-100"
+          variant="primary"
+          type="submit"
+          disabled={loading}
+        >
+          {loading ? ( // 🆕 لو في لودينج حط سبينر
+            <>
+              <Spinner
+                animation="border"
+                size="sm"
+                role="status"
+                className="me-2"
+              />
+            </>
+          ) : (
+            "Login now"
+          )}
         </Button>
-        <p className="mt-3 text-center ">
-          <span className=" text-black-50">{`Don't have an account?`}</span>{" "}
+
+        <p className="mt-3 text-center">
+          <span className="text-black-50">{`Don't have an account?`}</span>{" "}
           <Link to="/register">Register now</Link>
         </p>
       </Form>
+
       <div className="d-xl-block d-none">
         <img src="/src/assets/forms.jpg" alt="" className="" />
       </div>

@@ -24,6 +24,7 @@ import Book from "../components/common/book/Book";
 import AboutMe from "../components/common/profile/aboutuser/AboutMe";
 import ManageRoles from "../admin/pages/ManageRoles";
 import AdminDashboard from "../admin/pages/AdminDashboard";
+import BookReading from "../pages/BookReading/BookReading";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -73,6 +74,10 @@ const router = createBrowserRouter([
       {
         path: "community",
         element: <Community />,
+      },
+      {
+        path: "bookReading/:userid/:bookid",
+        element: <BookReading />,
       },
       {
         path: "profile",

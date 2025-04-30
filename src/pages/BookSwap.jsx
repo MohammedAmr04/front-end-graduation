@@ -15,11 +15,6 @@ const fields = [
     name: "author",
   },
   {
-    label: "Book Category",
-    type: "text",
-    name: "category",
-  },
-  {
     label: "Book Copy",
     type: "text",
     name: "copy",
@@ -46,11 +41,10 @@ export default function BookSwap() {
     setData(combinedData);
     setResetKey((prev) => prev + 1);
   };
-
+  console.log(data);
   useEffect(() => {
     handleClick();
-    console.log(data);
-  }, [data]);
+  });
   return (
     <div className="py-5 container-fluid">
       <div className="d-lg-flex d-block justify-content-between align-items-center">
