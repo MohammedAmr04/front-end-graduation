@@ -1,0 +1,51 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "username": "Rana",
+      "email": "Rana@example.com",
+      "role": "user",
+      "isBlocked": true,
+      "communityId": null
+    },
+    {
+      "id": "2",
+      "username": "sara",
+      "email": "sara@example.com",
+      "user": "ali",
+      "role": "user",
+      "isBlocked": true,
+      "communityId": null
+    },
+    {
+      "id": "3",
+      "username": "brazily",
+      "email": "brazily@example.com",
+      "role": "moderator",
+      "isBlocked": true,
+      "communityId": 3
+    }
+  ],
+  "communities": [
+    {
+      "id": "1",
+      "name": "science fiction"
+    },
+    {
+      "id": "2",
+      "name": "Horror"
+    },
+    {
+      "id": "3",
+      "name": "comedy"
+    },
+    {
+      "id": "4",
+      "name": "kids"
+    },
+    {
+      "id": "5",
+      "name": "romance"
+    }
+  ]
+}

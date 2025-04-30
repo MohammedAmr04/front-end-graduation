@@ -47,13 +47,14 @@ const AddBook = () => {
   };
 
   return (
-    <div className="add">
+    <div className="addBook">
       <h2>Add New book</h2>
       <form onSubmit={handeleSubmit}>
         <div>
           <label>Book Title</label>
           <input
             type="text"
+            name="title"
             value={formData.title}
             onChange={handleChange}
             required
@@ -63,6 +64,7 @@ const AddBook = () => {
           <label>Auther</label>
           <input
             type="text"
+            name="author"
             value={formData.author}
             onChange={handleChange}
             required
@@ -72,6 +74,7 @@ const AddBook = () => {
           <label>Category</label>
           <input
             type="text"
+            name="category"
             value={formData.category}
             onChange={handleChange}
             required
@@ -81,6 +84,7 @@ const AddBook = () => {
           <label>Book Description</label>
           <input
             type="text"
+            name="description"
             value={formData.description}
             onChange={handleChange}
             required
@@ -90,6 +94,7 @@ const AddBook = () => {
           <label>Book Content</label>
           <textarea
             value={formData.content}
+            name="content"
             onChange={handleChange}
             required
           ></textarea>

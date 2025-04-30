@@ -3,7 +3,7 @@ import "./AdminHeader.css";
 const AdminHeader = () => {
   return (
     <div className="AdminNav">
-      <div className="logo">
+      <div className="Adminlogo">
         <img src="/src/assets/Group 4.svg" alt="logo" />
       </div>
       <div className="adminProfile">

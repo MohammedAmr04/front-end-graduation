@@ -15,13 +15,15 @@ import ManageBook from "../admin/pages/ManageBook";
 import AdminLayout from "../layouts/AdminLayout";
 import AddCommunity from "../admin/pages/AddCommunity";
 import ManageCommunity from "../admin/pages/ManageCommunity";
+import ManageUsers from "../admin/pages/ManageUsers";
 import Profile from "./../pages/Profile";
 import PostsProfile from "../components/common/profile/PostsProfile/PostsProfile";
 import DashboardProfile from "../components/common/profile/dashboard/DashboardProfile";
 import Books from "../pages/books/Books";
 import Book from "../components/common/book/Book";
-
 import AboutMe from "../components/common/profile/aboutuser/AboutMe";
+import ManageRoles from "../admin/pages/ManageRoles";
+import AdminDashboard from "../admin/pages/AdminDashboard";
 import BookReading from "../pages/BookReading/BookReading";
 const router = createBrowserRouter([
   {
@@ -95,6 +97,10 @@ const router = createBrowserRouter([
           { path: "managebook", element: <ManageBook /> },
           { path: "addcommunity", element: <AddCommunity /> },
           { path: "managecommunity", element: <ManageCommunity /> },
+          { path: "manageroles", element: <ManageRoles /> },
+          { path: "manageusers", element: <ManageUsers /> },
+          { path: "admindashboard", element: <AdminDashboard /> },
+
         ],
       },
     ],

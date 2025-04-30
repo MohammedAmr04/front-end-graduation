@@ -70,7 +70,7 @@ const ManageCommunity =() =>{
     return (
         <div className="managecommunities">
       <h2>Manage Communities</h2>
-      <table>
+      <table className="allCommunities">
        <thead>
            <tr>
       <th>ID</th>
@@ -84,10 +84,10 @@ const ManageCommunity =() =>{
         <td>{communities.id}</td>
         <td>{communities.name}</td>
         <td>
-          <button className="edit-btn" onClick={() => handleEdit(communities)}>
+          <button className="edit-community-btn" onClick={() => handleEdit(communities)}>
             Edit
           </button>
-          <button className="delete-btn" onClick={() => handleDelete(communities.id)}>
+          <button className="delete-community-btn" onClick={() => handleDelete(communities.id)}>
             Delete
           </button>
         </td>
@@ -107,10 +107,10 @@ const ManageCommunity =() =>{
       onChange={handleUpdate}
     />
     <div className="form-buttons">
-      <button className="save-btn" onClick={handleSave}>
+      <button className="save-community-btn" onClick={handleSave}>
         Save
       </button>
-      <button className="cancel-btn" onClick={handleCancel}>
+      <button className="cancel-community-btn" onClick={handleCancel}>
         Cancel
       </button>
     </div>

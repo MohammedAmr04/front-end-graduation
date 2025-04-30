@@ -64,7 +64,7 @@ const ManageBook = () => {
   return (
     <div className="managebooks">
       <h2>Manage Books</h2>
-      <table>
+      <table className="allBooks">
         <thead>
           <tr>
             <th>ID</th>
@@ -84,8 +84,8 @@ const ManageBook = () => {
               <td>{book.category}</td>
               <td>{book.description}</td>
               <td>
-                <button className="edit-btn" onClick={() => handleEdit(book)}>Edit</button>
-                <button className="delete-btn" onClick={() => handleDelete(book.id)}>Delete</button>
+                <button className="editBook-btn" onClick={() => handleEdit(book)}>Edit</button>
+                <button className="deleteBook-btn" onClick={() => handleDelete(book.id)}>Delete</button>
               </td>
             </tr>
           ))}
@@ -93,7 +93,7 @@ const ManageBook = () => {
       </table>
 
       {editBook && (
-        <div className="edit-form">
+        <div className="editBook-form">
           <h3>Edit Book</h3>
           <form onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
             <input type="text" name="title" value={updateBook.title} onChange={handleUpdate} placeholder="Title" />
@@ -101,7 +101,7 @@ const ManageBook = () => {
             <input type="text" name="category" value={updateBook.category} onChange={handleUpdate} placeholder="Category" />
             <textarea name="description" value={updateBook.description} onChange={handleUpdate} placeholder="Description"></textarea>
             <textarea name="content" value={updateBook.content} onChange={handleUpdate} placeholder="Content"></textarea>
-            <button type="submit">Save</button>
+            <button className="saveBook" type="submit">Save</button>
             <button type="button" onClick={() => seteditBook(null)}>Cancel</button>
           </form>
         </div>

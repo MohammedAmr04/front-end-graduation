@@ -3,15 +3,16 @@
     color: rgba(0, 0, 0, 0.605);
     font-size: medium;
     padding-top: 70px;
+    width: 100%;
   }
   
   h2{
       font-size: 60px;
   } 
   
-  table{
+  .allBooks{
     width: 100%;
-    /* border-collapse: collapse; */
+    border-collapse: collapse;
     background: #fff;
     border-radius: 8px;
     overflow: hidden;
@@ -32,32 +33,33 @@
     background: #f1f1f1;
   }
   
-  button {
+  .saveBook {
     padding: 8px 12px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    color: #f1f1f1;
+    background-color: black;
     transition: 0.3s;
-  }
-  
-  .edit-btn {
+  } 
+  .editBook-btn {
     background: #0116ff9c;
     color: white;
     margin-right: 5px;
   }
   
-  .delete-btn {
+  .deleteBook-btn {
     background: #ff0606d6;
     color: white;
   }
-  .edit-btn:hover {
+  .editBook-btn:hover {
     background: #0a6cffc0;
   }
   
-  .delete-btn:hover {
+  .deleteBook-btn:hover {
     background: #c82333;
   }
-  .edit-form {
+  .editBook-form {
     margin-top: 20px;
     padding: 20px;
     background: white;
@@ -65,8 +67,8 @@
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   }
   
-  .edit-form input,
-  .edit-form textarea {
+  .editBook-form input,
+  .editBook-form textarea {
     width: 100%;
     padding: 10px;
     margin: 10px 0;
@@ -74,10 +76,10 @@
     border-radius: 5px;
   }
   
-  .edit-form button {
+  .editBook-form button {
     margin-right: 10px;
   }
   
-  .edit-form button :hover {
+  .editBook-form button :hover {
     background-color: #b0b0b0;
   }
