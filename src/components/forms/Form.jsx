@@ -1,13 +1,22 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import InputField from "./InputField";
 import "./Form.css";
 import PropTypes from "prop-types";
+
 function Form({ fields, onSubmit, resetTrigger }) {
   const [formData, setFormData] = useState({});
-  const initialState = fields.reduce((acc, field) => {
-    acc[field.name] = "";
-    return acc;
-  }, {});
+
+  const initialState = useMemo(() => {
+    return fields.reduce((acc, field) => {
+      acc[field.name] = "";
+      return acc;
+    }, {});
+  }, [fields]);
+
+  useEffect(() => {
+    setFormData(initialState);
+  }, [initialState, resetTrigger]);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -16,10 +25,7 @@ function Form({ fields, onSubmit, resetTrigger }) {
     e.preventDefault();
     onSubmit(formData);
   };
-  // Reset form when resetTrigger changes
-  useEffect(() => {
-    setFormData(initialState);
-  }, [resetTrigger]);
+
   return (
     <form className="form rounded-4" onSubmit={handleSubmit}>
       {fields.map((field) => (
@@ -43,10 +49,10 @@ function Form({ fields, onSubmit, resetTrigger }) {
   );
 }
 
-export default Form;
-
 Form.propTypes = {
   fields: PropTypes.array.isRequired,
   onSubmit: PropTypes.func.isRequired,
-  resetTrigger: PropTypes.number,
+  resetTrigger: PropTypes.number, // add this prop
 };
+
+export default Form;
