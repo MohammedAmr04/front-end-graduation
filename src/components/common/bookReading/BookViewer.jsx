@@ -1,157 +1,177 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+// Import necessary viewer and plugins from react-pdf-viewer
+import { Worker, Viewer, SpecialZoomLevel } from "@react-pdf-viewer/core";
+import { highlightPlugin } from "@react-pdf-viewer/highlight";
 import PropTypes from "prop-types";
-import styles from "./BookViewer.module.css";
-import { FaArrowCircleLeft, FaArrowCircleRight } from "react-icons/fa";
-import { cleanAndSplitText } from "../../../utils/util";
-import Loader from "./../loader/Loader";
+import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 
-const BookViewer = ({ bookId }) => {
-  const [pages, setPages] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [currentLocation, setCurrentLocation] = useState(1);
+// Import styles for plugins
+import "@react-pdf-viewer/default-layout/lib/styles/index.css";
+import "@react-pdf-viewer/highlight/lib/styles/index.css";
 
-  const bookRef = useRef(null);
-  const papersRef = useRef([]);
+// Import hooks and libraries
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import { DndContext } from "@dnd-kit/core";
+import StickyNote from "./../stickynotes/StickyNote";
 
-  const numOfPapers = pages.length;
-  const maxLocation = numOfPapers + 1;
+export default function BookViewer({ id }) {
+  const [notes, setNotes] = useState([]);
+  const latestNoteRef = useRef(null);
+  const [highlightAreas, setHighlightAreas] = useState([]);
+  console.log(" id: ", id);
 
-  const openBook = useCallback(() => {
-    bookRef.current.style.transform = "translateX(0%)";
-  }, []);
+  // Initialize highlight plugin
+  const highlightPluginInstance = highlightPlugin({
+    highlightAreas,
+    trigger: "TextSelection", // Enable highlighting on text selection
+    renderHighlightTarget: (props) => (
+      <div
+        style={{
+          background: "#ffc107",
+          color: "#000",
+          cursor: "pointer",
+          padding: "2px 4px",
+          borderRadius: "4px",
+          fontSize: "12px",
+        }}
+        onClick={() => {
+          props.onHighlightClicked(); // Trigger the highlight on click
+        }}
+      >
+        Highlight
+      </div>
+    ),
+    renderHighlightContent: () => (
+      <div
+        style={{
+          background: "#ffc107",
+          padding: "4px 8px",
+          borderRadius: "4px",
+          fontSize: "12px",
+          color: "#000",
+        }}
+      >
+        Highlighted!
+      </div>
+    ),
+    onHighlight: (props) => {
+      console.log("تم تظليل النص:", props.highlight.strings.join(" "));
+      const newAreas = [...highlightAreas, props.highlight];
+      setHighlightAreas(newAreas); // Add new highlighted area
+    },
+  });
 
-  const closeBook = useCallback((isAtBeginning) => {
-    if (isAtBeginning) {
-      bookRef.current.style.transform = "translateX(-50%)";
-    } else {
-      bookRef.current.style.transform = "translateX(50%)";
-    }
-  }, []);
+  const defaultLayoutPluginInstance = defaultLayoutPlugin();
 
-  const goNextPage = useCallback(() => {
-    if (
-      currentLocation < maxLocation &&
-      papersRef.current[currentLocation - 1]
-    ) {
-      if (currentLocation === 1) openBook();
-      const paper = papersRef.current[currentLocation - 1];
-      paper.classList.add(styles.flipped);
-      paper.style.zIndex = numOfPapers - currentLocation + 1; // ترتيب الصفحات بشكل طبيعي
-      if (currentLocation === numOfPapers) closeBook(false);
-      setCurrentLocation((prev) => prev + 1);
-    }
-  }, [currentLocation, maxLocation, numOfPapers, openBook, closeBook]);
-
-  const goPrevPage = useCallback(() => {
-    if (currentLocation > 1 && papersRef.current[currentLocation - 2]) {
-      if (currentLocation === 2) closeBook(true);
-      const paper = papersRef.current[currentLocation - 2];
-      paper.classList.remove(styles.flipped);
-      paper.style.zIndex = currentLocation - 2; // ترتيب الصفحات بشكل طبيعي
-      if (currentLocation === maxLocation) openBook();
-      setCurrentLocation((prev) => prev - 1);
-    }
-  }, [currentLocation, maxLocation, numOfPapers, openBook, closeBook]);
-
-  useEffect(() => {
-    async function fetchBook() {
-      setLoading(true);
-      try {
-        const response = await fetch(
-          `https://localhost:7159/api/Books/GetBookById/${bookId}`
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch book.");
-        }
-        const data = await response.json();
-        const splitPages = cleanAndSplitText(data.text, 400);
-        setPages(splitPages);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    if (bookId) {
-      fetchBook();
-    }
-  }, [bookId]);
-
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (event.key === "ArrowRight") {
-        goNextPage();
-      } else if (event.key === "ArrowLeft") {
-        goPrevPage();
-      }
+  // Add new sticky note with random position
+  const handleAddNote = useCallback(() => {
+    const newNote = {
+      id: `${Date.now()}`,
+      text: "",
+      x: 100 + Math.random() * 200,
+      y: 100 + Math.random() * 200,
     };
+    setNotes((prev) => [...prev, newNote]);
+  }, []);
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [goNextPage, goPrevPage]);
+  const handleDeleteNote = useCallback((id) => {
+    setNotes((prev) => prev.filter((note) => note.id !== id));
+  }, []);
 
-  if (loading) {
-    return <Loader />;
-  }
+  const handleTextChange = useCallback((id, newText) => {
+    setNotes((prev) =>
+      prev.map((note) => (note.id === id ? { ...note, text: newText } : note))
+    );
+  }, []);
 
-  if (error) {
-    return <div className={styles.error}>Error: {error}</div>;
-  }
+  // Update sticky note position on drag end
+  const handleDragEnd = useCallback((event) => {
+    const { active, delta } = event;
+    setNotes((prev) =>
+      prev.map((note) =>
+        note.id === active.id
+          ? {
+              ...note,
+              x: note.x + delta.x,
+              y: note.y + delta.y,
+            }
+          : note
+      )
+    );
+  }, []);
 
-  if (!pages.length) {
-    return <div className={styles.noPages}>No pages to display.</div>;
-  }
+  // Focus the last added sticky note
+  useEffect(() => {
+    if (notes.length > 0 && latestNoteRef.current) {
+      latestNoteRef.current.focus();
+    }
+  }, [notes.length]);
+
+  // Render all sticky notes
+  const renderedNotes = useMemo(
+    () =>
+      notes.map((note, index) => (
+        <StickyNote
+          key={note.id}
+          note={note}
+          onDelete={handleDeleteNote}
+          onTextChange={handleTextChange}
+          ref={index === notes.length - 1 ? latestNoteRef : null}
+        />
+      )),
+    [notes, handleDeleteNote, handleTextChange]
+  );
 
   return (
-    <div className={styles.bookViewerContainer}>
+    <div
+      style={{
+        height: "100vh",
+        position: "relative",
+        width: "90%",
+        margin: "0px auto",
+        padding: "60px 0",
+      }}
+    >
+      {/* Button to add new sticky note */}
       <button
-        onClick={goPrevPage}
-        className={styles.navButton}
-        aria-label="Previous page"
-        tabIndex="0"
+        onClick={handleAddNote}
+        style={{
+          marginBottom: "10px",
+          padding: "8px 16px",
+          backgroundColor: "#007bff",
+          color: "white",
+          border: "none",
+          borderRadius: "4px",
+          cursor: "pointer",
+          fontSize: "14px",
+          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+          transition: "background-color 0.2s ease",
+        }}
+        onMouseOver={(e) => (e.target.style.backgroundColor = "#0069d9")}
+        onMouseOut={(e) => (e.target.style.backgroundColor = "#007bff")}
       >
-        <FaArrowCircleLeft />
+        ➕ Add Note
       </button>
 
-      <div
-        className={styles.book}
-        ref={bookRef}
-        role="document"
-        aria-live="polite"
-      >
-        {pages.map((page, index) => (
-          <div
-            key={index}
-            className={styles.paper}
-            ref={(el) => (papersRef.current[index] = el)}
-            style={{ zIndex: numOfPapers - index }}
-          >
-            <div className={styles.front}>
-              <div className={styles.frontContent}>{page.front}</div>
-            </div>
-            <div className={styles.back}>
-              <div className={styles.backContent}>{page.back}</div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <button
-        onClick={goNextPage}
-        className={styles.navButton}
-        aria-label="Next page"
-        tabIndex="0"
-      >
-        <FaArrowCircleRight />
-      </button>
+      {/* Render PDF Viewer with highlight and layout plugins */}
+      <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
+        <DndContext onDragEnd={handleDragEnd}>
+          <Viewer
+            fileUrl="/Cracking-the-Coding-Interview-6th-Edition-189-Programming-Questions-and-Solutions.pdf"
+            defaultScale={SpecialZoomLevel.PageWidth}
+            plugins={[defaultLayoutPluginInstance, highlightPluginInstance]}
+          />
+          {renderedNotes}
+        </DndContext>
+      </Worker>
     </div>
   );
-};
+}
 
+// (Optional) Define prop types if you're passing props externally
 BookViewer.propTypes = {
-  bookId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  onHighlightClicked: PropTypes.func,
+  highlight: PropTypes.shape({
+    strings: PropTypes.arrayOf(PropTypes.string),
+  }),
+  id: PropTypes.string,
 };
-
-export default BookViewer;

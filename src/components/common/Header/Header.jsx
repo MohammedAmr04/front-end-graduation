@@ -1,15 +1,16 @@
-import { Container, Nav, Navbar, Dropdown, Image } from "react-bootstrap";
+import { Container, Nav, Navbar, Dropdown } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../../../store/Auth/authSlice";
 import logo from "/src/assets/Group 4.svg";
+import { FaUserCircle } from "react-icons/fa"; // 👈 استيراد الأيقونة
 
 export default function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { isLoggedIn, user } = useSelector((state) => state.auth);
+  const { isLoggedIn } = useSelector((state) => state.auth);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -92,15 +93,13 @@ export default function Header() {
               ) : (
                 <Dropdown align="end">
                   <Dropdown.Toggle variant="light" id="dropdown-user">
-                    <Image
-                      src={user?.avatar || "https://via.placeholder.com/30"}
-                      roundedCircle
-                      width="30"
-                      height="30"
-                    />
+                    <FaUserCircle size={24} /> {/* 👤 أيقونة المستخدم */}
                   </Dropdown.Toggle>
 
                   <Dropdown.Menu>
+                    <Dropdown.Item onClick={() => navigate("/profile")}>
+                      Profile
+                    </Dropdown.Item>
                     <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>

@@ -1,71 +1,54 @@
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import Post from "../components/common/community/post/Post";
 import SideBar from "../components/common/community/side-bar/SideBar";
 import AddPost from "../components/common/community/add-post/AddPost";
+import { useFetchPosts } from "../hooks/useFetchPosts";
 
-const posts = [
-  {
-    profileImage: "/src/assets/me.jpg", // صورتك الشخصية
-    username: "Me",
-    timeAgo: "Just now",
-    content: "Excited to be working on my new project! 🚀",
-    postImage:
-      "http://www.mountainphotography.com/images/xl/20100923-Capitol-Sunset.jpg",
-  },
-  {
-    profileImage: "/src/assets/me.jpg", // صورتك الشخصية
-    username: "Alice Johnson",
-    timeAgo: "30 minutes ago",
-    content: "Just finished reading an amazing book! 📖 Highly recommend it.",
-    postImage:
-      "https://tse4.mm.bing.net/th?id=OIP.IU0dBIT-RUIwj4J94xaXzQHaEm&pid=Api&P=0&h=220",
-  },
-  {
-    profileImage: "/src/assets/me.jpg", // صورتك الشخصية
-    username: "John Doe",
-    timeAgo: "1 hour ago",
-    content: "Had a great time hiking today! The view was breathtaking.",
-    postImage:
-      "https://tse4.mm.bing.net/th?id=OIP._LFnuIdeVajFLjyF6ZwuOQHaE7&pid=Api&P=0&h=220",
-  },
-  {
-    profileImage: "/src/assets/me.jpg", // صورتك الشخصية
-    username: "Emily Carter",
-    timeAgo: "2 hours ago",
-    content: "Enjoying a cup of coffee on this rainy evening. ☕🌧️",
-    postImage:
-      "https://tse2.mm.bing.net/th?id=OIP.WkLjIAYIyZCXq0QpfdsQ0QHaHa&pid=Api&P=0&h=220",
-  },
-  {
-    profileImage: "/src/assets/me.jpg", // صورتك الشخصية
-    username: "Michael Brown",
-    timeAgo: "3 hours ago",
-    content: "Coding late at night is the best time for creativity! 💻✨",
-    postImage:
-      "https://tse3.mm.bing.net/th?id=OIP.t9RxpyYqIqCJFboZho_y7wHaFj&pid=Api&P=0&h=220",
-  },
-  {
-    profileImage: "/src/assets/me.jpg", // صورتك الشخصية
-    username: "Sophia Lee",
-    timeAgo: "5 hours ago",
-    content: "The sunset today was absolutely stunning! 🌅",
-    postImage:
-      "https://tse2.mm.bing.net/th?id=OIP.WkLjIAYIyZCXq0QpfdsQ0QHaHa&pid=Api&P=0&h=220",
-  },
+const communityOptions = [
+  { id: 1, name: "Technology" },
+  { id: 2, name: "Books" },
+  { id: 3, name: "Music" },
+  { id: 4, name: "Movies" },
+  { id: 5, name: "Fitness" },
 ];
 
 export default function Community() {
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedCommunityId, setSelectedCommunityId] = useState(1); // default
+  const { token } = useSelector((state) => state.auth);
+
+  const { posts, loading, error } = useFetchPosts(selectedCommunityId, token);
 
   return (
     <div className="gap-3 d-flex">
       <SideBar />
+
       <div className="flex-grow-1 community-content">
         <div className="py-4 container-fluid">
-          <div className="mb-4 post-form-container position-relative">
+          {/* Select Community Filter */}
+          <div className="mb-3">
+            <select
+              className="w-auto form-select"
+              value={selectedCommunityId}
+              onChange={(e) => setSelectedCommunityId(Number(e.target.value))}
+            >
+              {communityOptions.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Add Post Button */}
+          <div
+            className="mb-4 post-form-container position-relative"
+            style={{ width: "600px" }}
+          >
             <button
               type="button"
-              className={`btn btn-primary rounded-pill new-post-btn  ${
+              className={`btn btn-primary rounded-pill new-post-btn ${
                 isOpen ? "active rotate" : ""
               }`}
               onClick={() => setIsOpen((prev) => !prev)}
@@ -77,9 +60,22 @@ export default function Community() {
             </div>
           </div>
 
-          <div className="pt-3 mx-auto mx-md-0 posts-container row flex-column ">
-            {posts.map((post, index) => (
-              <div key={index} className="">
+          {/* Loading State */}
+          {loading && (
+            <div className="py-5 text-center">
+              <div className="spinner-border text-primary" role="status" />
+            </div>
+          )}
+
+          {/* Error State */}
+          {error && (
+            <div className="text-center alert alert-danger">{error}</div>
+          )}
+
+          {/* Posts */}
+          <div className="pt-3 mx-auto mx-md-0 posts-container row flex-column">
+            {posts.map((post) => (
+              <div key={post.id}>
                 <Post {...post} />
               </div>
             ))}

@@ -45,13 +45,17 @@ export default function SideBar() {
 
       {/* Desktop Sidebar */}
       <div
-        className="pt-3 bg-white shadow-lg d-none d-lg-flex flex-column vh-100 position-fixed"
+        className="pt-3 bg-white shadow-lg desktop-sidebar d-none d-lg-flex flex-column vh-100 position-fixed"
         style={{
-          width: "250px",
+          // width: "40px",
+          overflow: "hidden",
           transition: "all 0.3s ease-in-out",
         }}
       >
-        <Nav className="flex-column">
+        <Nav
+          className="flex-column"
+          style={{ transition: "all 0.3s ease-in-out" }}
+        >
           {menuItems.map((item) => (
             <Nav
               key={item.path}
@@ -61,7 +65,7 @@ export default function SideBar() {
                 location.pathname === item.path ? "active" : ""
               }`}
             >
-              {item.icon}
+              <span className="icon">{item.icon}</span>
               <span className="menu-text">{item.label}</span>
             </Nav>
           ))}

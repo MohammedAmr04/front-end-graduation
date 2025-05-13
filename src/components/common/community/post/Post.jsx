@@ -4,16 +4,19 @@ import PropTypes from "prop-types";
 import { HandThumbsUp, Chat, HandThumbsUpFill } from "react-bootstrap-icons";
 import "./styles.css";
 import PostSlider from "../slider/PostSlider";
+import { timeAgo } from "../../../../utils/util";
 
 export default function Post({
-  profileImage,
-  username,
-  timeAgo,
+  userName,
+  createdAt,
+  isLiked,
+  likeCount,
+  communityName,
   content,
-  postImage,
+  imageUrl,
 }) {
   const [likes, setLikes] = useState(0);
-  const [isLiked, setIsLiked] = useState(false);
+  const [ setIsLiked] = useState(false);
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState("");
   const [isVisible, setIsVisible] = useState(false);
@@ -50,7 +53,7 @@ export default function Post({
         <div className="info d-flex align-items-center">
           <div className="profile-image-container">
             <img
-              src={profileImage}
+              src={`https://localhost:7159/${imageUrl}`}
               alt="Profile"
               className="rounded-circle profile-image"
               style={{
@@ -62,20 +65,20 @@ export default function Post({
             />
           </div>
           <div className="ms-3">
-            <h6 className="mb-0 fw-bold">{username}</h6>
+            <h6 className="mb-0 fw-bold">{userName}</h6>
             <small className="text-muted" style={{ fontSize: "12px" }}>
-              {timeAgo}
+              {timeAgo(createdAt)}
             </small>
           </div>
         </div>
 
         <div className="py-3 content">
           <p className="px-2 mb-3">{content}</p>
-          {postImage && (
+          {imageUrl && (
             <div className="post-image-container">
               <PostSlider>
                 <img
-                  src={postImage}
+                  src={`https://localhost:7159/${imageUrl}`}
                   alt="Post"
                   className="img-fluid w-100 rounded-4"
                   style={{ objectFit: "cover" }}
@@ -157,11 +160,15 @@ export default function Post({
 }
 
 Post.propTypes = {
-  profileImage: PropTypes.string.isRequired,
-  username: PropTypes.string.isRequired,
-  timeAgo: PropTypes.string,
+  profileImage: PropTypes.string,
+  userName: PropTypes.string.isRequired,
+  createdAt: PropTypes.string,
+  isLiked: PropTypes.bool,
+  likeCount: PropTypes.number,
+  commentCount: PropTypes.number,
   content: PropTypes.string.isRequired,
-  postImage: PropTypes.string,
+  communityName: PropTypes.string.isRequired,
+  imageUrl: PropTypes.string,
 };
 
 Post.defaultProps = {
