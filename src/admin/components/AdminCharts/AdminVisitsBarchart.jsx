@@ -12,11 +12,11 @@ import {
 } from "recharts";
 
 const data = [
-    { year: "2021", Jan: 120, Feb: 210, Mar: 160,April: 500,May:100 ,june: 160 ,july: 160, Augast: 300 },
-    { year: "2022", Jan: 200, Feb: 300, Mar: 250 },
-    { year: "2023", Jan: 180, Feb: 260, Mar: 300 },
-    { year: "2024", Jan: 120, Feb: 210, Mar: 160,April: 500,May:100 ,june: 160 ,july: 160, Augast: 300 },
-    { year: "2025", Jan: 120, Feb: 210, Mar: 160,April: 500,May:100 ,june: 160 ,july: 160, Augast: 300 },
+    // { year: "2021", Jan: 120, Feb: 210, Mar: 160,April: 500,May:100 ,june: 160 ,july: 160, Augast: 300 },
+    // { year: "2022", Jan: 200, Feb: 300, Mar: 250 },
+    // { year: "2023", Jan: 180, Feb: 260, Mar: 300,April: 500,May:100 ,june: 160 ,july: 160, Augast: 300 },
+    // { year: "2024", Jan: 120, Feb: 210, Mar: 160,April: 500,May:100 ,june: 160 ,july: 160, Augast: 300 },
+    { year: "2025", Jan: 120, Feb: 210, Mar: 160,April: 500,May:100  },
   ];
 
   const colors = [

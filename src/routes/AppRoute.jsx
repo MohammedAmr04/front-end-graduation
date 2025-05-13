@@ -16,6 +16,7 @@ import AdminLayout from "../layouts/AdminLayout";
 import AddCommunity from "../admin/pages/AddCommunity";
 import ManageCommunity from "../admin/pages/ManageCommunity";
 import ManageUsers from "../admin/pages/ManageUsers";
+import ManagePosts from "../admin/pages/ManagePosts";
 import Profile from "./../pages/Profile";
 import PostsProfile from "../components/common/profile/PostsProfile/PostsProfile";
 import DashboardProfile from "../components/common/profile/dashboard/DashboardProfile";
@@ -25,6 +26,7 @@ import AboutMe from "../components/common/profile/aboutuser/AboutMe";
 import ManageRoles from "../admin/pages/ManageRoles";
 import AdminDashboard from "../admin/pages/AdminDashboard";
 import BookReading from "../pages/BookReading/BookReading";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -100,6 +102,7 @@ const router = createBrowserRouter([
           { path: "manageroles", element: <ManageRoles /> },
           { path: "manageusers", element: <ManageUsers /> },
           { path: "admindashboard", element: <AdminDashboard /> },
+          { path: "manageposts", element: <ManagePosts /> },
 
         ],
       },

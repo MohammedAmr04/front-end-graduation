@@ -1,0 +1,48 @@
+.admin-cards-container {
+  display: flex;
+  justify-content: space-between; 
+  gap: 2px; 
+  flex-wrap: wrap; 
+  padding: 10px;
+  padding-left: 290px;
+  }
+h3{
+    padding-bottom: 20px;
+    color: rgba(0, 0, 0, 0.605);
+    font-size: 75px;
+    
+}
+h5{
+  padding-left: 290px;
+  padding-bottom: 20px;
+  color: rgba(0, 0, 0, 0.605);
+  font-size: 75px;
+  
+}
+.postscharts {
+  margin-top: 50px;
+  display: flex;
+  justify-content: space-between; 
+  gap: 2px; 
+  flex-wrap: wrap; 
+  padding: 10px;
+  padding-left: 290px;
+  }
+  .pdf-button {
+    background-color: #d8d8d8;
+    color: rgb(0, 0, 0);
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 20px;
+    margin-left: 900px;
+    text-decoration: underline;
+  }
+  
+  .pdf-button:hover {
+    background-color: #959595;
+  }
+  

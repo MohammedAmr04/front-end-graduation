@@ -54,11 +54,13 @@ const AdminSidebar = () => {
             )}
           </li>
         </ul>
+        <ul className="manageposts">
+          <li><Link to="/admin/manageposts"> Manage Posts</Link></li>
+        </ul>
         <ul className="adminDashboard">
-         
-         
           <li><Link to="/admin/admindashboard"><MdInsights size={24} /> System Insights</Link></li>
         </ul>
+       
 
 
       </ul>
