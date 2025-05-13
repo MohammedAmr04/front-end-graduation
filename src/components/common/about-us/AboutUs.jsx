@@ -1,12 +1,10 @@
-import { Link } from "react-router-dom";
-
 export default function AboutUs() {
   return (
-    <div className="about py-5 overflow-hidden">
+    <div className="py-5 overflow-hidden about">
       <div>
-        <div className="text ps-5 mt-3 ms-4 position-relative">
+        <div className="mt-3 text ps-5 ms-4 position-relative">
           <h1 className="pt-5">Who are we?</h1>
-          <div className="pt-2 px-2 my-3 fs-4">
+          <div className="px-2 pt-2 my-3 fs-4">
             <p className="">
               We are a goup of friends decided to give the readers their own
               space and world to communicate , discuss and share their special
@@ -14,7 +12,7 @@ export default function AboutUs() {
             </p>
             <p>If you want to join us ,this is our pleasure. you can</p>
           </div>
-          <div className="mt-2 position-relative">
+          {/* <div className="mt-2 position-relative">
             <Link
               className="btn login position-absolute rounded-5 "
               to={"/login"}
@@ -27,7 +25,7 @@ export default function AboutUs() {
             >
               Sign Up
             </Link>
-          </div>
+          </div> */}
         </div>
       </div>
       <div>

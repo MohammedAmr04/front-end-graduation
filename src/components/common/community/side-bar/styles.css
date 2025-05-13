@@ -3,6 +3,30 @@
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  text-wrap: nowrap;
+}
+
+.desktop-sidebar {
+  transition: all .3s ease;
+}
+
+.desktop-sidebar:hover {
+  width: 250px;
+}
+
+.desktop-sidebar:hover .menu-text {
+  display: block;
+  font-size: 0.95rem;
+}
+
+.desktop-sidebar:hover .sideBarItem .icon {
+  font-size: 16px;
+}
+
+.sideBarItem .icon {
+  font-size: 22px;
+  padding: 0 10px;
+  transition: all 0.3s ease;
 }
 
 .sideBarItem:hover {
@@ -29,6 +53,8 @@
 
 .menu-text {
   font-size: 0.95rem;
+  display: none;
+  transition: all 0.3s ease;
 }
 
 /* Mobile Menu Button Styles */

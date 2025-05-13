@@ -40,33 +40,32 @@ export default function ContactUs() {
   return (
     <div className="py-5 contact">
       <Container className="d-flex justify-content-between align-items-center">
-        <Form
-          onSubmit={onSubmit}
-          className="p-5 mx-auto mt-4 shadow-lg rounded-3 mx-lg-0 bg-light"
-        >
-          <p className="text-center fw-bold fs-4">Get in Touch</p>
+        <Form onSubmit={onSubmit} className="p-5 mx-auto mt-4 form-container">
+          <p className="mb-4 text-center fw-bold fs-4">Get in Touch</p>
 
-          <Form.Group className="mb-3" controlId="formName">
+          <Form.Group className="mb-4" controlId="formName">
             <Form.Label>Full Name</Form.Label>
             <Form.Control
               type="text"
               name="name"
               placeholder="Enter your name"
               required
+              className="form-control"
             />
           </Form.Group>
 
-          <Form.Group className="mb-3" controlId="formEmail">
+          <Form.Group className="mb-4" controlId="formEmail">
             <Form.Label>Email Address</Form.Label>
             <Form.Control
               type="email"
               name="email"
               placeholder="Enter your email"
               required
+              className="form-control"
             />
           </Form.Group>
 
-          <Form.Group className="mb-3" controlId="formMessage">
+          <Form.Group className="mb-4" controlId="formMessage">
             <Form.Label>Your Message</Form.Label>
             <Form.Control
               as="textarea"
@@ -74,10 +73,11 @@ export default function ContactUs() {
               rows={4}
               placeholder="Write your message here..."
               required
+              className="form-control"
             />
           </Form.Group>
 
-          <Button className="w-100" variant="primary" type="submit">
+          <Button className="w-100 btn-primary" type="submit">
             Send Message
           </Button>
 
@@ -87,7 +87,7 @@ export default function ContactUs() {
             </Alert>
           )}
         </Form>
-        <div className="text-center image-container w-50 d-lg-block d-none ">
+        <div className="text-center image-container w-50 d-lg-block d-none">
           <img
             src="/src/assets/Contact.png"
             className="w-100"

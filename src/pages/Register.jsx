@@ -2,7 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { Button, Form, Spinner } from "react-bootstrap";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useToast } from "../hooks/useToast";
 import { login } from "../store/Auth/authSlice";
 import Joi from "joi";
@@ -76,10 +76,10 @@ export default function Register() {
 
   return (
     <div className="overflow-hidden login justify-content-center align-items-center">
-      <Form className="p-5 mx-auto rounded-3" onSubmit={handleSubmit}>
-        <p className="text-center fw-bold fs-5">Create New account</p>
+      <Form className="p-5 mx-auto form-container" onSubmit={handleSubmit}>
+        <p className="mb-4 text-center fw-bold fs-4">Create New Account</p>
 
-        <Form.Group className="mb-3" controlId="formBasicEmail">
+        <Form.Group className="mb-4" controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
           <Form.Control
             type="email"
@@ -88,10 +88,11 @@ export default function Register() {
             value={user.email}
             onChange={handleChange}
             required
+            className="form-control"
           />
         </Form.Group>
 
-        <Form.Group className="mb-3">
+        <Form.Group className="mb-4">
           <Form.Label>First Name</Form.Label>
           <Form.Control
             name="firstName"
@@ -100,10 +101,11 @@ export default function Register() {
             value={user.firstName}
             onChange={handleChange}
             required
+            className="form-control"
           />
         </Form.Group>
 
-        <Form.Group className="mb-3">
+        <Form.Group className="mb-4">
           <Form.Label>Last Name</Form.Label>
           <Form.Control
             name="lastName"
@@ -112,10 +114,11 @@ export default function Register() {
             value={user.lastName}
             onChange={handleChange}
             required
+            className="form-control"
           />
         </Form.Group>
 
-        <Form.Group className="mb-3" controlId="formBasicPassword">
+        <Form.Group className="mb-4" controlId="formBasicPassword">
           <Form.Label>Password</Form.Label>
           <Form.Control
             name="password"
@@ -124,24 +127,36 @@ export default function Register() {
             value={user.password}
             onChange={handleChange}
             required
+            className="form-control"
           />
         </Form.Group>
 
         <Button
-          className="w-100"
-          variant="primary"
+          className="w-100 btn-primary"
           type="submit"
           disabled={isLoading}
         >
           {isLoading ? (
             <>
-              <Spinner animation="border" size="sm" />
-              <span className="ms-2">Loading...</span>
+              <Spinner
+                animation="border"
+                size="sm"
+                role="status"
+                className="me-2"
+              />
+              Loading...
             </>
           ) : (
-            "Sign Up"
+            "Register now"
           )}
         </Button>
+
+        <p className="mt-4 text-center">
+          <span className="text-black-50">{`Already have an account?`}</span>{" "}
+          <Link to="/login" className="text-primary">
+            Login now
+          </Link>
+        </p>
       </Form>
 
       <div className="d-xl-block d-none">
