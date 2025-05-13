@@ -51,6 +51,7 @@ export default function Community() {
               className={`btn btn-primary rounded-pill new-post-btn ${
                 isOpen ? "active rotate" : ""
               }`}
+              style={{ width: "fit-content" }}
               onClick={() => setIsOpen((prev) => !prev)}
             >
               New ➕

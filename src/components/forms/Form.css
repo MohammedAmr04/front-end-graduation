@@ -1,5 +1,6 @@
-.form-container form {
-  width: 360px;
+.form {
+  width: 100%;
+  max-width: 500px;
   margin: 0 auto;
   padding: 30px;
   background: white;
@@ -10,14 +11,14 @@
   transition: all 0.3s ease;
 }
 
-.form-container form:hover {
+.form:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
 }
 
-.form-container form button {
+.form button {
   width: 100%;
-  padding: 12px;
+  padding: 12px 24px;
   border-radius: 8px;
   font-weight: 600;
   letter-spacing: 0.5px;
@@ -25,13 +26,16 @@
   background: linear-gradient(45deg, #2196f3, #1976d2);
   border: none;
   color: white;
+  font-size: 1rem;
+  text-align: center;
+  cursor: pointer;
 }
 
-.form-container form button:hover {
+.form button:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
 }
 
-.form-container form button:active {
+.form button:active {
   transform: translateY(0);
 }

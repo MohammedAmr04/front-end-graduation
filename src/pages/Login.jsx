@@ -90,25 +90,25 @@ export default function Login() {
 
   return (
     <div className="overflow-hidden login justify-content-center align-items-center">
-      <Form className="p-5 mx-auto rounded-3" onSubmit={handleSubmit}>
-        <p className="text-center fw-bold fs-5">Login to your account</p>
-        {errors?.submit && (
-          <p className="text-center text-danger">{errors.submit}</p>
-        )}
-        <Form.Group className="mb-3" controlId="formBasicEmail">
+      <Form className="p-5 mx-auto form-container" onSubmit={handleSubmit}>
+        <p className="mb-4 text-center fw-bold fs-4">Welcome Back</p>
+
+        <Form.Group className="mb-4" controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
           <Form.Control
             type="email"
             name="email"
             placeholder="Enter email"
-            onChange={handleChange}
             value={user.email}
-            disabled={loading} // 🆕 متخليش يكتب وقت اللودينج
+            onChange={handleChange}
+            disabled={loading}
+            className="form-control"
+            required
           />
-          {errors?.email && <p className="text-danger">{errors.email}</p>}
+          {errors?.email && <p className="mt-2 text-danger">{errors.email}</p>}
         </Form.Group>
 
-        <Form.Group className="mb-3" controlId="formBasicPassword">
+        <Form.Group className="mb-4" controlId="formBasicPassword">
           <Form.Label>Password</Form.Label>
           <Form.Control
             name="password"
@@ -116,18 +116,17 @@ export default function Login() {
             placeholder="Enter your Password"
             onChange={handleChange}
             value={user.password}
-            disabled={loading} // 🆕 نفس الكلام هنا
+            disabled={loading}
+            className="form-control"
+            required
           />
-          {errors?.password && <p className="text-danger">{errors.password}</p>}
+          {errors?.password && (
+            <p className="mt-2 text-danger">{errors.password}</p>
+          )}
         </Form.Group>
 
-        <Button
-          className="w-100"
-          variant="primary"
-          type="submit"
-          disabled={loading}
-        >
-          {loading ? ( // 🆕 لو في لودينج حط سبينر
+        <Button className="w-100 btn-primary" type="submit" disabled={loading}>
+          {loading ? (
             <>
               <Spinner
                 animation="border"
@@ -135,15 +134,18 @@ export default function Login() {
                 role="status"
                 className="me-2"
               />
+              Loading...
             </>
           ) : (
             "Login now"
           )}
         </Button>
 
-        <p className="mt-3 text-center">
+        <p className="mt-4 text-center">
           <span className="text-black-50">{`Don't have an account?`}</span>{" "}
-          <Link to="/register">Register now</Link>
+          <Link to="/register" className="text-primary">
+            Register now
+          </Link>
         </p>
       </Form>
 
