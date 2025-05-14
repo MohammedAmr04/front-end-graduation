@@ -4,6 +4,7 @@ import Post from "../components/common/community/post/Post";
 import SideBar from "../components/common/community/side-bar/SideBar";
 import AddPost from "../components/common/community/add-post/AddPost";
 import { useFetchPosts } from "../hooks/useFetchPosts";
+import ChatBox from "../components/common/community/chat-box/ChatBox";
 
 const communityOptions = [
   { id: 1, name: "Technology" },
@@ -83,6 +84,7 @@ export default function Community() {
           </div>
         </div>
       </div>
+      <ChatBox />
     </div>
   );
 }
