@@ -1,32 +1,41 @@
 .sideBarItem {
   color: #333;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
   text-wrap: nowrap;
+  border-radius: 8px;
+  margin: 4px 8px;
 }
 
 .desktop-sidebar {
-  transition: all .3s ease;
-}
-
-.desktop-sidebar:hover {
   width: 250px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
 }
 
-.desktop-sidebar:hover .menu-text {
-  display: block;
-  font-size: 0.95rem;
+.desktop-sidebar.collapsed {
+  width: 80px;
 }
 
-.desktop-sidebar:hover .sideBarItem .icon {
-  font-size: 16px;
+.desktop-sidebar.collapsed .menu-text {
+  display: none;
+}
+
+.desktop-sidebar.collapsed .sideBarItem {
+  padding: 12px !important;
+  justify-content: center;
+}
+
+.desktop-sidebar.collapsed .sideBarItem .icon {
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 .sideBarItem .icon {
-  font-size: 22px;
+  font-size: 20px;
   padding: 0 10px;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .sideBarItem:hover {
@@ -49,12 +58,13 @@
   height: 100%;
   width: 4px;
   background-color: #007bff;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .menu-text {
   font-size: 0.95rem;
-  display: none;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 1;
 }
 
 /* Mobile Menu Button Styles */
@@ -72,7 +82,7 @@
   align-items: center;
   justify-content: center;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   color: #333;
 }
 
@@ -90,14 +100,41 @@
   width: 280px !important;
 }
 
+.collapse-btn {
+  background: none;
+  border: none;
+  color: #666;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.collapse-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #007bff;
+}
+
+.rotate-180 {
+  transform: rotate(180deg);
+}
+
+.main-content {
+  margin-left: 250px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.main-content.expanded {
+  margin-left: 80px;
+}
+
 @media (max-width: 991.98px) {
   .mobile-sidebar .sideBarItem {
     margin: 5px 0;
     border-radius: 8px;
   }
 
-  /* Adjust main content margin on mobile */
-  .d-flex {
+  .main-content {
     margin-left: 0 !important;
   }
 }
@@ -105,6 +142,6 @@
 /* Add smooth transition for sidebar */
 @media (min-width: 992px) {
   .sidebar-container {
-    transition: width 0.3s ease-in-out;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }

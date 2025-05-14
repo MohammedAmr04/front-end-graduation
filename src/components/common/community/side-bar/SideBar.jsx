@@ -3,13 +3,20 @@ import { faIdCardClip } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { Offcanvas, Nav } from "react-bootstrap";
-import { FiHome, FiLogIn, FiUserPlus, FiMenu } from "react-icons/fi";
+import {
+  FiHome,
+  FiLogIn,
+  FiUserPlus,
+  FiMenu,
+  FiChevronLeft,
+} from "react-icons/fi";
 import { Link, useLocation } from "react-router-dom";
 
 import "./styles.css";
 
 export default function SideBar() {
   const [show, setShow] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const location = useLocation();
 
   const menuItems = [
@@ -45,17 +52,20 @@ export default function SideBar() {
 
       {/* Desktop Sidebar */}
       <div
-        className="pt-3 bg-white shadow-lg desktop-sidebar d-none d-lg-flex flex-column vh-100 position-fixed"
-        style={{
-          // width: "40px",
-          overflow: "hidden",
-          transition: "all 0.3s ease-in-out",
-        }}
+        className={`pt-3 bg-white shadow-lg desktop-sidebar d-none d-lg-flex flex-column vh-100 position-fixed ${
+          isCollapsed ? "collapsed" : ""
+        }`}
       >
-        <Nav
-          className="flex-column"
-          style={{ transition: "all 0.3s ease-in-out" }}
-        >
+        <div className="px-3 mb-3 d-flex justify-content-end">
+          <button
+            className="collapse-btn"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            <FiChevronLeft className={`${isCollapsed ? "rotate-180" : ""}`} />
+          </button>
+        </div>
+        <Nav className="flex-column">
           {menuItems.map((item) => (
             <Nav
               key={item.path}
@@ -66,14 +76,16 @@ export default function SideBar() {
               }`}
             >
               <span className="icon">{item.icon}</span>
-              <span className="menu-text">{item.label}</span>
+              <span className={`menu-text ${isCollapsed ? "d-none" : ""}`}>
+                {item.label}
+              </span>
             </Nav>
           ))}
         </Nav>
       </div>
 
       {/* Main Content Wrapper */}
-      <div className="d-flex" style={{ marginLeft: "250px" }}>
+      <div className={`main-content ${isCollapsed ? "expanded" : ""}`}>
         {/* Mobile Sidebar */}
         <Offcanvas
           show={show}
