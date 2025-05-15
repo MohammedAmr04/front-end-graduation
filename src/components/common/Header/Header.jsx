@@ -3,14 +3,50 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../../../store/Auth/authSlice";
 import logo from "/src/assets/Group 4.svg";
-import { FaUserCircle } from "react-icons/fa"; // 👈 استيراد الأيقونة
+import { FaUserCircle } from "react-icons/fa";
+import { FiBell } from "react-icons/fi";
+import { useEffect, useRef, useState } from "react";
+import * as signalR from "@microsoft/signalr";
 
 export default function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { isLoggedIn } = useSelector((state) => state.auth);
+  const { isLoggedIn, token } = useSelector((state) => state.auth);
+  const [hasNotification, setHasNotification] = useState(false);
+  const [notifications, setNotifications] = useState([]); // Store notification messages
+  const [showDropdown, setShowDropdown] = useState(false);
+  const connectionRef = useRef(null);
+
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    const connection = new signalR.HubConnectionBuilder()
+      .withUrl("https://localhost:7159/notificationHub", {
+        accessTokenFactory: () => token,
+      })
+      .withAutomaticReconnect()
+      .build();
+
+    connection.on("ReceiveNotification", (message) => {
+      setHasNotification(true);
+      setNotifications((prev) => [message, ...prev]); // Add new message to notifications
+    });
+
+    connection
+      .start()
+      .catch((err) => console.error("SignalR Connection Error:", err));
+    connectionRef.current = connection;
+
+    return () => {
+      connection.stop();
+    };
+  }, [isLoggedIn, token]);
+
+  const handleNotificationClick = () => {
+    setHasNotification(false);
+    setShowDropdown((prev) => !prev); // Toggle dropdown
+  };
 
   const handleLogout = () => {
     dispatch(logout());
@@ -74,6 +110,73 @@ export default function Header() {
               >
                 Community
               </Nav.Link>
+
+              {isLoggedIn && (
+                <Nav.Item style={{ position: "relative", marginRight: "10px" }}>
+                  <span style={{ position: "relative" }}>
+                    <FiBell
+                      size={22}
+                      style={{ cursor: "pointer" }}
+                      onClick={handleNotificationClick}
+                    />
+                    {hasNotification && (
+                      <span
+                        style={{
+                          position: "absolute",
+                          top: 2,
+                          right: 2,
+                          width: 10,
+                          height: 10,
+                          background: "#ff4444",
+                          borderRadius: "50%",
+                          border: "2px solid #fff",
+                          zIndex: 2,
+                        }}
+                      ></span>
+                    )}
+                  </span>
+                  {showDropdown && notifications.length > 0 && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        right: 0,
+                        top: 30,
+                        minWidth: 250,
+                        background: "#fff",
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                        borderRadius: 8,
+                        zIndex: 1000,
+                        padding: 0,
+                        maxHeight: 300,
+                        overflowY: "auto",
+                      }}
+                      onMouseLeave={() => setShowDropdown(false)}
+                    >
+                      <div
+                        style={{
+                          padding: "10px 16px",
+                          borderBottom: "1px solid #eee",
+                          fontWeight: 600,
+                        }}
+                      >
+                        Notifications
+                      </div>
+                      {notifications.map((msg, idx) => (
+                        <div
+                          key={idx}
+                          style={{
+                            padding: "10px 16px",
+                            borderBottom: "1px solid #f5f5f5",
+                            fontSize: 14,
+                          }}
+                        >
+                          {msg}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </Nav.Item>
+              )}
 
               {!isLoggedIn ? (
                 <Dropdown align="end">

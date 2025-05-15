@@ -11,7 +11,7 @@ export const useFetchBooks = (currentPage, pageSize) => {
       setLoading(true);
       try {
         const response = await fetch(
-          `https://localhost:7159/api/Books/GetBooksPaginated?pageIndex=${currentPage}&pageSize=${pageSize}`
+          `https://localhost:7159/api/Books/paginated?pageIndex=${currentPage}&pageSize=${pageSize}`
         );
         if (!response.ok) {
           throw new Error("Network response was not ok");

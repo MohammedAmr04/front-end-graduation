@@ -11,12 +11,12 @@ export default function Post({
   createdAt,
   isLiked,
   likeCount,
+  commentCount,
   communityName,
   content,
   imageUrl,
 }) {
-  const [likes, setLikes] = useState(0);
-  const [ setIsLiked] = useState(false);
+  const [isLikedState, setIsLikedState] = useState(isLiked);
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState("");
   const [isVisible, setIsVisible] = useState(false);
@@ -26,8 +26,7 @@ export default function Post({
   }, []);
 
   const handleLike = () => {
-    setLikes(isLiked ? likes - 1 : likes + 1);
-    setIsLiked(!isLiked);
+    setIsLikedState(!isLikedState);
   };
 
   const handleCommentSubmit = (e) => {
@@ -66,9 +65,15 @@ export default function Post({
           </div>
           <div className="ms-3">
             <h6 className="mb-0 fw-bold">{userName}</h6>
-            <small className="text-muted" style={{ fontSize: "12px" }}>
-              {timeAgo(createdAt)}
-            </small>
+            <div className="gap-2 d-flex align-items-center">
+              <small className="text-muted" style={{ fontSize: "12px" }}>
+                {timeAgo(createdAt)}
+              </small>
+
+              <small className="text-muted" style={{ fontSize: "12px" }}>
+                {communityName}
+              </small>
+            </div>
           </div>
         </div>
 
@@ -90,20 +95,20 @@ export default function Post({
 
         <div className="gap-2 mt-2 interaction-buttons d-flex align-items-center">
           <Button
-            variant={isLiked ? "primary" : "outline-primary"}
+            variant={isLikedState ? "primary" : "outline-primary"}
             size="sm"
             className="gap-2 d-flex align-items-center interaction-button"
             onClick={handleLike}
           >
-            {isLiked ? <HandThumbsUpFill /> : <HandThumbsUp />}
-            <span>{likes}</span>
+            {isLikedState ? <HandThumbsUpFill /> : <HandThumbsUp />}
+            <span>{likeCount}</span>
           </Button>
           <Button
             variant="outline-secondary"
             size="sm"
             className="gap-2 d-flex align-items-center interaction-button"
           >
-            <Chat /> Comment
+            <Chat /> {commentCount} Comments
           </Button>
         </div>
 
@@ -174,4 +179,7 @@ Post.propTypes = {
 Post.defaultProps = {
   timeAgo: "Just now",
   postImage: "",
+  likeCount: 0,
+  commentCount: 0,
+  isLiked: false,
 };

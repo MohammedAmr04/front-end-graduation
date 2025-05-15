@@ -5,6 +5,7 @@ import SideBar from "../components/common/community/side-bar/SideBar";
 import AddPost from "../components/common/community/add-post/AddPost";
 import { useFetchPosts } from "../hooks/useFetchPosts";
 import ChatBox from "../components/common/community/chat-box/ChatBox";
+import { useToast } from "../hooks/useToast";
 
 const communityOptions = [
   { id: 1, name: "Technology" },
@@ -18,9 +19,9 @@ export default function Community() {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedCommunityId, setSelectedCommunityId] = useState(1); // default
   const { token } = useSelector((state) => state.auth);
-
+  const { showError } = useToast();
   const { posts, loading, error } = useFetchPosts(selectedCommunityId, token);
-
+  error && showError(error);
   return (
     <div className="gap-3 d-flex">
       <SideBar />
@@ -67,11 +68,6 @@ export default function Community() {
             <div className="py-5 text-center">
               <div className="spinner-border text-primary" role="status" />
             </div>
-          )}
-
-          {/* Error State */}
-          {error && (
-            <div className="text-center alert alert-danger">{error}</div>
           )}
 
           {/* Posts */}
