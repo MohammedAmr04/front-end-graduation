@@ -13,7 +13,7 @@ export default function Header() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { isLoggedIn, token } = useSelector((state) => state.auth);
+  const { isLoggedIn, token, id } = useSelector((state) => state.auth);
   const [hasNotification, setHasNotification] = useState(false);
   const [notifications, setNotifications] = useState([]); // Store notification messages
   const [showDropdown, setShowDropdown] = useState(false);
@@ -200,7 +200,7 @@ export default function Header() {
                   </Dropdown.Toggle>
 
                   <Dropdown.Menu>
-                    <Dropdown.Item onClick={() => navigate("/profile")}>
+                    <Dropdown.Item onClick={() => navigate(`/profile/${id}`)}>
                       Profile
                     </Dropdown.Item>
                     <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>

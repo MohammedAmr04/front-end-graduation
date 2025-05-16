@@ -1,26 +1,59 @@
-import { Container, Button } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 import "./styles.css";
 import { Link, useLocation } from "react-router-dom";
 import { Camera } from "react-bootstrap-icons";
+import PropTypes from "prop-types";
+import { useSelector } from "react-redux";
+import axios from "axios";
 
-export default function HeaderProfile() {
+export default function HeaderProfile({ profile, me }) {
   const location = useLocation();
+  const { token } = useSelector((state) => state.auth);
+  const { coverPhotoUrl, firstName, lastName, profilePhotoUrl } = profile || {};
 
-  const handleCoverImageChange = (e) => {
-    // Handle cover image change
+  const handleCoverImageChange = async (e) => {
     const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append("CoverPhotoUpdate", file);
     if (file) {
-      // Add your image upload logic here
-      console.log("Cover image changed:", file);
+      try {
+        const response = await axios.put(
+          "https://localhost:7159/api/Profile/cover-photo",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        console.log(response);
+      } catch (error) {
+        console.log("🟩 error: ", error);
+      }
     }
   };
 
-  const handleProfileImageChange = (e) => {
-    // Handle profile image change
+  const handleProfileImageChange = async (e) => {
     const file = e.target.files[0];
+    const formData = new FormData();
+    formData.append("ProfilePhotoUpdate", file);
     if (file) {
-      // Add your image upload logic here
-      console.log("Profile image changed:", file);
+      try {
+        const response = await axios.put(
+          "https://localhost:7159/api/Profile/profile-photo",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        console.log(response);
+      } catch (error) {
+        console.log("🟩 error: ", error);
+      }
     }
   };
 
@@ -28,46 +61,74 @@ export default function HeaderProfile() {
     <div className="header-profile">
       <Container>
         <div className="container-img position-relative">
-          <img src="/src/assets/BooKSwap.jpg" alt="book" className="w-100" />
-          <div className="cover-image-overlay">
-            <label htmlFor="cover-image-input" className="cover-image-button">
-              <Camera size={20} />
-              <span>Change Cover</span>
-            </label>
-            <input
-              type="file"
-              id="cover-image-input"
-              accept="image/*"
-              onChange={handleCoverImageChange}
-              style={{ display: "none" }}
-            />
-          </div>
+          <img
+            src={
+              coverPhotoUrl
+                ? `https://localhost:7159/${coverPhotoUrl}`
+                : "https://via.placeholder.com/300x200"
+            }
+            alt="Cover"
+            className="w-100"
+          />
+
+          {me && (
+            <div className="cover-image-overlay">
+              <label htmlFor="cover-image-input" className="cover-image-button">
+                <Camera size={20} />
+                <span>Change Cover</span>
+              </label>
+              <input
+                type="file"
+                id="cover-image-input"
+                accept="image/*"
+                onChange={handleCoverImageChange}
+                style={{ display: "none" }}
+              />
+            </div>
+          )}
         </div>
+
         <div className="user-info">
           <div className="gap-3 d-flex">
             <div className="photo-profile position-relative">
-              <img src="/src/assets/me.jpg" alt="me" />
-              <div className="profile-image-overlay">
-                <label
-                  htmlFor="profile-image-input"
-                  className="profile-image-button"
-                >
-                  <Camera size={16} />
-                </label>
-                <input
-                  type="file"
-                  id="profile-image-input"
-                  accept="image/*"
-                  onChange={handleProfileImageChange}
-                  style={{ display: "none" }}
-                />
-              </div>
+              <img
+                src={
+                  profilePhotoUrl
+                    ? `https://localhost:7159/${profilePhotoUrl}`
+                    : "https://via.placeholder.com/120"
+                }
+                alt="Profile"
+              />
+              {me && (
+                <div className="profile-image-overlay">
+                  <label
+                    htmlFor="profile-image-input"
+                    className="profile-image-button"
+                  >
+                    <Camera size={16} />
+                  </label>
+                  <input
+                    type="file"
+                    id="profile-image-input"
+                    accept="image/*"
+                    onChange={handleProfileImageChange}
+                    style={{ display: "none" }}
+                  />
+                </div>
+              )}
             </div>
             <div className="user-details">
-              <h3 className="username">John Doe</h3>
+              <h3 className="username">
+                {firstName || lastName
+                  ? `${firstName.toString().toUpperCase() || ""} ${
+                      lastName.toUpperCase() || ""
+                    }`.trim()
+                  : "User"}
+              </h3>
             </div>
           </div>
         </div>
+
         <div className="nav-profile">
           <ul>
             <li
@@ -77,7 +138,6 @@ export default function HeaderProfile() {
             >
               <Link to="posts">Posts</Link>
             </li>
-
             <li
               className={
                 location.pathname.endsWith("/about") ? "active-nav" : ""
@@ -90,7 +150,7 @@ export default function HeaderProfile() {
                 location.pathname.endsWith("/dashboard") ? "active-nav" : ""
               }
             >
-              <Link to={"dashboard"}>Dashboard</Link>
+              <Link to="dashboard">Dashboard</Link>
             </li>
           </ul>
         </div>
@@ -98,3 +158,28 @@ export default function HeaderProfile() {
     </div>
   );
 }
+
+HeaderProfile.propTypes = {
+  profile: PropTypes.shape({
+    age: PropTypes.number,
+    bio: PropTypes.string,
+    coverPhotoUrl: PropTypes.string,
+    favoriteBookTopics: PropTypes.arrayOf(PropTypes.string),
+    firstName: PropTypes.string.isRequired,
+    gender: PropTypes.string,
+    hobbies: PropTypes.arrayOf(PropTypes.string),
+    lastName: PropTypes.string.isRequired,
+    posts: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+          .isRequired,
+        content: PropTypes.string.isRequired,
+        userId: PropTypes.string.isRequired,
+        userName: PropTypes.string.isRequired,
+      })
+    ),
+    profilePhotoUrl: PropTypes.string,
+    userId: PropTypes.string.isRequired,
+  }),
+  me: PropTypes.bool,
+};

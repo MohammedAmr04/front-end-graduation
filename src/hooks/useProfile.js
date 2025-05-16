@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 
-const useProfile = () => {
+const useProfile = (id) => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,7 +12,7 @@ const useProfile = () => {
     const fetchProfile = async () => {
       try {
         const response = await axios.get(
-          "https://localhost:7159/api/Profile/me",
+          `https://localhost:7159/api/Profile/profile/${id}`,
           {
             headers: {
               "Content-Type": "application/json",

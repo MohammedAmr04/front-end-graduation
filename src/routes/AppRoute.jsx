@@ -82,7 +82,7 @@ const router = createBrowserRouter([
         element: <BookReading />,
       },
       {
-        path: "profile",
+        path: "profile/:Userid",
         element: <Profile />,
         children: [
           { index: true, element: <PostsProfile /> },
@@ -103,7 +103,6 @@ const router = createBrowserRouter([
           { path: "manageusers", element: <ManageUsers /> },
           { path: "admindashboard", element: <AdminDashboard /> },
           { path: "manageposts", element: <ManagePosts /> },
-
         ],
       },
     ],

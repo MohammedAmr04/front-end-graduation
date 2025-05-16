@@ -5,6 +5,7 @@ import { HandThumbsUp, Chat, HandThumbsUpFill } from "react-bootstrap-icons";
 import "./styles.css";
 import PostSlider from "../slider/PostSlider";
 import { timeAgo } from "../../../../utils/util";
+import { Link } from "react-router-dom";
 
 export default function Post({
   userName,
@@ -15,6 +16,7 @@ export default function Post({
   communityName,
   content,
   imageUrl,
+  userId,
 }) {
   const [isLikedState, setIsLikedState] = useState(isLiked);
   const [comments, setComments] = useState([]);
@@ -51,17 +53,20 @@ export default function Post({
       <Card.Body className="p-3 p-md-4">
         <div className="info d-flex align-items-center">
           <div className="profile-image-container">
-            <img
-              src={`https://localhost:7159/${imageUrl}`}
-              alt="Profile"
-              className="rounded-circle profile-image"
-              style={{
-                width: "45px",
-                height: "45px",
-                objectFit: "cover",
-                transition: "transform 0.2s ease",
-              }}
-            />
+            <Link to={`/profile/${userId}`}>
+              {" "}
+              <img
+                src={`https://localhost:7159/${imageUrl}`}
+                alt="Profile"
+                className="rounded-circle profile-image"
+                style={{
+                  width: "45px",
+                  height: "45px",
+                  objectFit: "cover",
+                  transition: "transform 0.2s ease",
+                }}
+              />
+            </Link>
           </div>
           <div className="ms-3">
             <h6 className="mb-0 fw-bold">{userName}</h6>
@@ -174,6 +179,7 @@ Post.propTypes = {
   content: PropTypes.string.isRequired,
   communityName: PropTypes.string.isRequired,
   imageUrl: PropTypes.string,
+  userId: PropTypes.string,
 };
 
 Post.defaultProps = {
