@@ -1,27 +1,42 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import Post from "../components/common/community/post/Post";
 import SideBar from "../components/common/community/side-bar/SideBar";
 import AddPost from "../components/common/community/add-post/AddPost";
 import { useFetchPosts } from "../hooks/useFetchPosts";
-import ChatBox from "../components/common/community/chat-box/ChatBox";
 import { useToast } from "../hooks/useToast";
-
-const communityOptions = [
-  { id: 1, name: "Technology" },
-  { id: 2, name: "Books" },
-  { id: 3, name: "Music" },
-  { id: 4, name: "Movies" },
-  { id: 5, name: "Fitness" },
-];
 
 export default function Community() {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedCommunityId, setSelectedCommunityId] = useState(1); // default
+  const [all, setAll] = useState(true);
+  const [selectedCommunityId, setSelectedCommunityId] = useState(null); // default
   const { token } = useSelector((state) => state.auth);
+  const [communityType, setCommunityType] = useState("");
+  const [communityTypes, setCommunityTypes] = useState([]);
   const { showError } = useToast();
-  const { posts, loading, error } = useFetchPosts(selectedCommunityId, token);
-  error && showError(error);
+  const { posts, loading, refetch } = useFetchPosts(
+    all,
+    selectedCommunityId,
+    token
+  );
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await fetch("https://localhost:7159/api/Community", {
+          headers: {
+            Authorization: `bearer ${token}`,
+          },
+        });
+        const data = await response.json();
+        setCommunityTypes(data);
+      } catch (error) {
+        showError("Error fetching community types.");
+        console.error(error);
+      }
+    }
+    fetchData();
+  }, [token]);
+
   return (
     <div className="gap-3 d-flex">
       <SideBar />
@@ -32,10 +47,20 @@ export default function Community() {
           <div className="mb-3">
             <select
               className="w-auto form-select"
-              value={selectedCommunityId}
-              onChange={(e) => setSelectedCommunityId(Number(e.target.value))}
+              value={selectedCommunityId || ""}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value === "") {
+                  setAll(true);
+                  setSelectedCommunityId(null);
+                } else {
+                  setAll(false);
+                  setSelectedCommunityId(Number(value));
+                }
+              }}
             >
-              {communityOptions.map((c) => (
+              <option value="">All Communities</option>
+              {communityTypes.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
                 </option>
@@ -59,7 +84,15 @@ export default function Community() {
               New ➕
             </button>
             <div className={`post-form-wrapper ${isOpen ? "show" : ""}`}>
-              {isOpen && <AddPost />}
+              {isOpen && (
+                <AddPost
+                  communityType={communityType}
+                  communityTypes={communityTypes}
+                  setCommunityType={setCommunityType}
+                  setCommunityTypes={setCommunityTypes}
+                  onPostSuccess={refetch}
+                />
+              )}
             </div>
           </div>
 
@@ -71,7 +104,7 @@ export default function Community() {
           )}
 
           {/* Posts */}
-          <div className="pt-3 mx-auto mx-md-0 posts-container row flex-column">
+          <div className="pt-5 mx-auto mx-md-0 posts-container row flex-column">
             {posts.map((post) => (
               <div key={post.id}>
                 <Post {...post} />
@@ -80,7 +113,7 @@ export default function Community() {
           </div>
         </div>
       </div>
-      <ChatBox />
+      {/* <ChatBox /> */}
     </div>
   );
 }
