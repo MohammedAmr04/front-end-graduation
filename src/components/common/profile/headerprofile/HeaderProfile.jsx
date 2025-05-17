@@ -1,6 +1,6 @@
 import { Container } from "react-bootstrap";
 import "./styles.css";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Camera } from "react-bootstrap-icons";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
@@ -8,8 +8,10 @@ import axios from "axios";
 
 export default function HeaderProfile({ profile, me }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const { token } = useSelector((state) => state.auth);
-  const { coverPhotoUrl, firstName, lastName, profilePhotoUrl } = profile || {};
+  const { coverPhotoUrl, firstName, lastName, profilePhotoUrl, userId } =
+    profile || {};
 
   const handleCoverImageChange = async (e) => {
     const file = e.target.files[0];
@@ -124,6 +126,15 @@ export default function HeaderProfile({ profile, me }) {
                       lastName.toUpperCase() || ""
                     }`.trim()
                   : "User"}
+                {!me && (
+                  <button
+                    className="btn btn-primary ms-3"
+                    style={{ fontSize: "0.95rem", padding: "6px 16px" }}
+                    onClick={() => navigate(`/chat/${userId}`)}
+                  >
+                    Message
+                  </button>
+                )}
               </h3>
             </div>
           </div>

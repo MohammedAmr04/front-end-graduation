@@ -69,7 +69,9 @@ export default function Post({
             </Link>
           </div>
           <div className="ms-3">
-            <h6 className="mb-0 fw-bold">{userName}</h6>
+            <Link to={`/profile/${userId}`}>
+              <h6 className="mb-0 fw-bold">{userName}</h6>
+            </Link>
             <div className="gap-2 d-flex align-items-center">
               <small className="text-muted" style={{ fontSize: "12px" }}>
                 {timeAgo(createdAt)}

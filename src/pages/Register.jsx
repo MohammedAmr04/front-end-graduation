@@ -14,6 +14,8 @@ const registerSchema = Joi.object({
   password: Joi.string().min(6).required(),
   firstName: Joi.string().min(2).max(30).required(),
   lastName: Joi.string().min(2).max(30).required(),
+  username: Joi.string().alphanum().min(3).max(20).required(),
+  gender: Joi.string().valid("male", "female").required(),
 });
 
 export default function Register() {
@@ -26,6 +28,8 @@ export default function Register() {
     password: "",
     firstName: "",
     lastName: "",
+    username: "",
+    gender: "",
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -55,6 +59,8 @@ export default function Register() {
         password: "",
         firstName: "",
         lastName: "",
+        username: "",
+        gender: "",
       });
 
       setTimeout(() => {
@@ -62,7 +68,6 @@ export default function Register() {
       }, 2000);
     } catch (error) {
       console.log(error.response);
-
       showError(error.response?.data || "Registration Failed!");
     } finally {
       setIsLoading(false);
@@ -116,6 +121,34 @@ export default function Register() {
             required
             className="form-control"
           />
+        </Form.Group>
+
+        <Form.Group className="mb-4">
+          <Form.Label>Username</Form.Label>
+          <Form.Control
+            name="username"
+            type="text"
+            placeholder="Enter a username"
+            value={user.username}
+            onChange={handleChange}
+            required
+            className="form-control"
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-4">
+          <Form.Label>Gender</Form.Label>
+          <Form.Select
+            name="gender"
+            value={user.gender}
+            onChange={handleChange}
+            required
+            className="form-control"
+          >
+            <option value="">Select Gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </Form.Select>
         </Form.Group>
 
         <Form.Group className="mb-4" controlId="formBasicPassword">
