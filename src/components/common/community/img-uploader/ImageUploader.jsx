@@ -1,4 +1,5 @@
 import PropTypes from "prop-types";
+import { FaCamera } from "react-icons/fa"; // أيقونة الكاميرا
 import "./styles.css";
 
 const ImageUploader = ({ setImages }) => {
@@ -17,8 +18,8 @@ const ImageUploader = ({ setImages }) => {
 
   return (
     <div>
-      <label className="upload-button">
-        📷 Choose Image
+      <label className="gap-2 upload-button d-flex align-items-center">
+        <FaCamera size={20} /> {/* أيقونة الكاميرا */}
         <input
           type="file"
           accept="image/*"

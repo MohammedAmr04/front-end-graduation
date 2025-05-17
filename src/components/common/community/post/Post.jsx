@@ -1,40 +1,174 @@
 import { useState, useEffect } from "react";
-import { Card, Button, Form } from "react-bootstrap";
+import { Card, Button, Form, Spinner, Alert } from "react-bootstrap";
 import PropTypes from "prop-types";
-import { HandThumbsUp, Chat, HandThumbsUpFill } from "react-bootstrap-icons";
+import { Chat } from "react-bootstrap-icons";
 import "./styles.css";
 import PostSlider from "../slider/PostSlider";
 import { timeAgo } from "../../../../utils/util";
+import { Link } from "react-router-dom";
+import {
+  BiDownvote,
+  BiSolidDownvote,
+  BiSolidUpvote,
+  BiUpvote,
+} from "react-icons/bi";
+import { FaRegImage, FaPaperPlane } from "react-icons/fa";
+import { useSelector } from "react-redux";
 
 export default function Post({
   userName,
   createdAt,
   isLiked,
+  isUnliked,
   likeCount,
+  unlikeCount,
+  commentCount,
   communityName,
   content,
   imageUrl,
+  id,
+  userId,
 }) {
-  const [likes, setLikes] = useState(0);
-  const [ setIsLiked] = useState(false);
+  const [liked, setLiked] = useState(isLiked);
+  const [unliked, setUnliked] = useState(isUnliked);
+  const [likes, setLikes] = useState(likeCount);
+  const [unlikes, setUnlikes] = useState(unlikeCount);
+  const [commentsCount, setCommentsCount] = useState(commentCount);
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState("");
+  const [commentImage, setCommentImage] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
-
+  const [showComments, setShowComments] = useState(false);
+  const [loadingComments, setLoadingComments] = useState(false);
+  const [commentsError, setCommentsError] = useState(null);
+  const { token } = useSelector((state) => state.auth);
   useEffect(() => {
     setIsVisible(true);
   }, []);
 
-  const handleLike = () => {
-    setLikes(isLiked ? likes - 1 : likes + 1);
-    setIsLiked(!isLiked);
+  const handleLike = async () => {
+    try {
+      const response = await fetch(
+        `https://localhost:7159/api/Community/posts/${id}/like`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.ok) {
+        if (liked) {
+          setLiked(false);
+          setLikes(likes - 1);
+        } else {
+          setLiked(true);
+          setLikes(likes + 1);
+          if (unliked) {
+            setUnliked(false);
+            setUnlikes(unlikes - 1);
+          }
+        }
+      }
+    } catch {
+      // Optionally handle error
+    }
   };
 
-  const handleCommentSubmit = (e) => {
+  const handleDislike = async () => {
+    try {
+      const response = await fetch(
+        `https://localhost:7159/api/Community/posts/${id}/unlike`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.ok) {
+        if (unliked) {
+          setUnliked(false);
+          setUnlikes(unlikes - 1);
+        } else {
+          setUnliked(true);
+          setUnlikes(unlikes + 1);
+          if (liked) {
+            setLiked(false);
+            setLikes(likes - 1);
+          }
+        }
+      }
+    } catch {
+      // Optionally handle error
+    }
+  };
+
+  const fetchComments = async () => {
+    setLoadingComments(true);
+    setCommentsError(null);
+    try {
+      const response = await fetch(
+        `https://localhost:7159/api/Community/posts/${id}/comments`,
+        {
+          credentials: "include",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (!response.ok) throw new Error("Failed to fetch comments");
+      const data = await response.json();
+      setComments(data);
+    } catch (error) {
+      setCommentsError(error.message);
+    } finally {
+      setLoadingComments(false);
+    }
+  };
+
+  const handleShowComments = () => {
+    if (!showComments) {
+      fetchComments();
+    }
+    setShowComments((prev) => !prev);
+  };
+
+  const handleCommentImageChange = (e) => {
+    setCommentImage(e.target.files[0]);
+  };
+
+  const handleCommentSubmit = async (e) => {
     e.preventDefault();
-    if (commentText.trim() !== "") {
-      setComments([...comments, { text: commentText, timestamp: new Date() }]);
-      setCommentText("");
+    if (commentText.trim() === "") return;
+    const formData = new FormData();
+    formData.append("PostId", id);
+    formData.append("Content", commentText);
+    if (commentImage) {
+      formData.append("imageFile", commentImage);
+    }
+    try {
+      const response = await fetch(
+        "https://localhost:7159/api/Community/posts/comments",
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        }
+      );
+      if (response.ok) {
+        setCommentText("");
+        setCommentImage(null);
+        setCommentsCount((prev) => prev + 1);
+        fetchComments(); // Refresh comments
+      }
+    } catch {
+      // Optionally handle error
     }
   };
 
@@ -52,23 +186,32 @@ export default function Post({
       <Card.Body className="p-3 p-md-4">
         <div className="info d-flex align-items-center">
           <div className="profile-image-container">
-            <img
-              src={`https://localhost:7159/${imageUrl}`}
-              alt="Profile"
-              className="rounded-circle profile-image"
-              style={{
-                width: "45px",
-                height: "45px",
-                objectFit: "cover",
-                transition: "transform 0.2s ease",
-              }}
-            />
+            <Link to={`/profile/${userId}`}>
+              <img
+                src={`https://localhost:7159/${imageUrl}`}
+                alt="Profile"
+                className="rounded-circle profile-image"
+                style={{
+                  width: "45px",
+                  height: "45px",
+                  objectFit: "cover",
+                  transition: "transform 0.2s ease",
+                }}
+              />
+            </Link>
           </div>
           <div className="ms-3">
-            <h6 className="mb-0 fw-bold">{userName}</h6>
-            <small className="text-muted" style={{ fontSize: "12px" }}>
-              {timeAgo(createdAt)}
-            </small>
+            <Link to={`/profile/${userId}`}>
+              <h6 className="mb-0 fw-bold">{userName}</h6>
+            </Link>
+            <div className="gap-2 d-flex align-items-center">
+              <small className="text-muted" style={{ fontSize: "12px" }}>
+                {timeAgo(createdAt)}
+              </small>
+              <small className="text-muted" style={{ fontSize: "12px" }}>
+                {communityName}
+              </small>
+            </div>
           </div>
         </div>
 
@@ -88,69 +231,144 @@ export default function Post({
           )}
         </div>
 
-        <div className="gap-2 mt-2 interaction-buttons d-flex align-items-center">
-          <Button
-            variant={isLiked ? "primary" : "outline-primary"}
-            size="sm"
-            className="gap-2 d-flex align-items-center interaction-button"
-            onClick={handleLike}
-          >
-            {isLiked ? <HandThumbsUpFill /> : <HandThumbsUp />}
-            <span>{likes}</span>
-          </Button>
+        <div className="gap-2 mt-2 interaction-buttons d-flex justify-content-between align-items-center">
+          <div className="gap-2 d-flex">
+            <Button
+              variant={liked ? "primary" : "outline-primary"}
+              size="sm"
+              onClick={handleLike}
+              className="gap-2 d-flex align-items-center interaction-button"
+              style={{ width: "fit-content" }}
+            >
+              {liked ? <BiSolidUpvote /> : <BiUpvote />}
+              <span>{likes}</span>
+            </Button>
+
+            <Button
+              variant={unliked ? "danger" : "outline-danger"}
+              size="sm"
+              onClick={handleDislike}
+              className="gap-2 d-flex align-items-center interaction-button"
+              style={{ width: "fit-content" }}
+            >
+              {unliked ? <BiSolidDownvote /> : <BiDownvote />}
+              <span>{unlikes}</span>
+            </Button>
+          </div>
+
           <Button
             variant="outline-secondary"
             size="sm"
             className="gap-2 d-flex align-items-center interaction-button"
+            onClick={handleShowComments}
           >
-            <Chat /> Comment
+            <Chat /> {commentsCount} Comments
           </Button>
         </div>
 
         <div className="mt-3 comments-section">
-          <Form onSubmit={handleCommentSubmit} className="comment-form">
-            <Form.Control
-              type="text"
-              placeholder="Add a comment..."
-              value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
-              className="rounded-pill"
-            />
-            <Button
-              variant="primary"
-              size="sm"
-              type="submit"
-              className="px-3 mt-2 rounded-pill"
-              disabled={!commentText.trim()}
-            >
-              Post
-            </Button>
-          </Form>
-
-          {comments.length > 0 && (
-            <div className="mt-3 comments-list">
-              <h6 className="mb-3">Comments</h6>
-              <ul className="list-unstyled">
-                {comments.map((comment, index) => (
-                  <li
-                    key={index}
-                    className="px-3 py-2 mb-2 comment-item bg-light rounded-3"
-                    style={{
-                      animation: `fadeIn 0.3s ease-in-out ${index * 0.1}s`,
-                    }}
+          {showComments && (
+            <div>
+              {loadingComments && <Spinner animation="border" size="sm" />}
+              {commentsError && <Alert variant="danger">{commentsError}</Alert>}
+              {!loadingComments && !commentsError && (
+                <>
+                  <Form
+                    onSubmit={handleCommentSubmit}
+                    className="gap-2 comment-form d-flex align-items-center"
                   >
-                    <div className="d-flex justify-content-between">
-                      <div className="comment-text">{comment.text}</div>
-                      <small className="text-muted">
-                        {new Date(comment.timestamp).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </small>
+                    <Form.Control
+                      type="text"
+                      placeholder="Add a comment..."
+                      value={commentText}
+                      onChange={(e) => setCommentText(e.target.value)}
+                      className="rounded-pill"
+                      style={{ minWidth: 0 }}
+                    />
+                    {/* Hidden file input */}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      id={`comment-image-input-${id}`}
+                      style={{ display: "none" }}
+                      onChange={handleCommentImageChange}
+                    />
+                    {/* Icon button for image upload */}
+                    <label
+                      htmlFor={`comment-image-input-${id}`}
+                      className="mb-0"
+                      style={{ cursor: "pointer" }}
+                    >
+                      <span
+                        className="p-2 btn btn-light d-flex align-items-center justify-content-center"
+                        style={{ borderRadius: "50%" }}
+                      >
+                        <FaRegImage size={18} />
+                      </span>
+                    </label>
+                    {/* Show image preview if selected */}
+                    {commentImage && (
+                      <img
+                        src={URL.createObjectURL(commentImage)}
+                        alt="preview"
+                        style={{
+                          width: 32,
+                          height: 32,
+                          objectFit: "cover",
+                          borderRadius: 8,
+                          marginRight: 4,
+                        }}
+                      />
+                    )}
+                    {/* Icon button for submit */}
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      type="submit"
+                      className="p-2 d-flex align-items-center justify-content-center rounded-circle"
+                      style={{ width: 36, height: 36 }}
+                      disabled={!commentText.trim()}
+                    >
+                      <FaPaperPlane size={16} />
+                    </Button>
+                  </Form>
+
+                  {comments.length > 0 && (
+                    <div className="mt-3 comments-list">
+                      <h6 className="mb-3">Comments</h6>
+                      <ul className="list-unstyled">
+                        {comments.map((comment, index) => (
+                          <li
+                            key={comment.id || index}
+                            className="px-3 py-2 mb-2 comment-item bg-light rounded-3"
+                            style={{
+                              animation: `fadeIn 0.3s ease-in-out ${
+                                index * 0.1
+                              }s`,
+                            }}
+                          >
+                            <div className="d-flex justify-content-between">
+                              <div className="comment-text">
+                                {comment.text || comment.content}
+                              </div>
+                              <small className="text-muted">
+                                {comment.timestamp
+                                  ? new Date(
+                                      comment.timestamp
+                                    ).toLocaleTimeString([], {
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })
+                                  : ""}
+                              </small>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                  </li>
-                ))}
-              </ul>
+                  )}
+                </>
+              )}
             </div>
           )}
         </div>
@@ -160,18 +378,26 @@ export default function Post({
 }
 
 Post.propTypes = {
-  profileImage: PropTypes.string,
   userName: PropTypes.string.isRequired,
   createdAt: PropTypes.string,
   isLiked: PropTypes.bool,
+  isUnliked: PropTypes.bool,
   likeCount: PropTypes.number,
+  unlikeCount: PropTypes.number,
   commentCount: PropTypes.number,
   content: PropTypes.string.isRequired,
   communityName: PropTypes.string.isRequired,
   imageUrl: PropTypes.string,
+  userId: PropTypes.string,
+  id: PropTypes.number,
 };
 
 Post.defaultProps = {
-  timeAgo: "Just now",
-  postImage: "",
+  createdAt: new Date().toISOString(),
+  isLiked: false,
+  isUnliked: false,
+  likeCount: 0,
+  unlikeCount: 0,
+  commentCount: 0,
+  imageUrl: "",
 };

@@ -1,44 +1,32 @@
-import { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import InputField from "../../../forms/InputField";
 import styles from "./AddPost.module.css";
 import ImageUploader from "../img-uploader/ImageUploader";
 import { useToast } from "../../../../hooks/useToast";
 
-export default function AddPost() {
+export default function AddPost({
+  communityType,
+  communityTypes,
+  setCommunityType,
+  setCommunityTypes,
+  onPostSuccess, // ✅ NEW PROP
+}) {
   const profileImage = "/src/assets/me.jpg";
   const { token } = useSelector((state) => state.auth);
   const { showSuccess, showError } = useToast();
 
   const [images, setImages] = useState([]);
   const [post, setPost] = useState("");
-  const [communityType, setCommunityType] = useState("");
-  const [communityTypes, setCommunityTypes] = useState([]);
 
   const selectedCommunity = communityTypes.find(
     (c) => c.id.toString() === communityType
   );
+
   const removeImage = () => {
     setImages([]);
   };
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await fetch("https://localhost:7159/api/Community", {
-          headers: {
-            Authorization: `bearer ${token}`,
-          },
-        });
-        const data = await response.json();
-        setCommunityTypes(data);
-      } catch (error) {
-        showError("Error fetching community types.");
-        console.error(error);
-      }
-    }
-    fetchData();
-  }, []);
 
   const handleJoin = async () => {
     try {
@@ -46,7 +34,6 @@ export default function AddPost() {
         `https://localhost:7159/api/Community/${+communityType}/join`,
         {
           method: "POST",
-
           headers: {
             Authorization: `bearer ${token}`,
           },
@@ -56,7 +43,6 @@ export default function AddPost() {
 
       showSuccess(`You joined ${selectedCommunity.name} successfully!`);
 
-      // Update the communityTypes to reflect membership
       setCommunityTypes((prev) =>
         prev.map((c) =>
           c.id.toString() === communityType ? { ...c, isMember: true } : c
@@ -68,19 +54,44 @@ export default function AddPost() {
     }
   };
 
+  const handleLeave = async () => {
+    try {
+      const response = await fetch(
+        `https://localhost:7159/api/Community/${+communityType}/leave`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `bearer ${token}`,
+          },
+        }
+      );
+      if (!response.ok) throw new Error("Failed to leave");
+
+      showSuccess(`You left ${selectedCommunity.name} successfully!`);
+
+      setCommunityTypes((prev) =>
+        prev.map((c) =>
+          c.id.toString() === communityType ? { ...c, isMember: false } : c
+        )
+      );
+    } catch (error) {
+      showError("Failed to leave community.");
+      console.error(error);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!post.trim()) return showError("Please write something in the post.");
     if (!selectedCommunity) return showError("Please select a community.");
-    // if (!selectedCommunity.isMember)
-    //   return showError("You must join this community before posting.");
-    // if (images.length === 0) return showError("Please upload an image.");
 
     const formData = new FormData();
     formData.append("Content", post);
     formData.append("CommunityId", communityType);
-    formData.append("ImageFile", images[0].file);
+    if (images[0]) {
+      formData.append("ImageFile", images[0].file);
+    }
 
     try {
       const response = await fetch(
@@ -104,6 +115,8 @@ export default function AddPost() {
       setPost("");
       setImages([]);
       setCommunityType("");
+
+      if (onPostSuccess) onPostSuccess();
     } catch (error) {
       showError("Failed to create post. Please try again.");
       console.error(error);
@@ -161,17 +174,28 @@ export default function AddPost() {
         )}
 
         {selectedCommunity && selectedCommunity.isMember && (
-          <button className="btn btn-success" disabled>
-            Joined ✅
-          </button>
+          <>
+            <button className="btn btn-success" disabled>
+              Joined ✅
+            </button>
+            <button
+              type="button"
+              className="btn btn-outline-danger ms-2"
+              onClick={handleLeave}
+            >
+              Leave
+            </button>
+          </>
         )}
+
         <ImageUploader images={images} setImages={setImages} />
+
         <button className="py-2 btn btn-primary" type="submit">
           Post
         </button>
       </div>
+
       <div>
-        {" "}
         {images.length > 0 && (
           <div className="mx-auto image-preview">
             <div className="image-container">
@@ -186,3 +210,18 @@ export default function AddPost() {
     </form>
   );
 }
+
+// ✅ PropTypes Definition
+AddPost.propTypes = {
+  communityType: PropTypes.string.isRequired,
+  communityTypes: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      name: PropTypes.string.isRequired,
+      isMember: PropTypes.bool,
+    })
+  ).isRequired,
+  setCommunityType: PropTypes.func.isRequired,
+  setCommunityTypes: PropTypes.func.isRequired,
+  onPostSuccess: PropTypes.func, // ✅ NEW
+};

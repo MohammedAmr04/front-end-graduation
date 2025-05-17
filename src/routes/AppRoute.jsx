@@ -26,6 +26,7 @@ import AboutMe from "../components/common/profile/aboutuser/AboutMe";
 import ManageRoles from "../admin/pages/ManageRoles";
 import AdminDashboard from "../admin/pages/AdminDashboard";
 import BookReading from "../pages/BookReading/BookReading";
+import Chat from "../pages/Chat";
 
 const router = createBrowserRouter([
   {
@@ -82,7 +83,7 @@ const router = createBrowserRouter([
         element: <BookReading />,
       },
       {
-        path: "profile",
+        path: "profile/:Userid",
         element: <Profile />,
         children: [
           { index: true, element: <PostsProfile /> },
@@ -103,8 +104,15 @@ const router = createBrowserRouter([
           { path: "manageusers", element: <ManageUsers /> },
           { path: "admindashboard", element: <AdminDashboard /> },
           { path: "manageposts", element: <ManagePosts /> },
-
         ],
+      },
+      {
+        path: "chat",
+        element: <Chat />,
+      },
+      {
+        path: "chat/:userId",
+        element: <Chat />,
       },
     ],
   },
