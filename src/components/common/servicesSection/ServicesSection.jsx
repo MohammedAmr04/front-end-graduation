@@ -28,8 +28,8 @@ function ServicesSection() {
         {services.map((service) => (
           <div className="px-4 shadow-sm service col-md-4" key={service.title}>
             <div className="text-center h-100">
-              <div style={{ fontSize: "4rem" }}>{service.icon}</div>
-              <h5 className="my-3 card-title">{service.title}</h5>
+              <div className="icon">{service.icon}</div>
+              <h5 className="my-3 ps-0 card-title">{service.title}</h5>
               <p className="pb-4 card-text">{service.description}</p>
             </div>
           </div>
