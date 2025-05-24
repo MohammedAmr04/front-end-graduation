@@ -1,85 +1,89 @@
-.managebooks{
-    padding-left: 270px;
-    color: rgba(0, 0, 0, 0.605);
-    font-size: medium;
-    padding-top: 70px;
-    width: 100%;
-  }
-  
-  h2{
-      font-size: 60px;
-  } 
-  
-  .allBooks{
-    width: 100%;
-    border-collapse: collapse;
-    background: #fff;
-    border-radius: 8px;
-    overflow: hidden;
-    
-  }
-  th, td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #b0b0b0;
-  }
-  
-  th {
-    background: #7c7c7cfc;
-    color: rgb(255, 255, 255);
-  }
-  
-  tr:hover {
-    background: #f1f1f1;
-  }
-  
-  .saveBook {
-    padding: 8px 12px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    color: #f1f1f1;
-    background-color: black;
-    transition: 0.3s;
-  } 
-  .editBook-btn {
-    background: #0116ff9c;
-    color: white;
-    margin-right: 5px;
-  }
-  
-  .deleteBook-btn {
-    background: #ff0606d6;
-    color: white;
-  }
-  .editBook-btn:hover {
-    background: #0a6cffc0;
-  }
-  
-  .deleteBook-btn:hover {
-    background: #c82333;
-  }
-  .editBook-form {
-    margin-top: 20px;
-    padding: 20px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .editBook-form input,
-  .editBook-form textarea {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-  }
-  
-  .editBook-form button {
-    margin-right: 10px;
-  }
-  
-  .editBook-form button :hover {
-    background-color: #b0b0b0;
-  }
+.managebooks {
+  color: rgba(0, 0, 0, 0.605);
+  font-size: medium;
+  padding-top: 70px;
+  width: 100%;
+}
+
+h2 {
+  font-size: 60px;
+}
+
+.allBooks {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+
+}
+
+th,
+td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #b0b0b0;
+}
+
+th {
+  background: #7c7c7cfc;
+  color: rgb(255, 255, 255);
+}
+
+tr:hover {
+  background: #f1f1f1;
+}
+
+.saveBook {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  color: #f1f1f1;
+  background-color: black;
+  transition: 0.3s;
+}
+
+.editBook-btn {
+  background: #0116ff9c;
+  color: white;
+  margin-right: 5px;
+}
+
+.deleteBook-btn {
+  background: #ff0606d6;
+  color: white;
+}
+
+.editBook-btn:hover {
+  background: #0a6cffc0;
+}
+
+.deleteBook-btn:hover {
+  background: #c82333;
+}
+
+.editBook-form {
+  margin-top: 20px;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.editBook-form input,
+.editBook-form textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.editBook-form button {
+  margin-right: 10px;
+}
+
+.editBook-form button :hover {
+  background-color: #b0b0b0;
+}
