@@ -1,34 +1,37 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
+import { useFetchBooks } from "../../hooks/useFetchBooks";
 import axios from "axios";
+import { FaEdit, FaTrash } from "react-icons/fa";
 import "./ManageBook.css";
 
+const PAGE_SIZE = 10;
+
 const ManageBook = () => {
-  const [books, setBooks] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const { books, loading, error, totalPages } = useFetchBooks(
+    currentPage,
+    PAGE_SIZE
+  );
   const [editBook, seteditBook] = useState(null);
   const [updateBook, setupdateBook] = useState({
     title: "",
     author: "",
     category: "",
-    description: "",
-    content: "",
+    summary: "",
+    // cover will be handled separately
   });
-
-  // Fetch books from API
-  useEffect(() => {
-    axios.get("http://localhost:5000/books")
-      .then((response) => {
-        setBooks(response.data);
-        console.log("Data fetched:", response.data); 
-      })
-      .catch((error) => {
-        console.error("Error fetching data", error);
-      });
-  }, []);
+  const [coverFile, setCoverFile] = useState(null);
 
   // Edit function
   const handleEdit = (book) => {
     seteditBook(book.id);
-    setupdateBook(book);
+    setupdateBook({
+      title: book.title,
+      author: book.author,
+      category: book.category,
+      summary: book.summary,
+    });
+    setCoverFile(null);
   };
 
   // Handle input changes
@@ -36,14 +39,30 @@ const ManageBook = () => {
     setupdateBook({ ...updateBook, [e.target.name]: e.target.value });
   };
 
+  // Handle cover file change
+  const handleCoverChange = (e) => {
+    setCoverFile(e.target.files[0]);
+  };
+
   // Save updated book
   const handleSave = async () => {
     try {
-      await axios.put(`http://localhost:5000/books/${editBook}`, updateBook);
-      setBooks(
-        books.map((book) => (book.id === editBook ? updateBook : book))
-      );
+      const data = new FormData();
+      data.append("title", updateBook.title);
+      data.append("author", updateBook.author);
+      data.append("category", updateBook.category);
+      data.append("summary", updateBook.summary);
+      if (coverFile) data.append("cover", coverFile);
+      const token = localStorage.getItem("token");
+      await axios.put(`https://localhost:7159/api/Books/${editBook}`, data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      });
+      // No need to update books state directly, just refresh page
       seteditBook(null);
+      setCoverFile(null);
     } catch (error) {
       console.error("Error updating book", error);
     }
@@ -51,61 +70,274 @@ const ManageBook = () => {
 
   // Delete book
   const handleDelete = (id) => {
+    const token = localStorage.getItem("token");
     axios
-      .delete(`http://localhost:5000/books/${id}`)
+      .delete(`https://localhost:7159/api/Books/${id}`, {
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      })
       .then(() => {
-        setBooks(books.filter((book) => book.id !== id));
+        // No need to update books state directly, just refresh page
       })
       .catch((error) => {
         console.error("Error deleting book:", error);
       });
   };
 
-  return (
-    <div className="managebooks">
-      <h2>Manage Books</h2>
-      <table className="allBooks">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Title</th>
-            <th>Author</th>
-            <th>Category</th>
-            <th>Description</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {books.map((book) => (
-            <tr key={book.id}>
-              <td>{book.id}</td>
-              <td>{book.title}</td>
-              <td>{book.author}</td>
-              <td>{book.category}</td>
-              <td>{book.description}</td>
-              <td>
-                <button className="editBook-btn" onClick={() => handleEdit(book)}>Edit</button>
-                <button className="deleteBook-btn" onClick={() => handleDelete(book.id)}>Delete</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+  // Pagination controls
+  const handlePageChange = (newPage) => {
+    if (newPage < 1 || newPage > totalPages) return;
+    setCurrentPage(newPage);
+  };
 
-      {editBook && (
-        <div className="editBook-form">
-          <h3>Edit Book</h3>
-          <form onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
-            <input type="text" name="title" value={updateBook.title} onChange={handleUpdate} placeholder="Title" />
-            <input type="text" name="author" value={updateBook.author} onChange={handleUpdate} placeholder="Author" />
-            <input type="text" name="category" value={updateBook.category} onChange={handleUpdate} placeholder="Category" />
-            <textarea name="description" value={updateBook.description} onChange={handleUpdate} placeholder="Description"></textarea>
-            <textarea name="content" value={updateBook.content} onChange={handleUpdate} placeholder="Content"></textarea>
-            <button className="saveBook" type="submit">Save</button>
-            <button type="button" onClick={() => seteditBook(null)}>Cancel</button>
-          </form>
+  return (
+    <div className="managebooks-page-bg py-5">
+      <div className="container">
+        <div className="managebooks-card p-4 mx-auto">
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+            <h2 className="mb-0">Manage Books</h2>
+            {/* Pagination top right on desktop */}
+            <nav className="pagination-nav d-none d-md-block">
+              <ul className="pagination justify-content-end mb-0">
+                <li
+                  className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
+                >
+                  <button
+                    className="page-link"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    &laquo;
+                  </button>
+                </li>
+                {(() => {
+                  const startPage = Math.max(currentPage - 2, 1);
+                  const endPage = Math.min(currentPage + 2, totalPages);
+                  const pages = [];
+                  for (let i = startPage; i <= endPage; i++) {
+                    pages.push(
+                      <li
+                        key={i}
+                        className={`page-item ${
+                          currentPage === i ? "active" : ""
+                        }`}
+                      >
+                        <button
+                          className="page-link"
+                          onClick={() => handlePageChange(i)}
+                        >
+                          {i}
+                        </button>
+                      </li>
+                    );
+                  }
+                  return pages;
+                })()}
+                {currentPage + 2 < totalPages && (
+                  <li className="page-item disabled">
+                    <span className="page-link">...</span>
+                  </li>
+                )}
+                <li
+                  className={`page-item ${
+                    currentPage === totalPages ? "disabled" : ""
+                  }`}
+                >
+                  <button
+                    className="page-link"
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                  >
+                    &raquo;
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          </div>
+          {loading ? (
+            <p>Loading...</p>
+          ) : error ? (
+            <p>Error loading books.</p>
+          ) : (
+            <>
+              <div className="table-responsive">
+                <table className="allBooks modern-table">
+                  <thead>
+                    <tr>
+                      <th>Cover</th>
+                      <th>Title</th>
+                      <th>Author</th>
+                      <th>Category</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {books.map((book) => (
+                      <tr key={book.id}>
+                        <td>
+                          {
+                            <img
+                              src={`https://www.gutenberg.org/cache/epub/${book.id}/pg${book.id}.cover.medium.jpg`}
+                              alt={book.title}
+                              className="book-cover-img"
+                            />
+                          }
+                        </td>
+                        <td>{book.title}</td>
+                        <td>{book.author}</td>
+                        <td>{book.category}</td>
+                        <td>
+                          <button
+                            className="editBook-btn icon-btn"
+                            onClick={() => handleEdit(book)}
+                            aria-label="Edit Book"
+                          >
+                            <FaEdit />
+                          </button>
+                          <button
+                            className="deleteBook-btn icon-btn"
+                            onClick={() => handleDelete(book.id)}
+                            aria-label="Delete Book"
+                          >
+                            <FaTrash />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {/* Pagination bottom center on mobile */}
+              <nav className="pagination-nav d-block d-md-none mt-4">
+                <ul className="pagination justify-content-center mb-0">
+                  <li
+                    className={`page-item ${
+                      currentPage === 1 ? "disabled" : ""
+                    }`}
+                  >
+                    <button
+                      className="page-link"
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                    >
+                      &laquo;
+                    </button>
+                  </li>
+                  {(() => {
+                    const startPage = Math.max(currentPage - 2, 1);
+                    const endPage = Math.min(currentPage + 2, totalPages);
+                    const pages = [];
+                    for (let i = startPage; i <= endPage; i++) {
+                      pages.push(
+                        <li
+                          key={i}
+                          className={`page-item ${
+                            currentPage === i ? "active" : ""
+                          }`}
+                        >
+                          <button
+                            className="page-link"
+                            onClick={() => handlePageChange(i)}
+                          >
+                            {i}
+                          </button>
+                        </li>
+                      );
+                    }
+                    return pages;
+                  })()}
+                  {currentPage + 2 < totalPages && (
+                    <li className="page-item disabled">
+                      <span className="page-link">...</span>
+                    </li>
+                  )}
+                  <li
+                    className={`page-item ${
+                      currentPage === totalPages ? "disabled" : ""
+                    }`}
+                  >
+                    <button
+                      className="page-link"
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                    >
+                      &raquo;
+                    </button>
+                  </li>
+                </ul>
+              </nav>
+            </>
+          )}
+
+          {editBook && (
+            <div
+              className="modal-overlay"
+              onClick={(e) => {
+                if (e.target.classList.contains("modal-overlay"))
+                  seteditBook(null);
+              }}
+            >
+              <div className="modal-content">
+                <button
+                  className="modal-close"
+                  onClick={() => seteditBook(null)}
+                  aria-label="Close Edit Modal"
+                >
+                  &times;
+                </button>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleSave();
+                  }}
+                  encType="multipart/form-data"
+                >
+                  <input
+                    type="text"
+                    name="title"
+                    value={updateBook.title}
+                    onChange={handleUpdate}
+                    placeholder="Title"
+                  />
+                  <input
+                    type="text"
+                    name="author"
+                    value={updateBook.author}
+                    onChange={handleUpdate}
+                    placeholder="Author"
+                  />
+                  <input
+                    type="text"
+                    name="category"
+                    value={updateBook.category}
+                    onChange={handleUpdate}
+                    placeholder="Category"
+                  />
+                  <textarea
+                    name="summary"
+                    value={updateBook.summary}
+                    onChange={handleUpdate}
+                    placeholder="Summary"
+                  ></textarea>
+                  <input
+                    type="file"
+                    name="cover"
+                    accept="image/*"
+                    onChange={handleCoverChange}
+                  />
+                  <button className="saveBook" type="submit">
+                    Save
+                  </button>
+                  <button type="button" onClick={() => seteditBook(null)}>
+                    Cancel
+                  </button>
+                </form>
+              </div>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };
