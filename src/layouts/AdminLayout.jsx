@@ -4,11 +4,11 @@ import AdminSidebar from "../admin/components/AdminSidebar";
 
 export default function AdminLayout() {
   return (
-    <div className="admin-layout d-flex" style={{ minHeight: "100vh" }}>
+    <div className="admin-layout d-flex gap-5" style={{ minHeight: "100vh" }}>
       {/* <AdminHeader /> */}
       <AdminSidebar />
       <div
-        className="admin-content flex-grow-1 d-flex justify-content-center align-items-center"
+        className="admin-content flex-grow-1 "
         style={{ minHeight: "100vh" }}
       >
         <Outlet />
