@@ -48,7 +48,7 @@ const Book = () => {
           </div>
         </div>
       </div>
-      <section>
+      <section className="container">
         <BookSlider />
       </section>
     </main>
