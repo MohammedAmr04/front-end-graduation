@@ -1,10 +1,10 @@
-.add-community{
-    padding-left: 270px;
+.add-community {
     color: rgba(0, 0, 0, 0.605);
     font-size: medium;
     padding-top: 70px;
 }
-.submit-btn{
+
+.submit-btn {
     background-color: black;
     color: rgb(255, 255, 255);
     margin-top: 20px;

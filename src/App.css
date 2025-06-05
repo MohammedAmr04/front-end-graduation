@@ -2,13 +2,16 @@
 body {
   font-family: "New Amsterdam", serif;
 }
+
 a {
   color: black;
   text-decoration: none;
 }
+
 .nav {
   cursor: pointer;
 }
+
 /* Login & Register Forms */
 .login form,
 .register form,
@@ -30,6 +33,7 @@ a {
 .navbar {
   background-color: var(--header-color);
 }
+
 .header {
   box-shadow: var(--box-shadow);
 }
@@ -37,14 +41,14 @@ a {
 .navbar-nav .nav-link {
   margin: 0 10px;
   position: relative;
+  border-bottom: solid 2px transparent;
   transition: var(--transition-speed);
 }
 
 /* Active Link Styling */
-.active {
+.navbar-nav .nav-link.active {
   border-bottom: solid 2px black;
   font-weight: 600;
-  width: fit-content;
 }
 
 /* About Section */
@@ -53,16 +57,19 @@ a {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
 }
+
 @media (max-width: 768px) {
   .about {
     display: block;
   }
 }
+
 div.login {
   position: relative;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
 }
+
 /* Buttons inside About Section */
 .about .btn.sign-up {
   background-color: #000000;
@@ -85,9 +92,11 @@ div.login {
   position: relative;
   width: 100%;
 }
+
 .contact form {
   margin-inline: auto;
 }
+
 @media (max-width: 767px) {
   .contact form {
     width: 100%;

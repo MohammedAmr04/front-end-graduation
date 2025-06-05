@@ -14,8 +14,9 @@
   --box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
   --header-color: #ffffff;
   --section-color: white;
-  --transition-speed: 0.3s;
+  --transition-speed: 0.5s;
 }
+
 * {
   margin: 0;
   padding: 0;

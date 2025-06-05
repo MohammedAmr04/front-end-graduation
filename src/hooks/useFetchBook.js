@@ -13,7 +13,7 @@ export function useFetchBook(id) {
       setLoading(true);
       try {
         const response = await axios.get(
-          `https://localhost:7159/api/Books/GetBookById/${id}`
+          `https://localhost:7159/api/Books/${id}`
         );
         setBook(response.data);
         setError(null);
