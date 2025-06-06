@@ -23,6 +23,7 @@ export default function Post({
   likeCount,
   unlikeCount,
   commentCount,
+  profilePicture,
   communityName,
   content,
   imageUrl,
@@ -188,7 +189,7 @@ export default function Post({
           <div className="profile-image-container">
             <Link to={`/profile/${userId}`}>
               <img
-                src={`https://localhost:7159/${imageUrl}`}
+                src={`https://localhost:7159/${profilePicture}`}
                 alt="Profile"
                 className="rounded-circle profile-image"
                 style={{
@@ -347,20 +348,37 @@ export default function Post({
                               }s`,
                             }}
                           >
-                            <div className="d-flex justify-content-between">
-                              <div className="comment-text">
-                                {comment.text || comment.content}
+                            <div className="d-flex">
+                              {comment.profilePicture && (
+                                <img
+                                  src={`https://localhost:7159/${comment.profilePicture}`}
+                                  alt="Profile"
+                                  className="rounded-circle me-2"
+                                  style={{
+                                    width: "30px",
+                                    height: "30px",
+                                    objectFit: "cover",
+                                  }}
+                                />
+                              )}
+                              <div className="flex-grow-1">
+                                <div>
+                                  <small className="fw-bold text-secondary d-block">
+                                    {comment.userName}
+                                  </small>
+                                  <small
+                                    className="text-muted"
+                                    style={{ fontSize: "11px" }}
+                                  >
+                                    {timeAgo(comment.createdAt)}
+                                  </small>
+                                </div>
+                                <div className="mt-2">
+                                  <span className="comment-text ps-2">
+                                    {comment.text || comment.content}
+                                  </span>
+                                </div>
                               </div>
-                              <small className="text-muted">
-                                {comment.timestamp
-                                  ? new Date(
-                                      comment.timestamp
-                                    ).toLocaleTimeString([], {
-                                      hour: "2-digit",
-                                      minute: "2-digit",
-                                    })
-                                  : ""}
-                              </small>
                             </div>
                           </li>
                         ))}
@@ -388,6 +406,7 @@ Post.propTypes = {
   content: PropTypes.string.isRequired,
   communityName: PropTypes.string.isRequired,
   imageUrl: PropTypes.string,
+  profilePicture: PropTypes.string,
   userId: PropTypes.string,
   id: PropTypes.number,
 };
