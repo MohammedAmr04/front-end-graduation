@@ -2,38 +2,40 @@ import { useSelector, useDispatch } from "react-redux";
 import { clearWishlist } from "../../store/wishlist/wishlistSlice";
 import BookCard from "../../components/common/card/BookCard";
 import "./Wishlist.css";
+import { FaTrash } from "react-icons/fa";
 
 export default function Wishlist() {
   const wishlistItems = useSelector((state) => state.wishlist.items);
   const dispatch = useDispatch();
 
   return (
-    <div className="container my-5 pt-5">
-      <div className="d-flex justify-content-between align-items-center mb-4">
+    <div className="wishlist-container">
+      <div className="wishlist-header">
         <h2>My Wishlist</h2>
         {wishlistItems.length > 0 && (
-          <button 
-            className="btn btn-outline-danger"
+          <button
+            className="clear-wishlist-btn"
             onClick={() => dispatch(clearWishlist())}
           >
+            <FaTrash className="me-2" />
             Clear Wishlist
           </button>
         )}
       </div>
 
       {wishlistItems.length === 0 ? (
-        <div className="text-center my-5">
-          <h4>Your wishlist is empty</h4>
-          <p>Add books to your wishlist by clicking the heart icon on any book card</p>
+        <div className="wishlist-empty">
+          <div className="empty-icon">❤️</div>
+          <h3>Your wishlist is empty</h3>
+          <p>
+            Add books to your wishlist by clicking the heart icon on any book
+            card
+          </p>
         </div>
       ) : (
-        <div className="flex-wrap gap-4 mx-auto d-flex">
+        <div className="wishlist-grid">
           {wishlistItems.map((book) => (
-            <div
-              key={book.id}
-              className="mx-auto mb-4"
-              style={{ width: "260px" }}
-            >
+            <div key={book.id} className="wishlist-item">
               <BookCard item={book} />
             </div>
           ))}

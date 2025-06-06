@@ -78,6 +78,21 @@
     z-index: 2;
     transition: all 0.2s ease;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    /* Hide by default */
+    transform: scale(0.9);
+}
+
+.img-container-responsive:hover .wishlist-btn,
+.wishlist-btn.active {
+    opacity: 1;
+    /* Show on hover */
+    transform: scale(1);
+}
+
+/* Always show if it's active (in wishlist) */
+.wishlist-btn .wishlist-icon.active {
+    color: #e74c3c;
 }
 
 .wishlist-btn:hover {
@@ -89,10 +104,6 @@
     font-size: 18px;
     color: #aaa;
     transition: all 0.2s ease;
-}
-
-.wishlist-icon.active {
-    color: #e74c3c;
 }
 
 .wishlist-btn:hover .wishlist-icon {
