@@ -7,7 +7,7 @@
 
 .slick-list {
   overflow-y: auto !important;
-  padding: 30px 0 !important;
+  padding: 40px 0 30px 0!important;
 }
 
 /* .slick-slide {
@@ -32,9 +32,9 @@
 }
 
 .enhanced-card {
-  background: #fff;
+  background: var(--color-card-bg);
   border-radius: 18px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  box-shadow: 0 2px 12px var(--color-shadow);
   transition: box-shadow 0.3s, transform 0.3s;
   display: flex;
   flex-direction: column;
@@ -43,7 +43,7 @@
 }
 
 .enhanced-card:hover {
-  box-shadow: 0 8px 32px #6c63ff22;
+  box-shadow: 0 8px 32px var(--color-shadow);
   transform: scale(1.04) translateY(-4px);
 }
 
@@ -55,7 +55,7 @@
 .book-title {
   font-weight: 600;
   font-size: 1.1rem;
-  color: #222;
+  color: var(--color-text-dark);
   margin-bottom: 2px;
 }
 
@@ -65,20 +65,20 @@
 
 .book-author {
   font-size: 0.98rem;
-  color: #6c63ff;
+  color: var(--color-accent);
   opacity: 0.85;
 }
 
 .custom-slick-arrow {
-  background: #fff !important;
+  background: var(--color-card-bg) !important;
   border-radius: 50%;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px var(--color-shadow);
   width: 40px;
   height: 40px;
   display: flex !important;
   align-items: center;
   justify-content: center;
-  color: #6c63ff !important;
+  color: var(--color-brand) !important;
   z-index: 2;
   border: none;
   font-size: 1.3rem;
@@ -97,9 +97,9 @@
 }
 
 .custom-slick-arrow:hover {
-  background: #6c63ff !important;
-  color: #fff !important;
-  box-shadow: 0 4px 16px #6c63ff33;
+  background: var(--color-brand) !important;
+  color: var(--color-text-light) !important;
+  box-shadow: 0 4px 16px var(--color-shadow);
 }
 
 .custom-slick-arrow.slick-disabled {
@@ -113,18 +113,18 @@
 
 .slick-dots li button:before {
   font-size: 12px;
-  color: #6c63ff;
+  color: var(--color-brand);
   opacity: 0.5;
 }
 
 .slick-dots li.slick-active button:before {
-  color: #6c63ff;
+  color: var(--color-brand);
   opacity: 1;
 }
 
 .slick-center .enhanced-card {
-  border: 2px solid #6c63ff33;
-  box-shadow: 0 8px 32px #6c63ff33;
+  border: 2px solid var(--color-shadow);
+  box-shadow: 0 8px 32px var(--color-shadow);
   transform: scale(1.07) translateY(-8px);
 }
 

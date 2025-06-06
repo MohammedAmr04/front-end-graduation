@@ -1,7 +1,7 @@
 .book-card-responsive {
-    background: #fff;
+    background: var(--color-card-bg);
     border-radius: 16px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+    box-shadow: 0 2px 12px var(--color-shadow);
     padding: 18px 10px 14px 10px;
     transition: box-shadow 0.3s, transform 0.3s;
     display: flex;
@@ -14,7 +14,7 @@
 }
 
 .book-card-responsive:hover {
-    box-shadow: 0 8px 32px #6c63ff22;
+    box-shadow: 0 8px 32px var(--color-shadow);
     transform: scale(1.04) translateY(-4px);
 }
 
@@ -29,18 +29,18 @@
     width: 140px;
     height: 200px;
     object-fit: cover;
-    box-shadow: 0 2px 8px #6c63ff11;
+    box-shadow: 0 2px 8px var(--color-shadow);
     transition: box-shadow 0.3s, transform 0.3s;
 }
 
 .book-card-responsive:hover .book-img-responsive {
-    box-shadow: 0 8px 24px #6c63ff33;
+    box-shadow: 0 8px 24px var(--color-shadow);
     transform: scale(1.03) rotate(-2deg);
 }
 
 .book-author-responsive {
     font-size: 1rem;
-    color: #6c63ff;
+    color: var(--color-accent);
     opacity: 0.85;
     margin-bottom: 0.5rem;
     text-align: center;
@@ -53,13 +53,13 @@
     font-size: 0.98rem;
     font-weight: 500;
     transition: background 0.2s, color 0.2s, box-shadow 0.2s;
-    box-shadow: 0 1px 4px #6c63ff11;
+    box-shadow: 0 1px 4px var(--color-shadow);
 }
 
 .book-btn-responsive:hover {
-    background: #6c63ff;
-    color: #fff;
-    box-shadow: 0 4px 16px #6c63ff33;
+    background: var(--color-brand);
+    color: var(--color-text-light);
+    box-shadow: 0 4px 16px var(--color-shadow);
 }
 
 .wishlist-btn {
@@ -77,9 +77,8 @@
     cursor: pointer;
     z-index: 2;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 5px var(--color-shadow);
     opacity: 0;
-    /* Hide by default */
     transform: scale(0.9);
 }
 

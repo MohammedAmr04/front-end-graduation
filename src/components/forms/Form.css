@@ -3,9 +3,9 @@
   max-width: 500px;
   margin: 0 auto;
   padding: 30px;
-  background: white;
+  background: var(--color-bg-beige);
   border-radius: 16px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 10px var(--color-shadow);
   backdrop-filter: blur(5px);
   border: 1px solid rgba(255, 255, 255, 0.3);
   transition: all 0.3s ease;
@@ -23,17 +23,19 @@
   font-weight: 600;
   letter-spacing: 0.5px;
   transition: all 0.3s ease;
-  background: linear-gradient(45deg, #2196f3, #1976d2);
+  background: var(--color-button-brown);
   border: none;
-  color: white;
+  color: var(--color-text-light);
   font-size: 1rem;
   text-align: center;
   cursor: pointer;
+  box-shadow: 0 2px 5px var(--color-shadow);
 }
 
 .form button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+  background: var(--color-button-brown-hover);
+  box-shadow: 0 4px 8px var(--color-shadow);
 }
 
 .form button:active {

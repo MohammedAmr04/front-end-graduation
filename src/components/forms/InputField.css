@@ -13,18 +13,18 @@
 .input-field input {
     width: 100%;
     padding: 12px 16px;
-    border: 2px solid #e0e0e0;
+    border: 2px solid #d7d0c0;
     border-radius: 8px;
     font-size: 1rem;
     transition: all 0.3s ease;
-    background: #f8f9fa;
+    background: var(--color-field-beige);
+    box-shadow: 0 1px 3px var(--color-shadow);
 }
 
 .input-field input:focus {
     outline: none;
-    border-color: #2196f3;
-    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
-    background: white;
+    border-color: var(--color-button-brown);
+    box-shadow: 0 0 0 3px rgba(93, 64, 55, 0.1);
 }
 
 .input-field input::placeholder {
