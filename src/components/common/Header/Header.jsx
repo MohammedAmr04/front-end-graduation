@@ -3,10 +3,11 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../../../store/Auth/authSlice";
 import logo from "/src/assets/Group 4.svg";
-import { FaUserCircle } from "react-icons/fa";
+import { FaUserCircle, FaHeart } from "react-icons/fa";
 import { FiBell } from "react-icons/fi";
 import { useEffect, useRef, useState } from "react";
 import * as signalR from "@microsoft/signalr";
+import { timeAgo } from "../../../utils/util";
 
 export default function Header() {
   const location = useLocation();
@@ -15,12 +16,15 @@ export default function Header() {
 
   const { isLoggedIn, token, id } = useSelector((state) => state.auth);
   const [hasNotification, setHasNotification] = useState(false);
-  const [notifications, setNotifications] = useState([]); // Store notification messages
+  const [notifications, setNotifications] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const connectionRef = useRef(null);
 
+  const wishlistItems = useSelector((state) => state.wishlist.items);
+
   useEffect(() => {
     if (!isLoggedIn) return;
+
     const connection = new signalR.HubConnectionBuilder()
       .withUrl("https://localhost:7159/notificationHub", {
         accessTokenFactory: () => token,
@@ -28,14 +32,16 @@ export default function Header() {
       .withAutomaticReconnect()
       .build();
 
-    connection.on("ReceiveNotification", (message) => {
+    connection.on("ReceiveNotification", (notification) => {
       setHasNotification(true);
-      setNotifications((prev) => [message, ...prev]); // Add new message to notifications
+      setNotifications((prev) => [notification, ...prev]);
     });
 
     connection
       .start()
+      .then(() => console.log("SignalR Connected Successfully"))
       .catch((err) => console.error("SignalR Connection Error:", err));
+
     connectionRef.current = connection;
 
     return () => {
@@ -43,9 +49,14 @@ export default function Header() {
     };
   }, [isLoggedIn, token]);
 
+  // للتأكد من تحديث الـ notifications
+  useEffect(() => {
+    console.log("Updated notifications:", notifications);
+  }, [notifications]);
+
   const handleNotificationClick = () => {
     setHasNotification(false);
-    setShowDropdown((prev) => !prev); // Toggle dropdown
+    setShowDropdown((prev) => !prev);
   };
 
   const handleLogout = () => {
@@ -112,70 +123,144 @@ export default function Header() {
               </Nav.Link>
 
               {isLoggedIn && (
-                <Nav.Item style={{ position: "relative", marginRight: "10px" }}>
-                  <span style={{ position: "relative" }}>
-                    <FiBell
-                      size={22}
-                      style={{ cursor: "pointer" }}
-                      onClick={handleNotificationClick}
-                    />
-                    {hasNotification && (
-                      <span
-                        style={{
-                          position: "absolute",
-                          top: 2,
-                          right: 2,
-                          width: 10,
-                          height: 10,
-                          background: "#ff4444",
-                          borderRadius: "50%",
-                          border: "2px solid #fff",
-                          zIndex: 2,
-                        }}
-                      ></span>
-                    )}
-                  </span>
-                  {showDropdown && notifications.length > 0 && (
-                    <div
-                      style={{
-                        position: "absolute",
-                        right: 0,
-                        top: 30,
-                        minWidth: 250,
-                        background: "#fff",
-                        boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-                        borderRadius: 8,
-                        zIndex: 1000,
-                        padding: 0,
-                        maxHeight: 300,
-                        overflowY: "auto",
-                      }}
-                      onMouseLeave={() => setShowDropdown(false)}
-                    >
+                <>
+                  <Nav.Item
+                    style={{ position: "relative", marginRight: "10px" }}
+                  >
+                    <span style={{ position: "relative" }}>
+                      <FiBell
+                        size={22}
+                        style={{ cursor: "pointer" }}
+                        onClick={handleNotificationClick}
+                      />
+                      {hasNotification && (
+                        <span
+                          style={{
+                            position: "absolute",
+                            top: 2,
+                            right: 2,
+                            width: 10,
+                            height: 10,
+                            background: "#ff4444",
+                            borderRadius: "50%",
+                            border: "2px solid #fff",
+                            zIndex: 2,
+                          }}
+                        ></span>
+                      )}
+                    </span>
+                    {showDropdown && notifications.length > 0 && (
                       <div
                         style={{
-                          padding: "10px 16px",
-                          borderBottom: "1px solid #eee",
-                          fontWeight: 600,
+                          position: "absolute",
+                          right: 0,
+                          top: 30,
+                          minWidth: 300,
+                          background: "#fff",
+                          boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                          borderRadius: 8,
+                          zIndex: 1000,
+                          padding: 0,
+                          maxHeight: 400,
+                          overflowY: "auto",
                         }}
+                        onMouseLeave={() => setShowDropdown(false)}
                       >
-                        Notifications
-                      </div>
-                      {notifications.map((msg, idx) => (
                         <div
-                          key={idx}
                           style={{
                             padding: "10px 16px",
-                            borderBottom: "1px solid #f5f5f5",
-                            fontSize: 14,
+                            borderBottom: "1px solid #eee",
+                            fontWeight: 600,
                           }}
                         >
-                          {msg}
+                          Notifications
                         </div>
-                      ))}
-                    </div>
-                  )}
-                </Nav.Item>
+                        {notifications.map((notification, idx) => (
+                          <div
+                            key={idx}
+                            style={{
+                              padding: "12px 16px",
+                              borderBottom: "1px solid #f5f5f5",
+                              fontSize: 14,
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "10px",
+                            }}
+                          >
+                            <div
+                              style={{ width: 40, height: 40, flexShrink: 0 }}
+                            >
+                              <img
+                                src={`https://localhost:7159${notification.profilePicture}`}
+                                alt={notification.username}
+                                style={{
+                                  width: "100%",
+                                  height: "100%",
+                                  borderRadius: "50%",
+                                  objectFit: "cover",
+                                }}
+                                onError={() =>
+                                  console.log(
+                                    "Error loading image:",
+                                    notification.profilePicture
+                                  )
+                                }
+                              />
+                            </div>
+                            <div style={{ flex: 1 }}>
+                              <div>{notification.text}</div>
+                              <div
+                                style={{
+                                  fontSize: 12,
+                                  color: "#666",
+                                  marginTop: 4,
+                                }}
+                              >
+                                {timeAgo(notification.time)}{" "}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </Nav.Item>
+
+                  <Nav.Item
+                    style={{ position: "relative", marginRight: "15px" }}
+                  >
+                    <Link to="/wishlist" style={{ textDecoration: "none" }}>
+                      <span style={{ position: "relative" }}>
+                        <FaHeart
+                          size={20}
+                          style={{ cursor: "pointer", color: "#e74c3c" }}
+                        />
+                        {wishlistItems.length > 0 && (
+                          <span
+                            style={{
+                              position: "absolute",
+                              top: -8,
+                              right: -8,
+                              width: 18,
+                              height: 18,
+                              background: "#6c63ff",
+                              borderRadius: "50%",
+                              border: "2px solid #fff",
+                              zIndex: 2,
+                              fontSize: "10px",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              color: "white",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            {wishlistItems.length}
+                          </span>
+                        )}
+                      </span>
+                    </Link>
+                  </Nav.Item>
+                </>
               )}
 
               {!isLoggedIn ? (
@@ -183,7 +268,6 @@ export default function Header() {
                   <Dropdown.Toggle variant="light" id="dropdown-basic">
                     Account
                   </Dropdown.Toggle>
-
                   <Dropdown.Menu>
                     <Dropdown.Item as={Link} to="/login">
                       Login
@@ -196,9 +280,8 @@ export default function Header() {
               ) : (
                 <Dropdown align="end">
                   <Dropdown.Toggle variant="light" id="dropdown-user">
-                    <FaUserCircle size={24} /> {/* 👤 أيقونة المستخدم */}
+                    <FaUserCircle size={24} />
                   </Dropdown.Toggle>
-
                   <Dropdown.Menu>
                     <Dropdown.Item onClick={() => navigate(`/profile/${id}`)}>
                       Profile

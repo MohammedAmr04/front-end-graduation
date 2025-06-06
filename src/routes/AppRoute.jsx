@@ -27,6 +27,7 @@ import ManageRoles from "../admin/pages/ManageRoles";
 import AdminDashboard from "../admin/pages/AdminDashboard";
 import BookReading from "../pages/BookReading/BookReading";
 import Chat from "../pages/Chat";
+import Wishlist from "../pages/wishlist/Wishlist";
 
 const router = createBrowserRouter([
   {
@@ -81,6 +82,10 @@ const router = createBrowserRouter([
       {
         path: "bookReading/:userid/:bookid",
         element: <BookReading />,
+      },
+      {
+        path: "wishlist",
+        element: <Wishlist />,
       },
       {
         path: "profile/:Userid",
