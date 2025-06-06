@@ -14,7 +14,9 @@ export default function Header() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { isLoggedIn, token, id } = useSelector((state) => state.auth);
+  const { isLoggedIn, token, id, profilePicture, userName } = useSelector(
+    (state) => state.auth
+  );
   const [hasNotification, setHasNotification] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -265,9 +267,7 @@ export default function Header() {
 
               {!isLoggedIn ? (
                 <Dropdown align="end">
-                  <Dropdown.Toggle variant="light" id="dropdown-basic">
-                    Account
-                  </Dropdown.Toggle>
+                  <Dropdown.Toggle id="dropdown-basic">Account</Dropdown.Toggle>
                   <Dropdown.Menu>
                     <Dropdown.Item as={Link} to="/login">
                       Login
@@ -279,14 +279,91 @@ export default function Header() {
                 </Dropdown>
               ) : (
                 <Dropdown align="end">
-                  <Dropdown.Toggle variant="light" id="dropdown-user">
-                    <FaUserCircle size={24} />
+                  <Dropdown.Toggle
+                    variant="light"
+                    id="dropdown-user"
+                    className="bg-transparent border-0 d-flex align-items-center"
+                    style={{ padding: "6px 10px", borderRadius: "20px" }}
+                  >
+                    {profilePicture ? (
+                      <img
+                        src={`https://localhost:7159/${profilePicture}`}
+                        alt="Profile"
+                        style={{
+                          width: "32px",
+                          height: "32px",
+                          borderRadius: "50%",
+                          objectFit: "cover",
+                          border: "2px solid var(--color-card-bg)",
+                          boxShadow: "0 2px 4px var(--color-shadow)",
+                        }}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.style.display = "none";
+                          e.target.nextSibling.style.display = "inline";
+                        }}
+                      />
+                    ) : (
+                      <FaUserCircle
+                        size={32}
+                        style={{ color: "var(--color-brand)" }}
+                      />
+                    )}
                   </Dropdown.Toggle>
-                  <Dropdown.Menu>
-                    <Dropdown.Item onClick={() => navigate(`/profile/${id}`)}>
+                  <Dropdown.Menu
+                    style={{
+                      minWidth: "200px",
+                      padding: "8px 0",
+                      borderRadius: "8px",
+                      boxShadow: "0 4px 12px var(--color-shadow)",
+                      border: "1px solid var(--color-field-beige)",
+                      backgroundColor: "var(--color-card-bg)",
+                    }}
+                  >
+                    <div
+                      className="px-3 py-2 mb-2"
+                      style={{
+                        borderBottom: "1px solid var(--color-field-beige)",
+                      }}
+                    >
+                      <div
+                        style={{
+                          fontWeight: "600",
+                          color: "var(--color-text-dark)",
+                        }}
+                      >
+                        {userName || "User"}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: "0.875rem",
+                          color: "var(--color-accent)",
+                        }}
+                      >
+                        View your profile
+                      </div>
+                    </div>
+                    <Dropdown.Item
+                      as={Link}
+                      to={`/profile/${id}`}
+                      className="px-3 py-2 d-flex align-items-center"
+                      style={{ color: "var(--color-text-dark)" }}
+                    >
+                      <FaUserCircle
+                        className="me-2"
+                        size={16}
+                        style={{ color: "var(--color-brand)" }}
+                      />
                       Profile
                     </Dropdown.Item>
-                    <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
+                    <Dropdown.Item
+                      onClick={handleLogout}
+                      className="px-3 py-2 d-flex align-items-center"
+                      style={{ color: "var(--color-accent-hover)" }}
+                    >
+                      <i className="bi bi-box-arrow-right me-2"></i>
+                      Logout
+                    </Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
               )}

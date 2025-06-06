@@ -42,7 +42,7 @@ const Books = () => {
     <div>
       {/* === Hero Section with Search === */}
       <section
-        className="text-center text-white d-flex align-items-center justify-content-center"
+        className="text-center text-white hero d-flex align-items-center justify-content-center"
         style={{
           backgroundImage:
             'url("https://images.unsplash.com/photo-1512820790803-83ca734da794")',
@@ -60,7 +60,7 @@ const Books = () => {
             backdropFilter: "blur(4px)",
           }}
         >
-          <h3 className="mb-4">
+          <h3 className="mb-4 ">
             {`Let's go to start your journey with your books!`}
           </h3>
           <form onSubmit={handleSearchSubmit}>

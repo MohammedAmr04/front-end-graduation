@@ -7,6 +7,7 @@ const initialState = {
   lastName: "",
   email: "",
   gender: "",
+  profilePicture: "", 
   id: "",
   token: null,
 };
@@ -21,6 +22,7 @@ export const authSlice = createSlice({
       state.id = action.payload.id;
       state.userName = action.payload.userName;
       state.lastName = action.payload.lastName;
+      state.profilePicture = action.payload.profilePicture;
       state.email = action.payload.email;
       state.gender = action.payload.gender;
       state.token = action.payload.token;
@@ -33,6 +35,7 @@ export const authSlice = createSlice({
       state.lastName = "";
       state.email = "";
       state.gender = "";
+      state.profilePicture = "";
       state.token = null;
     },
   },

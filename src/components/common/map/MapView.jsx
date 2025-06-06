@@ -135,6 +135,10 @@ function MapView({ requests }) {
                       <BookPopup
                         title={request.bookTitle}
                         author={request.authorName}
+                        senderProfilePhoto={request.senderProfilePhoto}
+                        senderUserId={request.senderId}
+                        senderUserName={request.senderUserName}
+                        requestDate={request.requestDate}
                         onAccept={() => {
                           console.log("Accepted book exchange!", request);
                         }}
