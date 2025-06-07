@@ -6,16 +6,28 @@ import ChatInput from "../components/ChatInput";
 import "../styles/Chat.css";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import { timeAgo } from "../utils/util";
 
 const HUB_URL = "https://localhost:7159/chatHub";
 const API_SEND_URL = "https://localhost:7159/api/Chat/send";
 
 const Chat = () => {
   const { userId } = useParams();
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState([
+    {
+      id: "19cd2c81-b051-4a2d-84b6-6d8b53c865df",
+      firstName: "mahmoud",
+      lastName: "talaat",
+      userName: "talaat",
+      email: "talaat@gmail.com",
+      gender: "male",
+      age: null,
+      profilePicture:
+        "/profile-photos/471306b0-4fc3-414d-9aa1-78b33cefeec5.jpeg",
+    },
+  ]);
   const [messages, setMessages] = useState([]);
   const [selectedUser, setSelectedUser] = useState(userId || null);
-  const [loading, setLoading] = useState(true);
   const [connection, setConnection] = useState(null);
   const { token } = useSelector((state) => state.auth);
 
@@ -23,7 +35,6 @@ const Chat = () => {
     const fetchMessages = async () => {
       if (!selectedUser) return;
 
-      setLoading(true);
       try {
         const response = await fetch(
           `https://localhost:7159/api/Chat/messages/${selectedUser}`,
@@ -39,19 +50,27 @@ const Chat = () => {
         if (!response.ok) throw new Error("Failed to fetch messages");
 
         const data = await response.json();
-        console.log("📩 Messages from API:", data);
-
+        // Map API response to consistent message structure
         const formattedMessages = data.map((msg, index) => ({
-          id: index + 1,
+          id: msg.id || index + 1,
+          senderId: msg.senderId,
           receiverId: msg.receiverId,
           text: msg.message,
+          senderName:
+            msg.sender && msg.sender.firstName && msg.sender.lastName
+              ? `${msg.sender.firstName} ${msg.sender.lastName}`
+              : undefined,
+          receiverName:
+            msg.receiver && msg.receiver.firstName && msg.receiver.lastName
+              ? `${msg.receiver.firstName} ${msg.receiver.lastName}`
+              : undefined,
+          isRead: msg.isRead,
+          timestamp: msg.createdAt ? timeAgo(msg.createdAt) : undefined,
         }));
 
         setMessages(formattedMessages);
       } catch (err) {
         console.error("Error fetching messages:", err);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -168,11 +187,7 @@ const Chat = () => {
         </div>
         <div className="p-0 col-12 col-md-9 d-flex flex-column chat-main">
           <div className="overflow-auto flex-grow-1 chat-messages-area">
-            <ChatMessages
-              messages={messages}
-              loading={loading}
-              userId={userId}
-            />
+            <ChatMessages messages={messages} userId={userId} />
           </div>
           <div className="p-2 chat-input-area border-top">
             <ChatInput onSend={handleSendMessage} />

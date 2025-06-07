@@ -6,12 +6,13 @@ const ChatSidebar = ({ users, selectedUser, onSelectUser }) => {
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
 
-  const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredUsers = users.filter((user) => {
+    const name = `${user.firstName || ""} ${user.lastName || ""}`.trim();
+    return name.toLowerCase().includes(search.toLowerCase());
+  });
 
   function handleOpenChat(user) {
-    onSelectUser(user.id); // selectedUser is a string now
+    onSelectUser(user.id);
     navigate(`/chat/${user.id}`);
   }
 
@@ -30,34 +31,42 @@ const ChatSidebar = ({ users, selectedUser, onSelectUser }) => {
         {filteredUsers.length === 0 && (
           <div className="mt-3 text-center text-muted">No users found</div>
         )}
-        {filteredUsers.map((user) => (
-          <button
-            key={user.id}
-            className={`list-group-item list-group-item-action d-flex align-items-center${
-              selectedUser === user.id ? " active" : ""
-            }`}
-            onClick={() => handleOpenChat(user)}
-          >
-            <img
-              src={
-                user.profilePic || "https://via.placeholder.com/40x40?text=User"
-              }
-              alt={user.name}
-              className="rounded-circle me-2"
-              width={40}
-              height={40}
-            />
-            <div className="flex-grow-1 text-start">
-              <div className="fw-bold">{user.name}</div>
-              <div
-                className="text-muted small text-truncate"
-                style={{ maxWidth: 120 }}
-              >
-                {user.lastMessage || "No messages yet"}
+        {filteredUsers.map((user) => {
+          const name =
+            `${user.firstName || ""} ${user.lastName || ""}`.trim() ||
+            user.userName ||
+            "Unknown";
+          return (
+            <button
+              key={user.id}
+              className={`list-group-item ps-2 pt-2 list-group-item-action d-flex align-items-center${
+                selectedUser === user.id ? " active" : ""
+              }`}
+              onClick={() => handleOpenChat(user)}
+            >
+              <img
+                src={
+                  "https://localhost:7159" + user.profilePicture ||
+                  "https://via.placeholder.com/40x40?text=User"
+                }
+                alt={name}
+                className="rounded-circle me-2"
+                width={40}
+                height={40}
+              />
+              <div className="flex-grow-1 text-start">
+                <div className="fw-bold">{name}</div>
+                <div
+                  className="text-muted small text-truncate"
+                  style={{ maxWidth: 120 }}
+                >
+                  {/* Optionally show last message here if available */}
+                  {user.lastMessage || "No messages yet"}
+                </div>
               </div>
-            </div>
-          </button>
-        ))}
+            </button>
+          );
+        })}
       </div>
     </div>
   );
@@ -65,7 +74,10 @@ const ChatSidebar = ({ users, selectedUser, onSelectUser }) => {
 
 ChatSidebar.propTypes = {
   users: PropTypes.array.isRequired,
-  selectedUser: PropTypes.string.isRequired,
+  selectedUser: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.oneOf([null]),
+  ]),
   onSelectUser: PropTypes.func.isRequired,
 };
 

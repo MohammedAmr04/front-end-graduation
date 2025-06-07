@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import Loader from "./common/loader/Loader";
 
-const ChatMessages = ({ messages, loading, userId }) => {
+const ChatMessages = ({ messages, loading = false, userId }) => {
   if (loading) {
     return (
       <div className="d-flex justify-content-center align-items-center h-100">
@@ -11,34 +11,41 @@ const ChatMessages = ({ messages, loading, userId }) => {
   }
 
   return (
-    <div className="p-3">
+    <div className="p-3 chat-messages-list">
+      {messages.length === 0 && (
+        <div className="mt-5 text-center text-muted">No messages yet</div>
+      )}
       {messages.map((msg) => {
-        const isOwn = msg.senderId === userId;
+        const isOwn = String(msg.senderId) === String(userId);
         return (
           <div
             key={msg.id}
-            className={`mb-3 d-flex flex-column ${
-              isOwn ? "align-items-end" : "align-items-start"
+            className={`mb-3 d-flex ${
+              isOwn ? "justify-content-end" : "justify-content-start"
             }`}
           >
             <div
-              className={`rounded p-2 shadow-sm chat-bubble ${
-                isOwn ? "bg-primary text-white" : "bg-light"
+              className={`chat-bubble p-3 shadow-sm rounded-4 position-relative ${
+                isOwn
+                  ? " align-self-end my-message"
+                  : " align-self-start user-message"
               }`}
-              style={{ maxWidth: "75%" }}
+              style={{
+                maxWidth: "70%",
+                minWidth: "80px",
+                borderTopRightRadius: isOwn ? 0 : 16,
+                borderTopLeftRadius: isOwn ? 16 : 0,
+                borderBottomRightRadius: 16,
+                borderBottomLeftRadius: 16,
+              }}
             >
-              <div
-                className={`fw-bold small ${
-                  isOwn ? "text-white-50" : "text-primary"
-                }`}
-              >
-                {msg.senderName}
+              <div className="mb-1 fw-bold small" style={{ opacity: 0.8 }}>
+                {msg.senderName || (isOwn ? "You" : "User")}
               </div>
-              <div>{msg.text}</div>
+              <div style={{ wordBreak: "break-word" }}>{msg.text}</div>
               <div
-                className={`text-muted small text-end mt-1 ${
-                  isOwn ? "text-white-50" : ""
-                }`}
+                className="mt-2 text-muted small text-end"
+                style={{ fontSize: 12, opacity: 0.7 }}
               >
                 {msg.timestamp}
               </div>
@@ -52,8 +59,8 @@ const ChatMessages = ({ messages, loading, userId }) => {
 
 ChatMessages.propTypes = {
   messages: PropTypes.array.isRequired,
-  loading: PropTypes.bool.isRequired,
-  userId: PropTypes.string.isRequired,
+  loading: PropTypes.bool,
+  userId: PropTypes.string,
 };
 
 export default ChatMessages;
