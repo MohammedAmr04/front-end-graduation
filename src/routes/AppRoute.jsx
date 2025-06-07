@@ -23,7 +23,6 @@ import DashboardProfile from "../components/common/profile/dashboard/DashboardPr
 import Books from "../pages/books/Books";
 import Book from "../components/common/book/Book";
 import AboutMe from "../components/common/profile/aboutuser/AboutMe";
-import ManageRoles from "../admin/pages/ManageRoles";
 import AdminDashboard from "../admin/pages/AdminDashboard";
 import BookReading from "../pages/BookReading/BookReading";
 import Chat from "../pages/Chat";
@@ -105,7 +104,6 @@ const router = createBrowserRouter([
           { path: "managebook", element: <ManageBook /> },
           { path: "addcommunity", element: <AddCommunity /> },
           { path: "managecommunity", element: <ManageCommunity /> },
-          { path: "manageroles", element: <ManageRoles /> },
           { path: "manageusers", element: <ManageUsers /> },
           { path: "admindashboard", element: <AdminDashboard /> },
           { path: "manageposts", element: <ManagePosts /> },

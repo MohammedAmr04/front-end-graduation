@@ -32,10 +32,7 @@ export default function AdminSidebar() {
       label: "Users",
       icon: <FaUser className="me-2" />,
       key: "users",
-      subItems: [
-        { path: "/admin/manageroles", label: "Manage Roles" },
-        { path: "/admin/manageusers", label: "Manage Users" },
-      ],
+      subItems: [{ path: "/admin/manageusers", label: "Manage Users" }],
     },
     {
       label: "Community",
