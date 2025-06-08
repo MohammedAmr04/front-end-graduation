@@ -181,7 +181,15 @@ const Chat = () => {
   return (
     <div className="container-fluid chat-page">
       <div className="row h-100">
-        <div className="p-0 col-12 col-md-3 border-end chat-sidebar">
+        {/* Sidebar */}
+        <div
+          className="p-0 col-12 col-md-3 border-end chat-sidebar"
+          style={{
+            background: "#fff",
+            boxShadow: "2px 0 8px rgba(0,0,0,0.03)",
+            zIndex: 2,
+          }}
+        >
           <ChatSidebar
             users={users}
             selectedUser={selectedUser}
@@ -189,12 +197,88 @@ const Chat = () => {
             setMessages={setMessages}
           />
         </div>
-        <div className="p-0 col-12 col-md-9 d-flex flex-column chat-main">
-          <div className="overflow-auto flex-grow-1 chat-messages-area">
-            <ChatMessages messages={messages} userId={userId} />
+        {/* Main Chat Area */}
+        <div
+          className="p-0 col-12 col-md-9 d-flex flex-column chat-main"
+          style={{
+            background: "var(--color-bg-beige)",
+            borderRadius: "0 18px 18px 0",
+            boxShadow: "0 2px 16px rgba(0,0,0,0.04)",
+          }}
+        >
+          {/* Header */}
+          <div
+            className="px-4 py-3 d-flex align-items-center border-bottom"
+            style={{
+              background: "#fff",
+              borderTopRightRadius: 18,
+            }}
+          >
+            <img
+              src={
+                users.find((u) => u.id === selectedUser)?.profilePicture
+                  ? "https://localhost:7159" +
+                    users.find((u) => u.id === selectedUser)?.profilePicture
+                  : "/assets/user.png"
+              }
+              alt="User"
+              width={44}
+              height={44}
+              className="border rounded-circle me-3"
+              style={{
+                objectFit: "cover",
+                background: "#f5f2e9",
+              }}
+            />
+            <div>
+              <div
+                className="fw-bold"
+                style={{
+                  fontSize: 18,
+                  color: "var(--color-brand)",
+                }}
+              >
+                {users.find((u) => u.id === selectedUser)
+                  ? `${users.find((u) => u.id === selectedUser).firstName} ${
+                      users.find((u) => u.id === selectedUser).lastName
+                    }`
+                  : "Select a user"}
+              </div>
+              <div className="small text-muted">
+                {users.find((u) => u.id === selectedUser)?.email || ""}
+              </div>
+            </div>
           </div>
-          <div className="p-2 chat-input-area border-top">
-            <ChatInput onSend={handleSendMessage} />
+          {/* Messages + Input */}
+          <div className="flex-grow-1 d-flex flex-column">
+            {selectedUser ? (
+              <>
+                <div
+                  className="overflow-auto flex-grow-1 chat-messages-area"
+                  style={{
+                    background: "var(--color-bg-beige)",
+                  }}
+                >
+                  <ChatMessages messages={messages} userId={userId} />
+                </div>
+                <div
+                  className="p-2 chat-input-area border-top"
+                  style={{
+                    background: "#fff",
+                    borderBottomRightRadius: 18,
+                  }}
+                >
+                  <ChatInput onSend={handleSendMessage} />
+                </div>
+              </>
+            ) : (
+              <div
+                className="flex-grow-1 d-flex align-items-center justify-content-center text-muted"
+                style={{ fontSize: 20 }}
+              >
+                Start chat with your friends
+              </div>
+            )}
           </div>
         </div>
       </div>
