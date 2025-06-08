@@ -1,19 +1,40 @@
 import PropTypes from "prop-types";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-const ChatSidebar = ({ users, selectedUser, onSelectUser }) => {
+const ChatSidebar = ({ users, selectedUser, onSelectUser, setMessages }) => {
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
+  const token = useSelector((state) => state.auth.token);
 
   const filteredUsers = users.filter((user) => {
     const name = `${user.firstName || ""} ${user.lastName || ""}`.trim();
     return name.toLowerCase().includes(search.toLowerCase());
   });
 
-  function handleOpenChat(user) {
+  async function handleOpenChat(user) {
     onSelectUser(user.id);
     navigate(`/chat/${user.id}`);
+    // Fetch messages for the selected user
+    try {
+      const response = await fetch(
+        `https://localhost:7159/api/Chat/messages/${user.id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (!response.ok) throw new Error("Failed to fetch messages");
+      // Optionally, you can process or pass messages here if needed
+      // const data = await response.json();
+      setMessages(response);
+    } catch (err) {
+      console.error("Error fetching messages for user:", err);
+    }
   }
 
   return (
@@ -79,6 +100,7 @@ ChatSidebar.propTypes = {
     PropTypes.oneOf([null]),
   ]),
   onSelectUser: PropTypes.func.isRequired,
+  setMessages: PropTypes.func.isRequired,
 };
 
 export default ChatSidebar;
