@@ -5,6 +5,7 @@ import InputField from "../../../forms/InputField";
 import styles from "./AddPost.module.css";
 import ImageUploader from "../img-uploader/ImageUploader";
 import { useToast } from "../../../../hooks/useToast";
+import { MdClose } from "react-icons/md";
 
 export default function AddPost({
   communityType,
@@ -13,7 +14,8 @@ export default function AddPost({
   setCommunityTypes,
   onPostSuccess, // ✅ NEW PROP
 }) {
-  const profileImage = "/src/assets/me.jpg";
+  const profileImage =
+    useSelector((state) => state.auth.profileImage) || "/src/assets/me.jpg";
   const { token } = useSelector((state) => state.auth);
   const { showSuccess, showError } = useToast();
 
@@ -139,7 +141,7 @@ export default function AddPost({
           <InputField
             type="text"
             placeHolder="What's on your mind?"
-            className="w-100"
+            className="m-0 w-100"
             labelRender={false}
             name="post"
             value={post}
@@ -148,7 +150,7 @@ export default function AddPost({
         </div>
       </div>
 
-      <div className="gap-2 mb-3 d-flex align-items-center">
+      <div className="gap-2 mb-3 d-flex justify-content-between align-items-center">
         <select
           style={{ width: "200px" }}
           className="form-select"
@@ -166,7 +168,7 @@ export default function AddPost({
         {selectedCommunity && !selectedCommunity.isMember && (
           <button
             type="button"
-            className="btn btn-outline-primary"
+            className="py-2 btn btn-outline-primary"
             onClick={handleJoin}
           >
             Join
@@ -175,24 +177,25 @@ export default function AddPost({
 
         {selectedCommunity && selectedCommunity.isMember && (
           <>
-            <button className="btn btn-success" disabled>
-              Joined ✅
+            <button className="py-2 btn btn-success" disabled>
+              Joined
             </button>
             <button
               type="button"
-              className="btn btn-outline-danger ms-2"
+              className="py-2 btn btn-outline-danger ms-2"
               onClick={handleLeave}
             >
               Leave
             </button>
           </>
         )}
+        <div className="gap-2 d-flex">
+          <ImageUploader images={images} setImages={setImages} />
 
-        <ImageUploader images={images} setImages={setImages} />
-
-        <button className="py-2 btn btn-primary" type="submit">
-          Post
-        </button>
+          <button className="w-auto py-2 btn btn-primary" type="submit">
+            Post
+          </button>
+        </div>
       </div>
 
       <div>
@@ -200,8 +203,28 @@ export default function AddPost({
           <div className="mx-auto image-preview">
             <div className="image-container">
               <img src={images[0].id} alt="Preview" className="preview-img" />
-              <button className="remove-button" onClick={removeImage}>
-                ❌
+              <button
+                className="remove-button"
+                onClick={removeImage}
+                title="Remove image"
+                style={{
+                  background: "rgba(255,255,255,0.85)",
+                  border: "none",
+                  borderRadius: "50%",
+                  width: 28,
+                  height: 28,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  boxShadow: "0 1px 4px var(--color-shadow)",
+                  cursor: "pointer",
+                  fontSize: 18,
+                  position: "absolute",
+                  top: 8,
+                  right: 8,
+                }}
+              >
+                <MdClose size={18} />
               </button>
             </div>
           </div>

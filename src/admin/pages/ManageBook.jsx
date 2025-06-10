@@ -92,14 +92,14 @@ const ManageBook = () => {
   };
 
   return (
-    <div className="managebooks-page-bg py-5">
+    <div className="py-5 managebooks-page-bg">
       <div className="container">
-        <div className="managebooks-card p-4 mx-auto">
-          <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+        <div className="p-4 mx-auto managebooks-card">
+          <div className="mb-4 d-flex flex-column flex-md-row justify-content-between align-items-center">
             <h2 className="mb-0">Manage Books</h2>
             {/* Pagination top right on desktop */}
             <nav className="pagination-nav d-none d-md-block">
-              <ul className="pagination justify-content-end mb-0">
+              <ul className="mb-0 pagination justify-content-end">
                 <li
                   className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
                 >
@@ -209,8 +209,8 @@ const ManageBook = () => {
                 </table>
               </div>
               {/* Pagination bottom center on mobile */}
-              <nav className="pagination-nav d-block d-md-none mt-4">
-                <ul className="pagination justify-content-center mb-0">
+              <nav className="mt-4 pagination-nav d-block d-md-none">
+                <ul className="mb-0 pagination justify-content-center">
                   <li
                     className={`page-item ${
                       currentPage === 1 ? "disabled" : ""

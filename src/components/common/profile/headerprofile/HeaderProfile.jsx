@@ -120,15 +120,17 @@ export default function HeaderProfile({ profile, me }) {
               )}
             </div>
             <div className="user-details">
-              <h3 className="username">
-                {firstName || lastName
-                  ? `${firstName.toString().toUpperCase() || ""} ${
-                      lastName.toUpperCase() || ""
-                    }`.trim()
-                  : "User"}
+              <h3 className="username d-flex align-items-center justify-content-between">
+                <span>
+                  {firstName || lastName
+                    ? `${firstName.toString().toUpperCase() || ""} ${
+                        lastName.toUpperCase() || ""
+                      }`.trim()
+                    : "User"}
+                </span>
                 {!me && (
                   <button
-                    className="btn btn-primary ms-3"
+                    className="w-auto mt-3 btn btn-primary ms-3"
                     style={{ fontSize: "0.95rem", padding: "6px 16px" }}
                     onClick={() => navigate(`/chat/${userId}`)}
                   >

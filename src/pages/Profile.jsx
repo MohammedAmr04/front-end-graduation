@@ -12,7 +12,7 @@ export default function Profile() {
   if (loading) {
     return <Loader />;
   }
-  const me = id === profile.userId ? true : false;
+  const me = id === profile?.userId ? true : false;
   return (
     <div>
       <HeaderProfile profile={profile} me={me} />

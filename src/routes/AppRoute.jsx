@@ -79,6 +79,10 @@ const router = createBrowserRouter([
         element: <Community />,
       },
       {
+        path: "community/:id",
+        element: <Community />,
+      },
+      {
         path: "bookReading/:userid/:bookid",
         element: <BookReading />,
       },

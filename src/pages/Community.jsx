@@ -5,8 +5,11 @@ import SideBar from "../components/common/community/side-bar/SideBar";
 import AddPost from "../components/common/community/add-post/AddPost";
 import { useFetchPosts } from "../hooks/useFetchPosts";
 import { useToast } from "../hooks/useToast";
+import { useParams, useNavigate } from "react-router-dom";
 
 export default function Community() {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [all, setAll] = useState(true);
   const [selectedCommunityId, setSelectedCommunityId] = useState(null); // default
@@ -16,7 +19,7 @@ export default function Community() {
   const { showError } = useToast();
   const { posts, loading, refetch } = useFetchPosts(
     all,
-    selectedCommunityId,
+    selectedCommunityId || id,
     token
   );
   useEffect(() => {
@@ -37,9 +40,48 @@ export default function Community() {
     fetchData();
   }, [token]);
 
+  const handleCommunityAction = async ({ id, action }) => {
+    const community = communityTypes.find((c) => c.id === id);
+    if (!community) return;
+    const url = `https://localhost:7159/api/Community/${id}/${action}`;
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Authorization: `bearer ${token}`,
+        },
+      });
+      if (!response.ok) throw new Error(`Failed to ${action}`);
+      setCommunityTypes((prev) =>
+        prev.map((c) =>
+          c.id === id ? { ...c, isMember: action === "join" } : c
+        )
+      );
+    } catch (error) {
+      // Optionally show error toast
+      // showError(`Failed to ${action} community.`);
+      console.error(error);
+    }
+  };
+
   return (
     <div className="gap-3 d-flex">
-      <SideBar />
+      <SideBar
+        communityTypes={communityTypes}
+        onSelectCommunity={(val) => {
+          if (val && typeof val === "object" && val.action) {
+            handleCommunityAction(val);
+          } else if (val === null) {
+            setAll(true);
+            setSelectedCommunityId(null);
+            navigate("/community");
+          } else {
+            setAll(false);
+            setSelectedCommunityId(Number(val));
+            navigate(`/community/${val}`);
+          }
+        }}
+      />
 
       <div className="flex-grow-1 community-content">
         <div className="py-4 container-fluid">

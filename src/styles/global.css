@@ -24,7 +24,9 @@ body {
 }
 
 .btn:hover {
-  background: var(--color-button-brown-hover) !important;
+  background: #8d6e63;
+  /* darker brown for hover */
+  color: var(--color-text-light);
   transform: translateY(-2px);
   box-shadow: 0 4px 8px var(--color-shadow) !important;
 }
@@ -35,7 +37,9 @@ body {
 }
 
 .btn-primary:hover {
-  background: var(--color-button-brown-hover);
+  background: #a1887f !important;
+  /* slightly darker than previous light */
+  color: var(--color-text-dark);
   box-shadow: 0 4px 8px var(--color-shadow);
 }
 
@@ -268,4 +272,11 @@ label,
 .active.rotate {
   transform: rotate(45deg);
   right: -60px;
+}
+
+.dropdown-item.active,
+.dropdown-item:active {
+  color: var(--color-text-light) !important;
+  text-decoration: none;
+  background-color: var(--color-brand-hover) !important;
 }

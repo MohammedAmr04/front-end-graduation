@@ -52,7 +52,8 @@
     border: none;
 }
 
-.btn.btn-primary {
+/* Make all buttons use the color variables from colors.css for consistency */
+.chat-page .btn.btn-primary {
     background: var(--color-brand);
     border: none;
     border-radius: 50%;
@@ -63,11 +64,30 @@
     justify-content: center;
     transition: background 0.2s;
     box-shadow: 0 2px 8px var(--color-shadow);
+    color: var(--color-text-light);
+    font-weight: 600;
 }
 
-.btn.btn-primary:hover,
-.btn.btn-primary:focus {
+.chat-page .btn.btn-primary:hover,
+.chat-page .btn.btn-primary:focus {
     background: var(--color-brand-hover);
+    color: var(--color-text-light);
+}
+
+/* Add secondary button style for chat if needed */
+.chat-page .btn.btn-second {
+    background: var(--color-accent);
+    color: var(--color-text-light);
+    font-weight: 700;
+    border: none;
+    border-radius: 24px;
+    transition: background 0.2s;
+}
+
+.chat-page .btn.btn-second:hover,
+.chat-page .btn.btn-second:focus {
+    background: var(--color-accent-hover);
+    color: var(--color-text-light);
 }
 
 .my-message {
