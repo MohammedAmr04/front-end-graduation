@@ -1,177 +1,332 @@
-// Import necessary viewer and plugins from react-pdf-viewer
-import { Worker, Viewer, SpecialZoomLevel } from "@react-pdf-viewer/core";
-import { highlightPlugin } from "@react-pdf-viewer/highlight";
-import PropTypes from "prop-types";
-import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
-
-// Import styles for plugins
-import "@react-pdf-viewer/default-layout/lib/styles/index.css";
-import "@react-pdf-viewer/highlight/lib/styles/index.css";
-
-// Import hooks and libraries
-import { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import { ReactReader } from "react-reader";
+import { useState, useRef, useEffect } from "react";
+import { HighlightSidebar } from "./HighlightFeatures";
+import { BookReaderFeatures } from "./BookReaderFeatures";
+import StickyNote from "./stickynotes/StickyNote";
 import { DndContext } from "@dnd-kit/core";
-import StickyNote from "./../stickynotes/StickyNote";
+import "./BookViewer.css";
+import PropTypes from "prop-types";
 
-export default function BookViewer({ id }) {
-  const [notes, setNotes] = useState([]);
-  const latestNoteRef = useRef(null);
-  const [highlightAreas, setHighlightAreas] = useState([]);
-  console.log(" id: ", id);
+const STORAGE_KEY = "epub-location";
+const THEME_KEY = "epub-theme";
+const themes = {
+  light: {
+    body: { background: "#fff", color: "#222" },
+    readerArea: { background: "#fff", color: "#222" },
+  },
+  dark: {
+    body: { background: "#181a1b", color: "#e8e6e3" },
+    readerArea: { background: "#181a1b", color: "#e8e6e3" },
+  },
+};
 
-  // Initialize highlight plugin
-  const highlightPluginInstance = highlightPlugin({
-    highlightAreas,
-    trigger: "TextSelection", // Enable highlighting on text selection
-    renderHighlightTarget: (props) => (
-      <div
-        style={{
-          background: "#ffc107",
-          color: "#000",
-          cursor: "pointer",
-          padding: "2px 4px",
-          borderRadius: "4px",
-          fontSize: "12px",
-        }}
-        onClick={() => {
-          props.onHighlightClicked(); // Trigger the highlight on click
-        }}
-      >
-        Highlight
-      </div>
-    ),
-    renderHighlightContent: () => (
-      <div
-        style={{
-          background: "#ffc107",
-          padding: "4px 8px",
-          borderRadius: "4px",
-          fontSize: "12px",
-          color: "#000",
-        }}
-      >
-        Highlighted!
-      </div>
-    ),
-    onHighlight: (props) => {
-      console.log("تم تظليل النص:", props.highlight.strings.join(" "));
-      const newAreas = [...highlightAreas, props.highlight];
-      setHighlightAreas(newAreas); // Add new highlighted area
-    },
+const highlightColors = [
+  { name: "Yellow", color: "#ffe066" },
+  { name: "Pink", color: "#ffadad" },
+  { name: "Green", color: "#caffbf" },
+  { name: "Blue", color: "#9bf6ff" },
+  { name: "Purple", color: "#bdb2ff" },
+];
+
+const customFonts = [
+  { name: "Default", fontFamily: "inherit" },
+  { name: "Serif", fontFamily: "serif" },
+  { name: "Sans-serif", fontFamily: "sans-serif" },
+  { name: "Georgia", fontFamily: "Georgia, serif" },
+  { name: "OpenDyslexic", fontFamily: "'OpenDyslexic', Arial, sans-serif" },
+];
+
+const BookViewer = ({ id }) => {
+  const [location, setLocation] = useState(() => {
+    return localStorage.getItem(STORAGE_KEY) || undefined;
   });
-
-  const defaultLayoutPluginInstance = defaultLayoutPlugin();
-
-  // Add new sticky note with random position
-  const handleAddNote = useCallback(() => {
-    const newNote = {
-      id: `${Date.now()}`,
-      text: "",
-      x: 100 + Math.random() * 200,
-      y: 100 + Math.random() * 200,
+  const [theme, setTheme] = useState(
+    () => localStorage.getItem(THEME_KEY) || "light"
+  );
+  const [selectionText, setSelectionText] = useState("");
+  const [highlightColor, setHighlightColor] = useState(
+    highlightColors[0].color
+  );
+  const [highlights, setHighlights] = useState([]); // {cfiRange, text, color}
+  const [showSidebar, setShowSidebar] = useState(false);
+  const [fontFamily, setFontFamily] = useState(customFonts[0].fontFamily);
+  const [stickyNotes, setStickyNotes] = useState([]);
+  const renditionRef = useRef(null);
+  const [bookUrl, setBookUrl] = useState("");
+  useEffect(() => {
+    const fetchBookUrl = async () => {
+      try {
+        const response = await fetch(`http://localhost:3000/book/${id}`);
+        const data = await response.json();
+        setBookUrl(data.path);
+      } catch (error) {
+        console.error("Error fetching book URL:", error);
+      }
     };
-    setNotes((prev) => [...prev, newNote]);
-  }, []);
 
-  const handleDeleteNote = useCallback((id) => {
-    setNotes((prev) => prev.filter((note) => note.id !== id));
-  }, []);
+    fetchBookUrl();
+  }, [id]);
+  const handleLocationChanged = (loc) => {
+    setLocation(loc);
+    localStorage.setItem(STORAGE_KEY, loc);
+  };
+  const handleThemeChange = (mode) => {
+    setTheme(mode);
+    localStorage.setItem(THEME_KEY, mode);
+    if (renditionRef.current) {
+      renditionRef.current.themes.select(mode);
+      renditionRef.current.themes.override("body", {
+        fontFamily,
+        color: themes[mode].body.color,
+      });
+    }
+  };
+  const handleFontChange = (font) => {
+    setFontFamily(font);
+    if (renditionRef.current) {
+      // Use inject to set font-family on the book's body directly
+      renditionRef.current.getContents().forEach((content) => {
+        content.document.body.style.fontFamily = font;
+      });
+      renditionRef.current.themes.override("body", {
+        fontFamily: font,
+        color: themes[theme].body.color,
+      });
+    }
+  };
 
-  const handleTextChange = useCallback((id, newText) => {
-    setNotes((prev) =>
-      prev.map((note) => (note.id === id ? { ...note, text: newText } : note))
+  const handleRendition = (rendition) => {
+    renditionRef.current = rendition;
+    rendition.themes.register("light", {
+      body: { background: "#fff", color: "#222", fontFamily },
+      highlight: { opacity: 0.7 },
+    });
+    rendition.themes.register("dark", {
+      body: { background: "#181a1b", color: "#e8e6e3", fontFamily },
+      highlight: { opacity: 0.7 },
+    });
+    rendition.themes.select(theme);
+    rendition.themes.override("body", {
+      fontFamily,
+      color: themes[theme].body.color,
+    });
+    // Inject fontFamily directly on all loaded contents
+    rendition.getContents().forEach((content) => {
+      content.document.body.style.fontFamily = fontFamily;
+    });
+
+    // Render all highlights on load
+    highlights.forEach((h) => {
+      rendition.annotations.add("highlight", h.cfiRange, {}, null, h.color);
+    });
+
+    // Add selection listener
+    rendition.on("selected", (cfiRange, contents) => {
+      const text =
+        contents.window.getSelection &&
+        contents.window.getSelection().toString();
+      setSelectionText(text);
+      // Add highlight to book
+      rendition.annotations.add(
+        "highlight",
+        cfiRange,
+        {},
+        null,
+        highlightColor
+      );
+      // Save highlight to state
+      setHighlights((prev) => [
+        ...prev,
+        { cfiRange, text, color: highlightColor },
+      ]);
+    });
+  };
+
+  // Remove a highlight
+  const removeHighlight = (cfiRange) => {
+    setHighlights((prev) => prev.filter((h) => h.cfiRange !== cfiRange));
+    if (renditionRef.current) {
+      renditionRef.current.annotations.remove(cfiRange, "highlight");
+    }
+  };
+
+  // Show highlight in book
+  const showHighlight = (cfiRange) => {
+    if (renditionRef.current) {
+      renditionRef.current.display(cfiRange);
+    }
+  };
+
+  // Sticky Note Handlers
+  const addStickyNote = (x = 100, y = 100) => {
+    setStickyNotes((prev) => [
+      ...prev,
+      {
+        id: Date.now().toString(),
+        text: "",
+        x,
+        y,
+      },
+    ]);
+  };
+  const deleteStickyNote = (id) => {
+    setStickyNotes((prev) => prev.filter((n) => n.id !== id));
+  };
+  const updateStickyNoteText = (id, text) => {
+    setStickyNotes((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, text } : n))
     );
-  }, []);
-
+  };
   // Update sticky note position on drag end
-  const handleDragEnd = useCallback((event) => {
+  const handleStickyDragEnd = (event) => {
     const { active, delta } = event;
-    setNotes((prev) =>
-      prev.map((note) =>
-        note.id === active.id
-          ? {
-              ...note,
-              x: note.x + delta.x,
-              y: note.y + delta.y,
-            }
-          : note
+    setStickyNotes((prev) =>
+      prev.map((n) =>
+        n.id === active.id ? { ...n, x: n.x + delta.x, y: n.y + delta.y } : n
       )
     );
-  }, []);
+  };
 
-  // Focus the last added sticky note
+  // Re-apply highlights when highlights, theme, or highlightColor changes
   useEffect(() => {
-    if (notes.length > 0 && latestNoteRef.current) {
-      latestNoteRef.current.focus();
+    if (renditionRef.current) {
+      renditionRef.current.themes.select(theme);
+      // Remove only highlight annotations, not all types
+      if (
+        renditionRef.current.annotations &&
+        renditionRef.current.annotations._annotations
+      ) {
+        const highlightsToRemove = Object.keys(
+          renditionRef.current.annotations._annotations.highlight || {}
+        );
+        highlightsToRemove.forEach((cfi) => {
+          renditionRef.current.annotations.remove(cfi, "highlight");
+        });
+      }
+      highlights.forEach((h) => {
+        // Always use the color stored in the highlight object
+        renditionRef.current.annotations.add(
+          "highlight",
+          h.cfiRange,
+          {},
+          null,
+          h.color
+        );
+      });
     }
-  }, [notes.length]);
+  }, [theme, highlights]);
 
-  // Render all sticky notes
-  const renderedNotes = useMemo(
-    () =>
-      notes.map((note, index) => (
-        <StickyNote
-          key={note.id}
-          note={note}
-          onDelete={handleDeleteNote}
-          onTextChange={handleTextChange}
-          ref={index === notes.length - 1 ? latestNoteRef : null}
-        />
-      )),
-    [notes, handleDeleteNote, handleTextChange]
-  );
+  // When highlightColor changes, do NOT update previous highlights
+  useEffect(() => {
+    if (highlights.length > 0 && !selectionText) {
+      setHighlights((prev) =>
+        prev.map((h, i) =>
+          i === prev.length - 1 ? { ...h, color: highlightColor } : h
+        )
+      );
+    }
+  }, [highlightColor, highlights.length, selectionText]);
+
+  // Show selection text for 2 seconds, then hide
+  useEffect(() => {
+    if (selectionText) {
+      const timeout = setTimeout(() => setSelectionText(""), 1000);
+      return () => clearTimeout(timeout);
+    }
+  }, [selectionText]);
+
+  // Ensure font color is applied together with font family
+  useEffect(() => {
+    if (renditionRef.current) {
+      renditionRef.current.themes.override("body", {
+        fontFamily,
+        color: themes[theme].body.color,
+      });
+      renditionRef.current.getContents().forEach((content) => {
+        content.document.body.style.fontFamily = fontFamily;
+      });
+    }
+  }, [fontFamily, theme]);
 
   return (
-    <div
-      style={{
-        height: "100vh",
-        position: "relative",
-        width: "90%",
-        margin: "0px auto",
-        padding: "60px 0",
-      }}
-    >
-      {/* Button to add new sticky note */}
-      <button
-        onClick={handleAddNote}
-        style={{
-          marginBottom: "10px",
-          padding: "8px 16px",
-          backgroundColor: "#007bff",
-          color: "white",
-          border: "none",
-          borderRadius: "4px",
-          cursor: "pointer",
-          fontSize: "14px",
-          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-          transition: "background-color 0.2s ease",
-        }}
-        onMouseOver={(e) => (e.target.style.backgroundColor = "#0069d9")}
-        onMouseOut={(e) => (e.target.style.backgroundColor = "#007bff")}
+    <div className="app-root">
+      <HighlightSidebar
+        showSidebar={showSidebar}
+        setShowSidebar={setShowSidebar}
+        highlights={highlights}
+        showHighlight={showHighlight}
+        removeHighlight={removeHighlight}
+      />
+      <div
+        className="app-main-content"
+        onDoubleClick={(e) =>
+          addStickyNote(e.nativeEvent.offsetX, e.nativeEvent.offsetY)
+        }
       >
-        ➕ Add Note
-      </button>
-
-      {/* Render PDF Viewer with highlight and layout plugins */}
-      <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
-        <DndContext onDragEnd={handleDragEnd}>
-          <Viewer
-            fileUrl="/Cracking-the-Coding-Interview-6th-Edition-189-Programming-Questions-and-Solutions.pdf"
-            defaultScale={SpecialZoomLevel.PageWidth}
-            plugins={[defaultLayoutPluginInstance, highlightPluginInstance]}
-          />
-          {renderedNotes}
+        <button
+          className="app-add-sticky-btn"
+          style={{ position: "absolute", top: 16, left: 16, zIndex: 30 }}
+          onClick={() => addStickyNote(120, 120)}
+        >
+          + Add Sticky Note
+        </button>
+        <BookReaderFeatures
+          theme={theme}
+          handleThemeChange={handleThemeChange}
+          customFonts={customFonts}
+          fontFamily={fontFamily}
+          handleFontChange={handleFontChange}
+          setShowSidebar={setShowSidebar}
+          highlightColors={highlightColors}
+          highlightColor={highlightColor}
+          setHighlightColor={setHighlightColor}
+        />
+        {/* Sticky Notes */}
+        <DndContext onDragEnd={handleStickyDragEnd}>
+          {stickyNotes.map((note) => (
+            <StickyNote
+              key={note.id}
+              note={note}
+              onDelete={deleteStickyNote}
+              onTextChange={updateStickyNoteText}
+            />
+          ))}
         </DndContext>
-      </Worker>
+        {selectionText && (
+          <div className="app-selection-text">
+            <strong>Selected:</strong> {selectionText}
+            <div style={{ marginTop: 8 }}>
+              <span style={{ fontSize: 12, color: "#888" }}>
+                Highlight color:{" "}
+              </span>
+              <span
+                style={{
+                  display: "inline-block",
+                  width: 16,
+                  height: 16,
+                  background: highlightColor,
+                  borderRadius: 4,
+                  border: "1px solid #ccc",
+                  verticalAlign: "middle",
+                }}
+              />
+            </div>
+          </div>
+        )}
+        <ReactReader
+          url={`http://localhost:3000/${bookUrl}`}
+          location={location}
+          locationChanged={handleLocationChanged}
+          styles={themes[theme]}
+          getRendition={handleRendition}
+        />
+      </div>
     </div>
   );
-}
-
-// (Optional) Define prop types if you're passing props externally
-BookViewer.propTypes = {
-  onHighlightClicked: PropTypes.func,
-  highlight: PropTypes.shape({
-    strings: PropTypes.arrayOf(PropTypes.string),
-  }),
-  id: PropTypes.string,
 };
+
+BookViewer.propTypes = {
+  id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+};
+
+export default BookViewer;

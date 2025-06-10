@@ -297,11 +297,7 @@ export default function Header() {
                           border: "2px solid var(--color-card-bg)",
                           boxShadow: "0 2px 4px var(--color-shadow)",
                         }}
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.style.display = "none";
-                          e.target.nextSibling.style.display = "inline";
-                        }}
+                     
                       />
                     ) : (
                       <FaUserCircle

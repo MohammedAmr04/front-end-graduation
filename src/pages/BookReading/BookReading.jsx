@@ -10,6 +10,7 @@ function BookReading() {
   // const [textColor, setTextColor] = useState("#000");
   // const [bgColor, setBgColor] = useState("#fff");
   const { bookid } = useParams();
+  console.log(bookid);
 
   return (
     <div className={styles.container}>
@@ -19,7 +20,7 @@ function BookReading() {
         setTextColor={setTextColor}
         setBgColor={setBgColor}
       /> */}
-      <BookViewer bookId={bookid} />
+      <BookViewer id={bookid} />
     </div>
   );
 }
