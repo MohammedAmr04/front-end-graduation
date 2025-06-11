@@ -12,8 +12,9 @@ import {
   BiSolidUpvote,
   BiUpvote,
 } from "react-icons/bi";
-import { FaRegImage, FaPaperPlane } from "react-icons/fa";
+import { FaRegImage, FaPaperPlane, FaTrash } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import { useToast } from "../../../../hooks/useToast";
 
 export default function Post({
   userName,
@@ -29,6 +30,7 @@ export default function Post({
   imageUrl,
   id,
   userId,
+  onDelete, // optional callback for parent to remove post from UI
 }) {
   const [liked, setLiked] = useState(isLiked);
   const [unliked, setUnliked] = useState(isUnliked);
@@ -42,7 +44,9 @@ export default function Post({
   const [showComments, setShowComments] = useState(false);
   const [loadingComments, setLoadingComments] = useState(false);
   const [commentsError, setCommentsError] = useState(null);
-  const { token } = useSelector((state) => state.auth);
+  const { id: currentUserId, token } = useSelector((state) => state.auth);
+  const { showError, showSuccess } = useToast();
+
   useEffect(() => {
     setIsVisible(true);
   }, []);
@@ -173,6 +177,57 @@ export default function Post({
     }
   };
 
+  const handleDelete = async () => {
+    if (!window.confirm("Are you sure you want to delete this post?")) return;
+    try {
+      const response = await fetch(
+        `https://localhost:7159/api/Community/posts/${id}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.ok) {
+        if (onDelete) onDelete(id);
+        showSuccess("Post deleted successfully.");
+        window.location.reload(); // fallback: reload page
+      } else {
+        showError("Failed to delete post.");
+      }
+    } catch {
+      showError("Failed to delete post.");
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    if (!window.confirm("Are you sure you want to delete this comment?"))
+      return;
+    try {
+      const response = await fetch(
+        `https://localhost:7159/api/Community/comments/${commentId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.ok) {
+        setComments((prev) => prev.filter((c) => c.id !== commentId));
+        setCommentsCount((prev) => prev - 1);
+        showSuccess("Comment deleted successfully.");
+      } else {
+        showError("Failed to delete comment.");
+      }
+    } catch {
+      showError("Failed to delete comment.");
+    }
+  };
+
   return (
     <Card
       className={`post-card ${
@@ -201,7 +256,7 @@ export default function Post({
               />
             </Link>
           </div>
-          <div className="ms-3">
+          <div className="ms-3 flex-grow-1">
             <Link to={`/profile/${userId}`}>
               <h6 className="mb-0 fw-bold">{userName}</h6>
             </Link>
@@ -214,6 +269,17 @@ export default function Post({
               </small>
             </div>
           </div>
+          {/* Delete icon if post belongs to current user */}
+          {String(currentUserId) === String(userId) && (
+            <button
+              className="w-auto p-0 bg-transparent text-danger ms-2"
+              title="Delete Post"
+              onClick={handleDelete}
+              style={{ fontSize: 20 }}
+            >
+              <FaTrash />
+            </button>
+          )}
         </div>
 
         <div className="py-3 content">
@@ -362,16 +428,34 @@ export default function Post({
                                 />
                               )}
                               <div className="flex-grow-1">
-                                <div>
-                                  <small className="fw-bold text-secondary d-block">
-                                    {comment.userName}
-                                  </small>
-                                  <small
-                                    className="text-muted"
-                                    style={{ fontSize: "11px" }}
-                                  >
-                                    {timeAgo(comment.createdAt)}
-                                  </small>
+                                <div className="d-flex align-items-center justify-content-between">
+                                  <div>
+                                    <small className="fw-bold text-secondary d-block">
+                                      {comment.userName}
+                                    </small>
+                                    <small
+                                      className="text-muted"
+                                      style={{ fontSize: "11px" }}
+                                    >
+                                      {timeAgo(comment.createdAt)}
+                                    </small>
+                                  </div>
+                                  {/* Delete icon for comment author or post owner */}
+                                  {(String(currentUserId) ===
+                                    String(comment.userId) ||
+                                    String(currentUserId) ===
+                                      String(userId)) && (
+                                    <button
+                                      className="w-auto p-0 bg-transparent text-danger ms-2"
+                                      title="Delete Comment"
+                                      onClick={() =>
+                                        handleDeleteComment(comment.id)
+                                      }
+                                      style={{ fontSize: 22 }}
+                                    >
+                                      <FaTrash />
+                                    </button>
+                                  )}
                                 </div>
                                 <div className="mt-2">
                                   <span className="comment-text ps-2">
