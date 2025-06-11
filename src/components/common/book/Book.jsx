@@ -1,12 +1,15 @@
 import { useParams } from "react-router-dom";
 import styles from "./Book.module.css"; // Importing the CSS module
 import BookSlider from "./../book-slider/BookSlider";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { useFetchBook } from "../../../hooks/useFetchBook";
 import Loader from "../loader/Loader";
 
 const Book = () => {
   const { id } = useParams();
-
+  const { id: userId } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
   const { book, loading, error } = useFetchBook(id);
   console.log(book);
 
@@ -25,8 +28,18 @@ const Book = () => {
             data-aos="zoom-in"
           />
           <div className="gap-3 pt-3 d-flex justify-content-center ">
-            <button className="button button-second">Download</button>
-            <button className="button button-primary">Read</button>
+            <a
+              className="button button-second"
+              href={`https://www.gutenberg.org/ebooks/${id}.epub3.images`}
+            >
+              Download
+            </a>
+            <button
+              className="button button-primary"
+              onClick={() => navigate(`/bookReading/${userId}/${id}`)}
+            >
+              Read
+            </button>
           </div>
         </div>
         <div className={styles.bookDetails}>

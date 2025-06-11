@@ -43,6 +43,7 @@ export default function BookCard({ item }) {
         <img
           src={`https://www.gutenberg.org/cache/epub/${id}/pg${id}.cover.medium.jpg`}
           alt={title}
+          loading="lazy"
           className="rounded-3 book-img-responsive"
         />
       </div>
