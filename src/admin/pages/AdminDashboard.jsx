@@ -7,6 +7,10 @@ import TotalPostsCard from "../AdminCards/TotalPostsCard";
 import "./AdminDashboard.css";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import axios from "axios";
+import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { useToast } from "../../hooks/useToast";
 
 export default function AdminDashboard() {
   const downloadPDF = () => {
@@ -27,6 +31,61 @@ export default function AdminDashboard() {
       pdf.save("dashboard.pdf");
     });
   };
+  const [users, setUsers] = useState([]);
+  const [communities, setCommunities] = useState([]);
+  const [postsCount, setPostsCount] = useState([]);
+  const token = useSelector((state) => state.auth.token);
+  const { showError } = useToast();
+
+  useEffect(() => {
+    if (!token) return;
+    axios
+      .get("https://localhost:7159/api/Admin/users", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => setUsers(response.data))
+      .catch((error) => {
+        showError("Error fetching users", "error");
+        console.error("Error fetching users:", error);
+      });
+  }, [token]);
+
+  useEffect(() => {
+    if (!token) return;
+    axios
+      .get("https://localhost:7159/api/Admin/communities", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => setCommunities(response.data))
+      .catch((error) => {
+        showError("Error fetching users", "error");
+        console.error("Error fetching users:", error);
+      });
+  }, [token]);
+
+  useEffect(() => {
+    if (!token) return;
+    axios
+      .get("https://localhost:7159/api/Admin/community-posts-count", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => setPostsCount(response))
+      .catch((error) => {
+        showError("Error fetching users", "error");
+        console.error("Error fetching users:", error);
+      });
+  }, [token]);
+  console.log("🟩 postsCount: ", postsCount);
+
+  const totalPosts = Array.isArray(postsCount.data)
+    ? postsCount.data.reduce((acc, curr) => acc + curr.postCount, 0)
+    : 0;
 
   return (
     <div className="admin-dashboard-root">
@@ -46,21 +105,24 @@ export default function AdminDashboard() {
         </div>
         <div className="admin-cards-container admin-dashboard-cards">
           <div className="admin-dashboard-card">
-            <TotalUsersCars />
+            <TotalUsersCars count={users.length} />
           </div>
           <div className="admin-dashboard-card">
             <TotalBooksCars />
           </div>
           <div className="admin-dashboard-card">
-            <TotalCommunityCard />
+            <TotalCommunityCard count={communities.length} />
           </div>
         </div>
         <div className="postscharts admin-dashboard-postscharts">
           <div className="admin-dashboard-postschart">
-            <PostsDonutChart />
+            <PostsDonutChart
+              communitiesRes={communities}
+              postsRes={postsCount.data}
+            />
           </div>
           <div className="admin-dashboard-postscard">
-            <TotalPostsCard />
+            <TotalPostsCard counts={totalPosts} />
           </div>
         </div>
       </div>

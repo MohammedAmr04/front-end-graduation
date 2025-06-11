@@ -1,19 +1,11 @@
-import React, { useEffect, useState } from "react";
 import CountUp from "react-countup";
-import axios from "axios";
-import { FaUser  } from "react-icons/fa";
+import { FaUser } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import "./TotalUsersCard.css";
+import PropTypes from "prop-types";
 
-const TotalUsersCard = () => {
-  const [userCount, setUserCount] = useState(0);
+const TotalUsersCard = ({ count }) => {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    axios.get("http://localhost:5000/users")
-      .then((res) => setUserCount(res.data.length))
-      .catch((err) => console.error("Error fetching users:", err));
-  }, []);
 
   const goToManageUsers = () => {
     navigate("/admin/manageusers");
@@ -21,12 +13,18 @@ const TotalUsersCard = () => {
 
   return (
     <div className="usersCard" onClick={goToManageUsers}>
-      <h4  >
-        <FaUser/>  Total users
+      <h4>
+        <FaUser /> Total users
       </h4>
-      <div className="usersCount"><CountUp end={userCount} duration={2} /></div>
+      <div className="usersCount">
+        <CountUp end={count} duration={2} />
+      </div>
     </div>
   );
+};
+
+TotalUsersCard.propTypes = {
+  count: PropTypes.number.isRequired,
 };
 
 export default TotalUsersCard;

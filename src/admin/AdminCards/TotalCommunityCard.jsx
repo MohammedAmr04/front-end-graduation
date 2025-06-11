@@ -1,20 +1,12 @@
-import React, { useEffect, useState } from "react";
 import CountUp from "react-countup";
-import axios from "axios";
-import { FaTachometerAlt, FaBook, FaUser ,FaUsers } from "react-icons/fa";
+import { FaUsers } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
 
 import "./TotalCommunityCard.css";
 
-const TotalCommunityCard = () => {
-  const [communityCount, setCommunityCount] = useState(0);
+const TotalCommunityCard = ({ count }) => {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    axios.get("http://localhost:5000/communities")
-      .then((res) => setCommunityCount(res.data.length))
-      .catch((err) => console.error("Error fetching community:", err));
-  }, []);
 
   const goToManageCommunity = () => {
     navigate("/admin/managecommunity");
@@ -22,13 +14,16 @@ const TotalCommunityCard = () => {
 
   return (
     <div className="totalcommunitiesCard" onClick={goToManageCommunity}>
-      <h4  >
-        <FaUsers/>  Total communities
-        
+      <h4>
+        <FaUsers /> Total communities
       </h4>
-      <div className="communitiesCount"><CountUp end={communityCount} duration={2} /></div>
+      <div className="communitiesCount">
+        <CountUp end={count} duration={2} />
+      </div>
     </div>
   );
 };
-
+TotalCommunityCard.propTypes = {
+  count: PropTypes.number.isRequired,
+};
 export default TotalCommunityCard;
