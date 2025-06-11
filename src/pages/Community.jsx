@@ -16,6 +16,7 @@ export default function Community() {
   const { token } = useSelector((state) => state.auth);
   const [communityType, setCommunityType] = useState("");
   const [communityTypes, setCommunityTypes] = useState([]);
+  const [localPosts, setLocalPosts] = useState([]);
   const { showError } = useToast();
   const { posts, loading, refetch } = useFetchPosts(
     all,
@@ -38,7 +39,11 @@ export default function Community() {
       }
     }
     fetchData();
-  }, [token]);
+  }, [token, showError]);
+
+  useEffect(() => {
+    setLocalPosts(posts);
+  }, [posts]);
 
   const handleCommunityAction = async ({ id, action }) => {
     const community = communityTypes.find((c) => c.id === id);
@@ -64,6 +69,10 @@ export default function Community() {
     }
   };
 
+  const handleDeletePost = (postId) => {
+    setLocalPosts((prev) => prev.filter((p) => p.id !== postId));
+  };
+
   return (
     <div className="gap-3 d-flex">
       <SideBar
@@ -82,7 +91,6 @@ export default function Community() {
           }
         }}
       />
-
       <div className="flex-grow-1 community-content">
         <div className="py-4 container-fluid">
           {/* Select Community Filter */}
@@ -147,9 +155,9 @@ export default function Community() {
 
           {/* Posts */}
           <div className="pt-5 mx-auto mx-md-0 posts-container row flex-column">
-            {posts.map((post) => (
+            {localPosts.map((post) => (
               <div key={post.id}>
-                <Post {...post} />
+                <Post {...post} onDelete={handleDeletePost} />
               </div>
             ))}
           </div>

@@ -127,7 +127,7 @@ export default function AddPost({
 
   return (
     <form
-      className={`px-3 py-4 ${styles.addPost} rounded-3`}
+      className={`px-3 pt-4 pb-2 ${styles.addPost} rounded-3`}
       onSubmit={handleSubmit}
     >
       <div className={styles.addPostHeader}>
@@ -189,7 +189,7 @@ export default function AddPost({
             </button>
           </>
         )}
-        <div className="gap-2 d-flex">
+        <div className="gap-2 mt-3 d-flex">
           <ImageUploader images={images} setImages={setImages} />
 
           <button className="w-auto py-2 btn btn-primary" type="submit">

@@ -272,7 +272,7 @@ export default function Post({
           {/* Delete icon if post belongs to current user */}
           {String(currentUserId) === String(userId) && (
             <button
-              className="w-auto p-0 bg-transparent text-danger ms-2"
+              className="w-auto p-0 bg-transparent border-0 text-danger ms-2"
               title="Delete Post"
               onClick={handleDelete}
               style={{ fontSize: 20 }}
@@ -493,6 +493,7 @@ Post.propTypes = {
   profilePicture: PropTypes.string,
   userId: PropTypes.string,
   id: PropTypes.number,
+  onDelete: PropTypes.func, // added for parent callback
 };
 
 Post.defaultProps = {
