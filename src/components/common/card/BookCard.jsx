@@ -71,6 +71,6 @@ BookCard.propTypes = {
   item: PropTypes.shape({
     title: PropTypes.string.isRequired,
     id: PropTypes.number.isRequired,
-    author: PropTypes.string.isRequired,
+    author: PropTypes.string,
   }).isRequired,
 };

@@ -91,7 +91,6 @@ const Chat = () => {
 
     setConnection(newConnection);
   }, [token]);
-
   // Start connection and listen
   useEffect(() => {
     if (connection) {

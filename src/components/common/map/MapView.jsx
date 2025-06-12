@@ -35,17 +35,6 @@ function MapView({ requests }) {
     []
   ); // Cairo
 
-  //   try {
-  //     return {
-  //       lat: parseFloat(req.latitude),
-  //       lng: parseFloat(req.longitude),
-  //     };
-  //   } catch (error) {
-  //     console.error("Error parsing coordinates:", error);
-  //     return null;
-  //   }
-  // }, []);
-
   const { finalPosition, bounds, groupedRequests } = useMemo(() => {
     if (!Array.isArray(requests) || requests.length === 0) {
       return {

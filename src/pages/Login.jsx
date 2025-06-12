@@ -16,10 +16,20 @@ const schema = Joi.object({
       "string.empty": "Email is required",
       "string.email": "Please enter a valid email address",
     }),
-  password: Joi.string().min(6).required().messages({
-    "string.empty": "Password is required",
-    "string.min": "Password must be at least 6 characters",
-  }),
+  password: Joi.string()
+    .min(9)
+    .pattern(
+      new RegExp(
+        "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=[\\]{};':\"\\\\|,.<>/?]).+$"
+      )
+    )
+    .required()
+    .messages({
+      "string.empty": "Password is required",
+      "string.min": "Password must be at least 9 characters",
+      "string.pattern.base":
+        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
+    }),
 });
 
 export default function Login() {

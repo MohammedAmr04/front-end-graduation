@@ -8,39 +8,6 @@ import "./styles.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-const initData = [
-  {
-    id: 1,
-    title: "Pride and Prejudice",
-    author: "Jane Austen",
-    src: "https://www.gutenberg.org/cache/epub/1342/pg1342.cover.medium.jpg",
-  },
-  {
-    id: 2,
-    title: "Moby Dick",
-    author: "Herman Melville",
-    src: "/src/assets/img/classic3.jpg",
-  },
-  {
-    id: 3,
-    title: "Great Expectations",
-    author: "Charles Dickens",
-    src: "/src/assets/img/classic4.jpg",
-  },
-  {
-    id: 4,
-    title: "Frankenstein",
-    author: "Mary Shelley",
-    src: "/src/assets/img/classic5.jpg",
-  },
-  {
-    id: 5,
-    title: "Dracula",
-    author: "Bram Stoker",
-    src: "/src/assets/img/classic6.jpg",
-  },
-];
-
 function NextArrow(props) {
   const { className, style, onClick } = props;
   return (
@@ -117,12 +84,12 @@ const settings = {
   ),
 };
 
-export default function BookSlider() {
+export default function BookSlider({ books }) {
   return (
     <div className="py-5 position-relative book-slider-root">
       <h2 className="mb-3 main-header">Classic</h2>
       <Slider {...settings} className="book-slick-slider">
-        {initData.map((item) => (
+        {books.map((item) => (
           <div className="slider-slide enhanced-slide" key={item.id}>
             <div className="enhanced-card">
               <BookCard item={item} />
@@ -137,3 +104,7 @@ export default function BookSlider() {
     </div>
   );
 }
+
+BookSlider.propTypes = {
+  books: PropTypes.array.isRequired,
+};

@@ -5,13 +5,37 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useFetchBook } from "../../../hooks/useFetchBook";
 import Loader from "../loader/Loader";
+import { useEffect, useState } from "react";
 
 const Book = () => {
   const { id } = useParams();
   const { id: userId } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const { book, loading, error } = useFetchBook(id);
-  console.log(book);
+  const [recommends, setRecommends] = useState([]);
+
+  const fetchRecommendations = async (title) => {
+    try {
+      const response = await fetch("http://127.0.0.1:5000/api/recommend", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ term: title }),
+      });
+      if (!response.ok) throw new Error("Failed to fetch recommendations");
+      const data = await response.json();
+      setRecommends(data);
+    } catch (error) {
+      setRecommends([]);
+      console.error("Error fetching recommendations:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (book && book.title) {
+      fetchRecommendations(book.title);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [book && book.title]);
 
   if (loading) return <Loader />;
   if (error) return <p className=" text-danger"> {error}</p>;
@@ -62,7 +86,7 @@ const Book = () => {
         </div>
       </div>
       <section className="container">
-        <BookSlider />
+        <BookSlider books={recommends} />
       </section>
     </main>
   );
