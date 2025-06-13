@@ -3,17 +3,22 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { FiEdit2 } from "react-icons/fi";
 import { useToast } from "../../hooks/useToast";
-import "./ManageUsers.css";
+import "./ManageUsersNew.css";
+import "../../styles/colors.css";
 
 const API_URL = "https://localhost:7159/api/Admin/users";
+const COMMUNITY_API_URL = "https://localhost:7159/api/Community";
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
+  const [communities, setCommunities] = useState([]);
   const [editRoleUserId, setEditRoleUserId] = useState(null);
   const [newRole, setNewRole] = useState("");
+  const [selectedCommunity, setSelectedCommunity] = useState({});
   const token = useSelector((state) => state.auth.token);
   const { showSuccess, showError } = useToast();
 
+  // Fetch users
   useEffect(() => {
     if (!token) return;
     axios
@@ -29,82 +34,162 @@ const ManageUsers = () => {
       });
   }, [token]);
 
-  // Handle block/unblock user
-  const handleBlockToggle = (id, currentStatus) => {
+  // Fetch communities
+  useEffect(() => {
+    if (!token) return;
     axios
-      .patch(
-        `${API_URL}/${id}`,
-        { isBlocked: !currentStatus },
+      .get(COMMUNITY_API_URL, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => setCommunities(response.data))
+      .catch((error) => {
+        showError("Error fetching communities", "error");
+        console.error("Error fetching communities:", error);
+      });
+  }, [token]);
+
+  // Handle assign moderator
+  const handleAssignModerator = async (userId, communityId) => {
+    if (!communityId) {
+      showError("Please select a community", "error");
+      return;
+    }
+    try {
+      await axios.post(
+        `${COMMUNITY_API_URL}/moderators/assign`,
+        {
+          communityId: parseInt(communityId),
+          userId,
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
-      )
-      .then(() => {
-        setUsers(
-          users.map((user) =>
-            user.id === id ? { ...user, isBlocked: !currentStatus } : user
-          )
-        );
-        showSuccess(
-          `User ${!currentStatus ? "blocked" : "unblocked"} successfully`
-        );
-      })
-      .catch((error) => {
-        showError("Error toggling block", "error");
-        console.error("Error toggling block:", error);
-      });
+      );
+      setUsers(
+        users.map((user) =>
+          user.id === userId
+            ? {
+                ...user,
+                communityId: parseInt(communityId),
+                communityName:
+                  communities.find((c) => c.id === parseInt(communityId))
+                    ?.name || null,
+              }
+            : user
+        )
+      );
+      setSelectedCommunity({ ...selectedCommunity, [userId]: "" });
+      showSuccess("Moderator assigned successfully");
+    } catch (error) {
+      showError("Error assigning moderator", "error");
+      console.error("Error assigning moderator:", error);
+    }
   };
 
-  // Handle delete user
-  const handleDelete = (id) => {
-    axios
-      .delete(`${API_URL}/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then(() => {
-        setUsers(users.filter((user) => user.id !== id));
+  // Handle remove moderator
+  const handleRemoveModerator = async (userId, communityId) => {
+    try {
+      await axios.delete(
+        `${COMMUNITY_API_URL}/moderators/remove?communityId=${communityId}&userId=${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setUsers(
+        users.map((user) =>
+          user.id === userId
+            ? { ...user, communityId: null, communityName: null }
+            : user
+        )
+      );
+      showSuccess("Moderator removed successfully");
+    } catch (error) {
+      showError("Error removing moderator", "error");
+      console.error("Error removing moderator:", error);
+    }
+  };
 
-        showSuccess("User deleted successfully");
-      })
-      .catch((error) => {
-        showError("Error deleting user", "error");
-        console.error("Error deleting user:", error);
-      });
+  // Handle block user in community
+  const handleBlockInCommunity = async (userId, communityId) => {
+    try {
+      await axios.post(
+        `${COMMUNITY_API_URL}/${communityId}/ban/${userId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setUsers(
+        users.map((user) =>
+          user.id === userId ? { ...user, isBlocked: true } : user
+        )
+      );
+      showSuccess("User blocked in community successfully");
+    } catch (error) {
+      showError("Error blocking user in community", "error");
+      console.error("Error blocking user in community:", error);
+    }
   };
 
   return (
-    <div className="manageUsers" style={{ padding: "40px 0" }}>
-      <h2 style={{ textAlign: "center", marginBottom: 32 }}>Manage Users</h2>
-      <div
+    <div
+      className="manageUsers"
+      style={{
+        padding: "40px 0",
+        minHeight: "100vh",
+        background: "var(--color-bg-light)",
+      }}
+    >
+      <h2
         style={{
-          display: "flex",
-          flexWrap: "wrap",
+          textAlign: "center",
+          marginBottom: 32,
+          fontWeight: 800,
+          fontSize: 32,
+          color: "var(--color-brand)",
+          letterSpacing: 1,
+        }}
+      >
+        Manage Users
+      </h2>
+      <div
+        className="users-grid"
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
           gap: "32px",
           justifyContent: "center",
           alignItems: "stretch",
+          padding: "0 16px",
+          maxWidth: 1400,
+          margin: "0 auto",
         }}
       >
         {users.map((user) => (
           <div
             key={user.id}
             style={{
-              background: "linear-gradient(135deg, #f8fafc 60%, #e0e7ff 100%)",
-              borderRadius: "16px",
-              boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
-              padding: "32px 28px 24px 28px",
-              width: "320px",
-              minHeight: "260px",
-              marginBottom: "24px",
+              background: "var(--color-card-bg)",
+              borderRadius: "18px",
+              boxShadow: "0 4px 24px var(--color-shadow)",
+              padding: "32px 24px 24px 24px",
+              minHeight: "340px",
               position: "relative",
               display: "flex",
               flexDirection: "column",
               justifyContent: "space-between",
-              border: "1.5px solid #e0e7ff",
+              border: "1.5px solid var(--color-bg-light-alt)",
               transition: "box-shadow 0.2s, transform 0.2s",
+              cursor: "pointer",
+              overflow: "hidden",
             }}
             className="user-card"
           >
@@ -113,17 +198,31 @@ const ManageUsers = () => {
                 style={{
                   fontSize: 22,
                   fontWeight: 700,
-                  color: "#1e293b",
+                  color: "var(--color-text-dark)",
                   marginBottom: 8,
+                  wordBreak: "break-word",
                 }}
               >
                 {user.username}
               </h3>
-              <p style={{ color: "#475569", marginBottom: 8 }}>
+              <p
+                style={{
+                  color: "var(--color-accent)",
+                  marginBottom: 8,
+                  fontSize: 15,
+                  wordBreak: "break-all",
+                }}
+              >
                 <strong>Email:</strong> {user.email}
               </p>
-              <div style={{ fontSize: 15, color: "#64748b", marginBottom: 8 }}>
-                <span style={{ marginRight: 12 }}>
+              <div className="role-edit">
+                <span
+                  style={{
+                    marginRight: 12,
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
                   <strong>Role:</strong> {user.role}
                   <FiEdit2
                     style={{
@@ -132,6 +231,7 @@ const ManageUsers = () => {
                       marginLeft: 8,
                       cursor: "pointer",
                       verticalAlign: "middle",
+                      color: "var(--color-brand)",
                     }}
                     title="Edit Role"
                     onClick={() => {
@@ -141,21 +241,30 @@ const ManageUsers = () => {
                   />
                 </span>
                 {user.communityId && (
-                  <span>
-                    <strong>Community:</strong> {user.communityId}
+                  <span className="community-label">
+                    <strong>Community:</strong> {user.communityName}
                   </span>
                 )}
               </div>
               {editRoleUserId === user.id && (
-                <div style={{ marginBottom: 8, marginTop: 4 }}>
+                <div
+                  style={{
+                    marginBottom: 8,
+                    marginTop: 4,
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: 8,
+                  }}
+                >
                   <select
                     value={newRole}
                     onChange={(e) => setNewRole(e.target.value)}
                     style={{
                       padding: "4px 8px",
                       borderRadius: 6,
-                      border: "1px solid #e0e7ff",
+                      border: "1px solid var(--color-bg-light-alt)",
                       marginRight: 8,
+                      minWidth: 120,
                     }}
                   >
                     <option value="Admin">Admin</option>
@@ -166,13 +275,14 @@ const ManageUsers = () => {
                   </select>
                   <button
                     style={{
-                      padding: "4px 10px",
+                      padding: "4px 14px",
                       borderRadius: 6,
-                      background: "#2563eb",
-                      color: "#fff",
+                      background: "var(--color-brand)",
+                      color: "var(--color-text-light)",
                       border: "none",
                       fontWeight: 600,
                       marginRight: 4,
+                      minWidth: 70,
                     }}
                     onClick={async () => {
                       try {
@@ -201,12 +311,13 @@ const ManageUsers = () => {
                   </button>
                   <button
                     style={{
-                      padding: "4px 10px",
+                      padding: "4px 14px",
                       borderRadius: 6,
-                      background: "#e0e7ff",
-                      color: "#334155",
+                      background: "var(--color-bg-light-alt)",
+                      color: "var(--color-text-dark)",
                       border: "none",
                       fontWeight: 600,
+                      minWidth: 70,
                     }}
                     onClick={() => setEditRoleUserId(null)}
                   >
@@ -216,33 +327,151 @@ const ManageUsers = () => {
               )}
               <div style={{ marginBottom: 8 }}>
                 <span
-                  style={{
-                    background: user.isBlocked ? "#fecaca" : "#bbf7d0",
-                    color: user.isBlocked ? "#b91c1c" : "#166534",
-                    borderRadius: 8,
-                    padding: "4px 12px",
-                    fontWeight: 600,
-                    fontSize: 14,
-                  }}
+                  className={`user-status${user.isBlocked ? " blocked" : ""}`}
                 >
                   {user.isBlocked ? "Blocked" : "Active"}
                 </span>
               </div>
+              {!user.communityId ? (
+                <div
+                  style={{
+                    marginBottom: 8,
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: 8,
+                    alignItems: "center",
+                  }}
+                >
+                  <select
+                    value={selectedCommunity[user.id] || ""}
+                    onChange={(e) =>
+                      setSelectedCommunity({
+                        ...selectedCommunity,
+                        [user.id]: e.target.value,
+                      })
+                    }
+                    style={{
+                      padding: "4px 8px",
+                      borderRadius: 6,
+                      border: "1px solid var(--color-bg-light-alt)",
+                      marginRight: 8,
+                      width: "180px",
+                      minWidth: 120,
+                    }}
+                  >
+                    <option value="">Select a community</option>
+                    {communities.map((community) => (
+                      <option key={community.id} value={community.id}>
+                        {community.name}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    style={{
+                      padding: "4px 14px",
+                      borderRadius: 6,
+                      background: "var(--color-brand)",
+                      color: "var(--color-text-light)",
+                      border: "none",
+                      fontWeight: 600,
+                      minWidth: 120,
+                    }}
+                    onClick={() =>
+                      handleAssignModerator(user.id, selectedCommunity[user.id])
+                    }
+                  >
+                    Assign Moderator
+                  </button>
+                </div>
+              ) : (
+                <div style={{ marginBottom: 8 }}>
+                  <button
+                    style={{
+                      padding: "4px 14px",
+                      borderRadius: 6,
+                      background: "var(--color-accent)",
+                      color: "var(--color-text-light)",
+                      border: "none",
+                      fontWeight: 600,
+                      minWidth: 120,
+                    }}
+                    onClick={() =>
+                      handleRemoveModerator(user.id, user.communityId)
+                    }
+                  >
+                    Remove Moderator
+                  </button>
+                </div>
+              )}
             </div>
-            <div style={{ marginTop: 18, display: "flex", gap: 10 }}>
+            <div style={{ marginTop: 18 }}>
+              <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                <select
+                  className="community-select"
+                  value={
+                    selectedCommunity[user.id + "_block"] ||
+                    user.communityId ||
+                    ""
+                  }
+                  onChange={(e) =>
+                    setSelectedCommunity({
+                      ...selectedCommunity,
+                      [user.id + "_block"]: e.target.value,
+                    })
+                  }
+                  disabled={user.isBlocked}
+                  style={{
+                    marginRight: 8,
+                    minWidth: 120,
+                    background: "var(--color-bg-light)",
+                    color: "var(--color-brand)",
+                    border: "1px solid var(--color-bg-light-alt)",
+                    borderRadius: 6,
+                    padding: "4px 8px",
+                  }}
+                >
+                  <option value="">Select community to block</option>
+                  {communities.map((community) => (
+                    <option key={community.id} value={community.id}>
+                      {community.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <button
                 className={user.isBlocked ? "unblock-btn" : "block-btn"}
-                style={{ flex: 1, fontWeight: 600, fontSize: 15 }}
-                onClick={() => handleBlockToggle(user.id, user.isBlocked)}
+                style={{
+                  width: "100%",
+                  marginTop: 12,
+                  fontWeight: 700,
+                  fontSize: 15,
+                  borderRadius: 6,
+                  border: "none",
+                  padding: "10px 0",
+                  background: user.isBlocked
+                    ? "var(--color-accent)"
+                    : "var(--color-brand)",
+                  color: "var(--color-text-light)",
+                  transition: "background 0.2s",
+                }}
+                onClick={() =>
+                  handleBlockInCommunity(
+                    user.id,
+                    selectedCommunity[user.id + "_block"]
+                  )
+                }
+                disabled={
+                  user.isBlocked || !selectedCommunity[user.id + "_block"]
+                }
+                title={
+                  user.isBlocked
+                    ? "Already blocked"
+                    : !selectedCommunity[user.id + "_block"]
+                    ? "Select a community to block"
+                    : "Block in community"
+                }
               >
-                {user.isBlocked ? "Unblock" : "Block"}
-              </button>
-              <button
-                className="delete-btn"
-                style={{ flex: 1, fontWeight: 600, fontSize: 15 }}
-                onClick={() => handleDelete(user.id)}
-              >
-                Delete
+                Block in Community
               </button>
             </div>
           </div>

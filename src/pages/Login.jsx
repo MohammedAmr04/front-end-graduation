@@ -17,7 +17,7 @@ const schema = Joi.object({
       "string.email": "Please enter a valid email address",
     }),
   password: Joi.string()
-    .min(9)
+    .min(8)
     .pattern(
       new RegExp(
         "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=[\\]{};':\"\\\\|,.<>/?]).+$"

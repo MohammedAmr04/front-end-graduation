@@ -34,6 +34,7 @@ export default function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const [communities, setCommunities] = useState([]);
   const [postsCount, setPostsCount] = useState([]);
+  const [booksCount, setBooksCount] = useState([]);
   const token = useSelector((state) => state.auth.token);
   const { showError } = useToast();
 
@@ -67,6 +68,21 @@ export default function AdminDashboard() {
       });
   }, [token]);
 
+  useEffect(() => {
+    if (!token) return;
+    axios
+      .get("https://localhost:7159/api/Books/count", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => setBooksCount(response.data))
+      .catch((error) => {
+        showError("Error fetching users", "error");
+        console.error("Error fetching users:", error);
+      });
+  }, [token]);
+  console.log("🟩 booksCount: ", booksCount);
   useEffect(() => {
     if (!token) return;
     axios
@@ -108,7 +124,7 @@ export default function AdminDashboard() {
             <TotalUsersCars count={users.length} />
           </div>
           <div className="admin-dashboard-card">
-            <TotalBooksCars />
+            <TotalBooksCars count={booksCount} />
           </div>
           <div className="admin-dashboard-card">
             <TotalCommunityCard count={communities.length} />

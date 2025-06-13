@@ -171,9 +171,20 @@ export default function Post({
         setCommentImage(null);
         setCommentsCount((prev) => prev + 1);
         fetchComments(); // Refresh comments
+      } else {
+        const data = await response.json();
+        if (data && data.error) {
+          showError(data.error);
+        } else {
+          showError(
+            "An error occurred while adding the comment. Please try again."
+          );
+        }
       }
     } catch {
-      // Optionally handle error
+      showError(
+        "An error occurred while adding the comment. Please try again."
+      );
     }
   };
 

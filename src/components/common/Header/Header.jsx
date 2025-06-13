@@ -7,7 +7,7 @@ import { FaUserCircle, FaHeart } from "react-icons/fa";
 import { FiBell } from "react-icons/fi";
 import { useEffect, useRef, useState } from "react";
 import * as signalR from "@microsoft/signalr";
-import { timeAgo } from "../../../utils/util";
+// import { timeAgo } from "../../../utils/util";
 
 export default function Header() {
   const location = useLocation();
@@ -26,6 +26,22 @@ export default function Header() {
 
   useEffect(() => {
     if (!isLoggedIn) return;
+
+    // Fetch latest notifications on mount
+    fetch("https://localhost:7159/api/Community/notifications/latest", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      credentials: "include",
+    })
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setNotifications(data);
+          setHasNotification(true);
+        }
+      })
+      .catch(() => {});
 
     const connection = new signalR.HubConnectionBuilder()
       .withUrl("https://localhost:7159/notificationHub", {
@@ -179,7 +195,7 @@ export default function Header() {
                         </div>
                         {notifications.map((notification, idx) => (
                           <div
-                            key={idx}
+                            key={notification.id || idx}
                             style={{
                               padding: "12px 16px",
                               borderBottom: "1px solid #f5f5f5",
@@ -187,30 +203,46 @@ export default function Header() {
                               display: "flex",
                               alignItems: "center",
                               gap: "10px",
+                              background:
+                                notification.notificationType === "PostRejected"
+                                  ? "#fff3f3"
+                                  : notification.notificationType === "PostAccepted"
+                                  ? "#f3fff3"
+                                  : "#fff",
                             }}
                           >
-                            <div
-                              style={{ width: 40, height: 40, flexShrink: 0 }}
-                            >
+                            <div style={{ width: 40, height: 40, flexShrink: 0 }}>
                               <img
-                                src={`https://localhost:7159${notification.profilePicture}`}
-                                alt={notification.username}
+                                src={`https://localhost:7159${notification.actorProfilePicture}`}
+                                alt={notification.actorUserName}
                                 style={{
                                   width: "100%",
                                   height: "100%",
                                   borderRadius: "50%",
                                   objectFit: "cover",
+                                  border:
+                                    notification.notificationType === "PostRejected"
+                                      ? "2px solid #e57373"
+                                      : notification.notificationType === "PostAccepted"
+                                      ? "2px solid #4caf50"
+                                      : "2px solid #eee",
                                 }}
-                                onError={() =>
-                                  console.log(
-                                    "Error loading image:",
-                                    notification.profilePicture
-                                  )
-                                }
                               />
                             </div>
                             <div style={{ flex: 1 }}>
-                              <div>{notification.text}</div>
+                              <div
+                                style={{
+                                  fontWeight: 600,
+                                  color:
+                                    notification.notificationType === "PostRejected"
+                                      ? "#e57373"
+                                      : notification.notificationType === "PostAccepted"
+                                      ? "#388e3c"
+                                      : undefined,
+                                }}
+                              >
+                                {notification.message}
+                              </div>
                               <div
                                 style={{
                                   fontSize: 12,
@@ -218,7 +250,12 @@ export default function Header() {
                                   marginTop: 4,
                                 }}
                               >
-                                {timeAgo(notification.time)}{" "}
+                                <span style={{ fontWeight: 500 }}>
+                                  {notification.actorUserName}
+                                </span>
+                                {notification.timeAgo
+                                  ? ` • ${notification.timeAgo}`
+                                  : ""}
                               </div>
                             </div>
                           </div>
@@ -297,7 +334,6 @@ export default function Header() {
                           border: "2px solid var(--color-card-bg)",
                           boxShadow: "0 2px 4px var(--color-shadow)",
                         }}
-                     
                       />
                     ) : (
                       <FaUserCircle

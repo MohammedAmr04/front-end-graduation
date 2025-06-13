@@ -108,8 +108,19 @@ export default function AddPost({
       );
 
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Post creation failed: ${errorText}`);
+        let errorMsg = "Failed to create post. Please try again.";
+        try {
+          const data = await response.json();
+          if (data && data.error) {
+            errorMsg = data.error;
+          }
+        } catch {
+          // fallback to text if not JSON
+          const errorText = await response.text();
+          if (errorText) errorMsg = errorText;
+        }
+        showError(errorMsg);
+        return;
       }
 
       await response.json();

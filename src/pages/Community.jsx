@@ -39,7 +39,7 @@ export default function Community() {
       }
     }
     fetchData();
-  }, [token, showError]);
+  }, [token]);
 
   useEffect(() => {
     setLocalPosts(posts);
