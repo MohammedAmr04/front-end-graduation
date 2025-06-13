@@ -2,6 +2,7 @@
 import styles from "./BookReading.module.css";
 import BookViewer from "../../components/common/bookReading/BookViewer";
 import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 // import HeaderBook from "../../components/common/bookReading/HeaderBook";
 
 function BookReading() {
@@ -11,7 +12,7 @@ function BookReading() {
   // const [bgColor, setBgColor] = useState("#fff");
   const { bookid } = useParams();
   console.log(bookid);
-
+  const { id } = useSelector((state) => state.auth);
   return (
     <div className={styles.container}>
       {/* <HeaderBook
@@ -20,7 +21,7 @@ function BookReading() {
         setTextColor={setTextColor}
         setBgColor={setBgColor}
       /> */}
-      <BookViewer id={bookid} />
+      <BookViewer id={bookid} userId={id} />
     </div>
   );
 }

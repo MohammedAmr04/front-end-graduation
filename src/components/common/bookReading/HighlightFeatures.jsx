@@ -1,6 +1,7 @@
 // src/HighlightFeatures.jsx
 import PropTypes from "prop-types";
 import "./HighlightColorPicker.css";
+import { MdVisibility, MdDelete, MdClose } from "react-icons/md";
 
 export function HighlightSidebar({
   showSidebar,
@@ -50,21 +51,65 @@ export function HighlightSidebar({
             </div>
             <button
               onClick={() => showHighlight(h.cfiRange)}
-              style={{ marginRight: 8, fontSize: 12 }}
+              style={{
+                marginRight: 8,
+                fontSize: 13,
+                border: "none",
+                borderRadius: 6,
+                background: "#e3f2fd",
+                color: "#1976d2",
+                padding: "6px 14px",
+                cursor: "pointer",
+                boxShadow: "0 1px 2px #0001",
+                transition: "background 0.2s",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 4,
+              }}
             >
-              Show
+              <MdVisibility size={18} style={{ marginRight: 4 }} /> Show
             </button>
             <button
               onClick={() => removeHighlight(h.cfiRange)}
-              style={{ color: "#c00", fontSize: 12 }}
+              style={{
+                fontSize: 13,
+                border: "none",
+                borderRadius: 6,
+                background: "#ffebee",
+                color: "#c62828",
+                padding: "6px 14px",
+                cursor: "pointer",
+                boxShadow: "0 1px 2px #0001",
+                transition: "background 0.2s",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 4,
+              }}
             >
-              Remove
+              <MdDelete size={18} style={{ marginRight: 4 }} /> Remove
             </button>
           </li>
         ))}
       </ul>
-      <button onClick={() => setShowSidebar(false)} style={{ marginTop: 16 }}>
-        Close
+      <button
+        onClick={() => setShowSidebar(false)}
+        style={{
+          marginTop: 16,
+          border: "none",
+          borderRadius: 8,
+          background: "#ececec",
+          color: "#444",
+          padding: "8px 20px",
+          fontWeight: 600,
+          cursor: "pointer",
+          boxShadow: "0 1px 2px #0001",
+          transition: "background 0.2s",
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 6,
+        }}
+      >
+        <MdClose size={18} style={{ marginRight: 4 }} /> Close
       </button>
     </div>
   );

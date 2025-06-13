@@ -8,10 +8,7 @@ import DOMPurify from "dompurify";
 import "./BookViewer.css";
 import PropTypes from "prop-types";
 
-const STORAGE_KEY = "epub-location";
-const THEME_KEY = "epub-theme";
-const HIGHLIGHTS_KEY = "epub-highlights";
-const STICKY_NOTES_KEY = "epub-sticky-notes";
+const getStorageKey = (userId, bookId, key) => `${userId}_${bookId}_${key}`;
 
 const themes = {
   light: {
@@ -53,12 +50,16 @@ const supportedLanguages = [
 
 const MAX_STICKY_NOTES = 10;
 
-const BookViewer = ({ id }) => {
+const BookViewer = ({ id, userId }) => {
   const [location, setLocation] = useState(() => {
-    return localStorage.getItem(STORAGE_KEY) || undefined;
+    return (
+      localStorage.getItem(getStorageKey(userId, id, "epub-location")) ||
+      undefined
+    );
   });
   const [theme, setTheme] = useState(
-    () => localStorage.getItem(THEME_KEY) || "light"
+    () =>
+      localStorage.getItem(getStorageKey(userId, id, "epub-theme")) || "light"
   );
   const [selectionText, setSelectionText] = useState("");
   const [selectedCfiRange, setSelectedCfiRange] = useState(null);
@@ -66,13 +67,17 @@ const BookViewer = ({ id }) => {
     highlightColors[0].color
   );
   const [highlights, setHighlights] = useState(() => {
-    const saved = localStorage.getItem(HIGHLIGHTS_KEY);
+    const saved = localStorage.getItem(
+      getStorageKey(userId, id, "epub-highlights")
+    );
     return saved ? JSON.parse(saved) : [];
   });
   const [showSidebar, setShowSidebar] = useState(false);
   const [fontFamily, setFontFamily] = useState(customFonts[0].fontFamily);
   const [stickyNotes, setStickyNotes] = useState(() => {
-    const saved = localStorage.getItem(STICKY_NOTES_KEY);
+    const saved = localStorage.getItem(
+      getStorageKey(userId, id, "epub-sticky-notes")
+    );
     return saved ? JSON.parse(saved) : [];
   });
   const [selectedLanguage, setSelectedLanguage] = useState("en");
@@ -104,35 +109,39 @@ const BookViewer = ({ id }) => {
 
   // Save highlights to localStorage
   useEffect(() => {
-    localStorage.setItem(HIGHLIGHTS_KEY, JSON.stringify(highlights));
-  }, [highlights]);
+    localStorage.setItem(
+      getStorageKey(userId, id, "epub-highlights"),
+      JSON.stringify(highlights)
+    );
+  }, [highlights, userId, id]);
 
   // Save sticky notes to localStorage
   useEffect(() => {
-    localStorage.setItem(STICKY_NOTES_KEY, JSON.stringify(stickyNotes));
-  }, [stickyNotes]);
+    localStorage.setItem(
+      getStorageKey(userId, id, "epub-sticky-notes"),
+      JSON.stringify(stickyNotes)
+    );
+  }, [stickyNotes, userId, id]);
+
+  // Save theme to localStorage
+  useEffect(() => {
+    localStorage.setItem(getStorageKey(userId, id, "epub-theme"), theme);
+  }, [theme, userId, id]);
 
   // Update location
   const handleLocationChanged = (loc) => {
     setLocation(loc);
-    localStorage.setItem(STORAGE_KEY, loc);
+    localStorage.setItem(getStorageKey(userId, id, "epub-location"), loc);
   };
 
   // Apply theme and font
   const applyThemeAndFont = (rendition, theme, fontFamily) => {
     rendition.themes.select(theme);
-    rendition.themes.override("body", {
-      fontFamily,
-      color: themes[theme].body.color,
-    });
-    rendition.getContents().forEach((content) => {
-      content.document.body.style.fontFamily = fontFamily;
-    });
+    rendition.themes.font(fontFamily);
   };
 
   const handleThemeChange = (mode) => {
     setTheme(mode);
-    localStorage.setItem(THEME_KEY, mode);
     if (renditionRef.current) {
       applyThemeAndFont(renditionRef.current, mode, fontFamily);
     }
@@ -145,53 +154,91 @@ const BookViewer = ({ id }) => {
     }
   };
 
-  // Add highlight manually
+  // Add highlight with validation
   const addHighlight = () => {
     if (selectionText && selectedCfiRange && renditionRef.current) {
-      renditionRef.current.annotations.add(
-        "highlight",
+      console.log("Adding highlight:", {
         selectedCfiRange,
-        {},
-        null,
-        highlightColor
-      );
-      setHighlights((prev) => [
-        ...prev,
-        {
-          cfiRange: selectedCfiRange,
-          text: selectionText,
-          color: highlightColor,
-        },
-      ]);
-      setSelectionText("");
-      setSelectedCfiRange(null);
+        selectionText,
+        highlightColor,
+      });
+      try {
+        const range = renditionRef.current.getRange(selectedCfiRange);
+        if (range) {
+          renditionRef.current.annotations.add(
+            "highlight",
+            selectedCfiRange,
+            {},
+            null,
+            "highlight",
+            { fill: highlightColor, "fill-opacity": "0.5" }
+          );
+          setHighlights((prev) => [
+            ...prev,
+            {
+              cfiRange: selectedCfiRange,
+              text: selectionText,
+              color: highlightColor,
+            },
+          ]);
+          console.log("Highlight added successfully");
+          setSelectionText("");
+          setSelectedCfiRange(null);
+        } else {
+          console.error("Invalid cfiRange:", selectedCfiRange);
+        }
+      } catch (error) {
+        console.error("Error adding highlight:", error);
+      }
+    } else {
+      console.warn("Missing required data for highlight:", {
+        selectionText,
+        selectedCfiRange,
+        rendition: renditionRef.current,
+      });
     }
   };
 
   const handleRendition = (rendition) => {
     renditionRef.current = rendition;
-    rendition.themes.register("light", {
-      body: { background: "#fff", color: "#222", fontFamily },
-      highlight: { opacity: 0.7 },
-    });
-    rendition.themes.register("dark", {
-      body: { background: "#181a1b", color: "#e8e6e3", fontFamily },
-      highlight: { opacity: 0.7 },
-    });
+    console.log("Rendition initialized:", rendition);
+    rendition.themes.register("light", themes.light);
+    rendition.themes.register("dark", themes.dark);
     applyThemeAndFont(rendition, theme, fontFamily);
 
-    highlights.forEach((h) => {
-      rendition.annotations.add("highlight", h.cfiRange, {}, null, h.color);
+    rendition.on("rendered", () => {
+      console.log("Rendition rendered, applying highlights:", highlights);
+      highlights.forEach((h) => {
+        try {
+          if (!rendition.annotations._annotations[h.cfiRange]) {
+            rendition.annotations.add(
+              "highlight",
+              h.cfiRange,
+              {},
+              null,
+              "highlight",
+              { fill: h.color, "fill-opacity": "0.5" }
+            );
+            console.log("Restored highlight:", h.cfiRange);
+          }
+        } catch (error) {
+          console.error("Error restoring highlight:", h.cfiRange, error);
+        }
+      });
     });
 
     rendition.on("selected", (cfiRange, contents) => {
+      console.log("Text selected:", { cfiRange, contents });
       const text =
         contents.window.getSelection &&
         contents.window.getSelection().toString();
       if (text) {
         const cleanText = DOMPurify.sanitize(text, { ALLOWED_TAGS: [] });
+        console.log("Cleaned selected text:", cleanText);
         setSelectionText(cleanText);
         setSelectedCfiRange(cfiRange);
+      } else {
+        console.warn("No text selected");
       }
     });
   };
@@ -214,6 +261,7 @@ const BookViewer = ({ id }) => {
       setTtsError("Maximum limit of sticky notes (10) reached");
       return;
     }
+    console.log("Adding sticky note at:", { x, y });
     setStickyNotes((prev) => [
       ...prev,
       {
@@ -242,6 +290,19 @@ const BookViewer = ({ id }) => {
         n.id === active.id ? { ...n, x: n.x + delta.x, y: n.y + delta.y } : n
       )
     );
+  };
+
+  // Handle double-click to add sticky note
+  const handleDoubleClick = (e) => {
+    const isFromReader = e.target.closest(".book-reader-container");
+    console.log("Double-click detected:", {
+      isFromReader,
+      x: e.nativeEvent.offsetX,
+      y: e.nativeEvent.offsetY,
+    });
+    if (!isFromReader) {
+      addStickyNote(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+    }
   };
 
   // Convert text to speech
@@ -282,24 +343,6 @@ const BookViewer = ({ id }) => {
     }
   }, [audioPath]);
 
-  // Update highlights efficiently
-  useEffect(() => {
-    if (renditionRef.current) {
-      applyThemeAndFont(renditionRef.current, theme, fontFamily);
-      highlights.forEach((h) => {
-        if (!renditionRef.current.annotations._annotations[h.cfiRange]) {
-          renditionRef.current.annotations.add(
-            "highlight",
-            h.cfiRange,
-            {},
-            null,
-            h.color
-          );
-        }
-      });
-    }
-  }, [theme, fontFamily, highlights]);
-
   // Hide selected text after 10 seconds
   useEffect(() => {
     if (selectionText) {
@@ -320,12 +363,7 @@ const BookViewer = ({ id }) => {
         showHighlight={showHighlight}
         removeHighlight={removeHighlight}
       />
-      <div
-        className="app-main-content"
-        onDoubleClick={(e) =>
-          addStickyNote(e.nativeEvent.offsetX, e.nativeEvent.offsetY)
-        }
-      >
+      <div className="app-main-content" onDoubleClick={handleDoubleClick}>
         {isLoading && (
           <div style={{ position: "absolute", top: 50, left: 50, zIndex: 40 }}>
             Loading book...
@@ -406,8 +444,11 @@ const BookViewer = ({ id }) => {
               url={`http://localhost:3000/${bookUrl}`}
               location={location}
               locationChanged={handleLocationChanged}
-              styles={themes[theme]}
               getRendition={handleRendition}
+              epubInitOptions={{
+                openAs: "epub",
+                sandbox: "allow-same-origin allow-scripts",
+              }}
             />
           )}
           <div className="audio-player" style={{ marginTop: 10 }}>
@@ -428,6 +469,7 @@ const BookViewer = ({ id }) => {
 
 BookViewer.propTypes = {
   id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  userId: PropTypes.string.isRequired,
 };
 
 export default BookViewer;

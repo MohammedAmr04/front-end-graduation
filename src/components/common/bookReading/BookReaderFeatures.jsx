@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { HighlightColorPicker } from "./HighlightFeatures";
 import { FontSelector } from "./FontSelector";
 import "./BookReaderFeatures.css";
+import { MdLightMode, MdDarkMode, MdFormatColorFill } from "react-icons/md";
 
 export function BookReaderFeatures(props) {
   const {
@@ -23,14 +24,18 @@ export function BookReaderFeatures(props) {
       <button
         onClick={() => handleThemeChange("light")}
         className={`bookreader-btn${theme === "light" ? " active-light" : ""}`}
+        title="Light Mode"
+        style={{ display: "flex", alignItems: "center", gap: 4 }}
       >
-        Light
+        <MdLightMode size={18} /> Light
       </button>
       <button
         onClick={() => handleThemeChange("dark")}
         className={`bookreader-btn${theme === "dark" ? " active-dark" : ""}`}
+        title="Dark Mode"
+        style={{ display: "flex", alignItems: "center", gap: 4 }}
       >
-        Dark
+        <MdDarkMode size={18} /> Dark
       </button>
       <FontSelector
         customFonts={customFonts}
@@ -40,8 +45,10 @@ export function BookReaderFeatures(props) {
       <button
         onClick={() => setShowSidebar((v) => !v)}
         className="bookreader-btn highlight"
+        title="Show Highlights"
+        style={{ display: "flex", alignItems: "center", gap: 4 }}
       >
-        Highlights
+        <MdFormatColorFill size={18} /> Highlights
       </button>
       <HighlightColorPicker
         highlightColors={highlightColors}
