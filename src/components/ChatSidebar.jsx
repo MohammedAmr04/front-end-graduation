@@ -120,7 +120,6 @@ const ChatSidebar = ({ users, selectedUser, onSelectUser, setMessages }) => {
                   style={{ maxWidth: 120 }}
                 >
                   {/* Optionally show last message here if available */}
-                  {user.lastMessage || "No messages yet"}
                 </div>
               </div>
             </button>

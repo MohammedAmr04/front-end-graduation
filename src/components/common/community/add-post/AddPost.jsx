@@ -14,7 +14,7 @@ export default function AddPost({
   setCommunityTypes,
   onPostSuccess, // ✅ NEW PROP
 }) {
-  const profileImage = useSelector((state) => state.auth.profileImage);
+  const profilePicture = useSelector((state) => state.auth.profilePicture);
   const { token } = useSelector((state) => state.auth);
   const { showSuccess, showError } = useToast();
 
@@ -143,7 +143,7 @@ export default function AddPost({
       <div className={styles.addPostHeader}>
         <div className="d-flex justify-content-center align-items-center">
           <img
-            src={profileImage}
+            src={`https://localhost:7159${profilePicture}`}
             className="rounded-circle me-2"
             alt="Profile"
             style={{ width: "40px", height: "40px" }}

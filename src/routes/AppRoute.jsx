@@ -19,7 +19,6 @@ const ManageBook = lazy(() => import("../admin/pages/ManageBook"));
 const AddCommunity = lazy(() => import("../admin/pages/AddCommunity"));
 const ManageCommunity = lazy(() => import("../admin/pages/ManageCommunity"));
 const ManageUsers = lazy(() => import("../admin/pages/ManageUsers"));
-const ManagePosts = lazy(() => import("../admin/pages/ManagePosts"));
 const Profile = lazy(() => import("../pages/Profile"));
 const PostsProfile = lazy(() =>
   import("../components/common/profile/PostsProfile/PostsProfile")
@@ -148,10 +147,6 @@ const router = createBrowserRouter([
           {
             path: "admindashboard",
             element: <AdminDashboard />,
-          },
-          {
-            path: "manageposts",
-            element: <ManagePosts />,
           },
         ],
       },

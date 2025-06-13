@@ -48,7 +48,7 @@ export default function SideBar({ communityTypes = [], onSelectCommunity }) {
 
       {/* Desktop Sidebar */}
       <div
-        className={`pt-4 bg-white shadow-lg desktop-sidebar d-none d-lg-flex flex-column vh-100 position-fixed ${
+        className={`pt-4 bg-white shadow-lg desktop-sidebar d-none d-lg-flex flex-column vh-100  ${
           isCollapsed ? "collapsed" : ""
         }`}
       >

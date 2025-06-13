@@ -87,7 +87,6 @@ const settings = {
 export default function BookSlider({ books }) {
   return (
     <div className="py-5 position-relative book-slider-root">
-      <h2 className="mb-3 main-header">Classic</h2>
       <Slider {...settings} className="book-slick-slider">
         {books.map((item) => (
           <div className="slider-slide enhanced-slide" key={item.id}>

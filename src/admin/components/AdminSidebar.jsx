@@ -44,12 +44,6 @@ export default function AdminSidebar() {
       ],
     },
     {
-      label: "Posts",
-      icon: <MdInsights className="me-2" />,
-      key: "posts",
-      subItems: [{ path: "/admin/manageposts", label: "Manage Posts" }],
-    },
-    {
       label: "System Insights",
       icon: <MdInsights className="me-2" />,
       key: "insights",

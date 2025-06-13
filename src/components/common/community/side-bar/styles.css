@@ -24,6 +24,8 @@
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: #e3f2fd #f6f8fa;
+  position: sticky;
+  top: 70px;
 }
 
 .desktop-sidebar.collapsed {
