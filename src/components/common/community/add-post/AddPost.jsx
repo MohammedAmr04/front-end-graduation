@@ -14,8 +14,7 @@ export default function AddPost({
   setCommunityTypes,
   onPostSuccess, // ✅ NEW PROP
 }) {
-  const profileImage =
-    useSelector((state) => state.auth.profileImage) || "/src/assets/me.jpg";
+  const profileImage = useSelector((state) => state.auth.profileImage);
   const { token } = useSelector((state) => state.auth);
   const { showSuccess, showError } = useToast();
 

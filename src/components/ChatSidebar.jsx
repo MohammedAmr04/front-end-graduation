@@ -19,12 +19,12 @@ const ChatSidebar = ({ users, selectedUser, onSelectUser, setMessages }) => {
         });
 
   async function handleOpenChat(user) {
-    onSelectUser(user.id);
-    navigate(`/chat/${user.id}`);
+    onSelectUser(user.userId);
+    navigate(`/chat/${user.userId}`);
     // Fetch messages for the selected user
     try {
       const response = await fetch(
-        `https://localhost:7159/api/Chat/messages/${user.id}`,
+        `https://localhost:7159/api/Chat/messages/${user.userId}`,
         {
           method: "GET",
           headers: {
@@ -34,9 +34,8 @@ const ChatSidebar = ({ users, selectedUser, onSelectUser, setMessages }) => {
         }
       );
       if (!response.ok) throw new Error("Failed to fetch messages");
-      // Optionally, you can process or pass messages here if needed
-      // const data = await response.json();
-      setMessages(response);
+      const data = await response.json();
+      setMessages(data);
     } catch (err) {
       console.error("Error fetching messages for user:", err);
     }
@@ -101,9 +100,9 @@ const ChatSidebar = ({ users, selectedUser, onSelectUser, setMessages }) => {
             : "https://via.placeholder.com/40x40?text=User";
           return (
             <button
-              key={user.id}
-              className={`list-group-item ps-2 pt-2 list-group-item-action d-flex align-items-center${
-                selectedUser === user.id ? " active" : ""
+              key={user.userId}
+              className={`list-group-item ps-2 pt-2 list-group-item-action d-flex align-items-center$${
+                selectedUser === user.userId ? " active" : ""
               }`}
               onClick={() => handleOpenChat(user)}
             >

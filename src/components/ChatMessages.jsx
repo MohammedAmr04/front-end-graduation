@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import Loader from "./common/loader/Loader";
 import { useSelector } from "react-redux";
 
-const ChatMessages = ({ messages, loading = false, userId }) => {
+const ChatMessages = ({ messages, loading = false }) => {
   const { id } = useSelector((state) => state.auth);
   if (loading) {
     return (
@@ -20,7 +20,6 @@ const ChatMessages = ({ messages, loading = false, userId }) => {
       {Array.isArray(messages) &&
         messages.map((msg) => {
           const isOwn = String(msg.senderId) === String(id);
-          console.log("is", isOwn);
           return (
             <div
               key={msg.id}
@@ -64,7 +63,6 @@ const ChatMessages = ({ messages, loading = false, userId }) => {
 ChatMessages.propTypes = {
   messages: PropTypes.array.isRequired,
   loading: PropTypes.bool,
-  userId: PropTypes.string,
 };
 
 export default ChatMessages;

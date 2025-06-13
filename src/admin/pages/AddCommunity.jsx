@@ -11,10 +11,15 @@ const AddCommunity = () => {
     name: "",
     description: "",
   });
+  const [imageFile, setImageFile] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setCommunities({ ...communities, [e.target.name]: e.target.value });
+  };
+
+  const handleImageChange = (e) => {
+    setImageFile(e.target.files[0]);
   };
 
   const handleAddCommunity = async (e) => {
@@ -22,15 +27,22 @@ const AddCommunity = () => {
     setLoading(true);
 
     try {
-      await axios.post("https://localhost:7159/api/Community", communities, {
+      const formData = new FormData();
+      formData.append("name", communities.name);
+      formData.append("description", communities.description);
+      if (imageFile) {
+        formData.append("imageFile", imageFile);
+      }
+
+      await axios.post("https://localhost:7159/api/Community", formData, {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
 
       showSuccess("Community added successfully!");
       setCommunities({ name: "", description: "" });
+      setImageFile(null);
     } catch (error) {
       console.error("Failed adding community", error);
       showError(error.response?.data || "Failed to add community");
@@ -72,6 +84,17 @@ const AddCommunity = () => {
             className="form-control bg-light"
             rows="4"
             required
+          />
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label text-secondary">Image:</label>
+          <input
+            type="file"
+            name="imageFile"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="form-control bg-light"
           />
         </div>
 

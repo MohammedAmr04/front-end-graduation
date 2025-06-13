@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import * as signalR from "@microsoft/signalr";
 import ChatSidebar from "../components/ChatSidebar";
 import ChatMessages from "../components/ChatMessages";
@@ -6,33 +6,54 @@ import ChatInput from "../components/ChatInput";
 import "../styles/Chat.css";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import { FaUserAlt } from "react-icons/fa";
 
 const HUB_URL = "https://localhost:7159/chatHub";
 
 const Chat = () => {
   const { userId } = useParams();
-  const [users, setUsers] = useState([
-    {
-      id: "19cd2c81-b051-4a2d-84b6-6d8b53c865df",
-      firstName: "mahmoud",
-      lastName: "talaat",
-      userName: "talaat",
-      email: "talaat@gmail.com",
-      gender: "male",
-      age: null,
-      profilePicture:
-        "/profile-photos/471306b0-4fc3-414d-9aa1-78b33cefeec5.jpeg",
-    },
-  ]);
+  const [users, setUsers] = useState([]);
   const [messages, setMessages] = useState([]);
   const [selectedUser, setSelectedUser] = useState(userId || null);
   const [connection, setConnection] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [connectionError, setConnectionError] = useState(null);
   const { token } = useSelector((state) => state.auth);
+  const connectionRef = useRef(null); // لتخزين الـ connection
 
+  // Fetch conversations
+  useEffect(() => {
+    const fetchConversations = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(
+          "https://localhost:7159/api/Chat/conversations",
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (!response.ok)
+          throw new Error(`Failed to fetch conversations: ${response.status}`);
+        const data = await response.json();
+        setUsers(data);
+      } catch (err) {
+        console.error("Error fetching conversations:", err);
+        setUsers([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchConversations();
+  }, [token]);
+
+  // Fetch messages
   useEffect(() => {
     const fetchMessages = async () => {
       if (!selectedUser) return;
-
+      setIsLoading(true);
       try {
         const response = await fetch(
           `https://localhost:7159/api/Chat/messages/${selectedUser}`,
@@ -44,60 +65,104 @@ const Chat = () => {
             },
           }
         );
-
-        if (!response.ok) throw new Error("Failed to fetch messages");
-
+        if (!response.ok)
+          throw new Error(`Failed to fetch messages: ${response.status}`);
         const data = await response.json();
-        // Map API response to consistent message structure
         const formattedMessages = data.map((msg, index) => ({
           id: msg.id || index + 1,
           senderId: msg.senderId,
           receiverId: msg.receiverId,
           text: msg.message,
-          senderName:
-            msg.sender && msg.sender.firstName && msg.sender.lastName
-              ? `${msg.sender.firstName} ${msg.sender.lastName}`
-              : undefined,
-          receiverName:
-            msg.receiver && msg.receiver.firstName && msg.receiver.lastName
-              ? `${msg.receiver.firstName} ${msg.receiver.lastName}`
-              : undefined,
+          senderName: msg.sender
+            ? `${msg.sender.firstName} ${msg.sender.lastName}`
+            : "Unknown",
+          receiverName: msg.receiver
+            ? `${msg.receiver.firstName} ${msg.receiver.lastName}`
+            : "Unknown",
           isRead: msg.isRead,
-          timestamp:
-            msg.createdAt &&
-            new Date(msg.createdAt).toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            }),
+          timestamp: msg.createdAt
+            ? new Date(msg.createdAt).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            : null,
         }));
-
         setMessages(formattedMessages);
       } catch (err) {
         console.error("Error fetching messages:", err);
+        setMessages([]);
+      } finally {
+        setIsLoading(false);
       }
     };
-
     fetchMessages();
   }, [selectedUser, token]);
 
-  // Setup SignalR connection
   useEffect(() => {
+    if (!token) {
+      console.warn("No token available, skipping SignalR connection setup.");
+      setConnectionError("Authentication required. Please log in.");
+      return;
+    }
+
     const newConnection = new signalR.HubConnectionBuilder()
       .withUrl(HUB_URL, {
-        accessTokenFactory: () => token,
+        accessTokenFactory: () => {
+          console.log("Using token for SignalR:", token);
+          return token;
+        },
       })
-      .withAutomaticReconnect()
+      .withAutomaticReconnect([0, 2000, 5000, 10000, 30000])
+      .configureLogging(signalR.LogLevel.Information)
       .build();
 
+    connectionRef.current = newConnection;
     setConnection(newConnection);
+
+    return () => {
+      console.log("Cleaning up SignalR connection...");
+      connectionRef.current
+        ?.stop()
+        .catch((e) => console.error("Error stopping connection:", e));
+    };
   }, [token]);
-  // Start connection and listen
+
+  // Setup SignalR connection
   useEffect(() => {
-    if (connection) {
-      connection
-        .start()
-        .then(() => {
-          connection.on("ReceiveMessage", (senderId, message) => {
+    if (!token) {
+      console.warn("No token available, skipping SignalR connection setup.");
+      setConnectionError("Authentication required. Please log in.");
+      return;
+    }
+
+    const newConnection = new signalR.HubConnectionBuilder()
+      .withUrl(HUB_URL, {
+        accessTokenFactory: () => {
+          console.log("Using token for SignalR:", token);
+          return token;
+        },
+      })
+      .withAutomaticReconnect([0, 2000, 5000, 10000, 30000])
+      .configureLogging(signalR.LogLevel.Information)
+      .build();
+
+    connectionRef.current = newConnection;
+    setConnection(newConnection);
+
+    // Start connection
+    const startConnection = async () => {
+      try {
+        console.log("Attempting to start SignalR connection...");
+        if (
+          connectionRef.current.state ===
+          signalR.HubConnectionState.Disconnected
+        ) {
+          await connectionRef.current.start();
+          console.log("SignalR Connected successfully!");
+          setConnectionError(null);
+
+          connectionRef.current.on("ReceiveMessage", (senderId, message) => {
+            console.log("Received message:", { senderId, message });
             setMessages((prev) => [
               ...prev,
               {
@@ -105,78 +170,100 @@ const Chat = () => {
                 senderId,
                 receiverId: userId,
                 text: message,
+                senderName:
+                  users.find((u) => u.userId === senderId)?.userName ||
+                  "Unknown",
+                timestamp: new Date().toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }),
               },
             ]);
           });
-        })
-        .catch((e) => console.error("SignalR Connection failed: ", e));
-    }
+
+          connectionRef.current.onreconnecting((error) => {
+            console.warn("SignalR reconnecting:", error?.message);
+            setConnectionError("Reconnecting...");
+          });
+
+          connectionRef.current.onreconnected((connectionId) => {
+            console.log("SignalR reconnected with ID:", connectionId);
+            setConnectionError(null);
+          });
+
+          connectionRef.current.onclose((error) => {
+            console.error(
+              "SignalR connection closed:",
+              error?.message || error
+            );
+            setConnectionError("Connection lost. Please check your network.");
+          });
+        }
+      } catch (e) {
+        console.error("SignalR Connection failed:", e);
+        setConnectionError(`Connection failed: ${e.message}`);
+      }
+    };
+
+    startConnection();
 
     return () => {
-      if (connection) connection.stop();
+      console.log("Cleaning up SignalR connection...");
+      connectionRef.current
+        ?.stop()
+        .catch((e) => console.error("Error stopping connection:", e));
     };
-  }, [connection, users, userId]);
-
-  // Fetch users
-  // useEffect(() => {
-  //   const fetchUsers = async () => {
-  //     try {
-  //       const response = await fetch("https://localhost:7159/api/Chat/users", {
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       });
-  //       if (!response.ok) throw new Error("Failed to fetch users");
-  //       const data = await response.json();
-  //       setUsers(data);
-  //     } catch (err) {
-  //       console.error("Error fetching users:", err);
-  //     }
-  //   };
-  //   fetchUsers();
-  // }, [token]);
-
-  // Helper to get current user's name
-  function getCurrentUserName(users, userId) {
-    const user = users.find((u) => String(u.id) === String(userId));
-    return user ? user.name : "You";
-  }
-
-  // Send message via SignalR + API
-  const handleSendMessage = async (text) => {
-    if (!text.trim() || !connection) return;
-    try {
-      await connection.invoke("SendMessage", selectedUser, text);
-
-      // await fetch(API_SEND_URL, {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //     Authorization: `Bearer ${token}`,
-      //   },
-      //   body: JSON.stringify({ receiverId: selectedUser, message: text }),
-      // });
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: prev.length + 1,
-          senderId: userId,
-          receiverId: selectedUser,
-          senderName: getCurrentUserName(users, userId),
-          text,
-          timestamp: new Date().toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-        },
-      ]);
-    } catch (err) {
-      console.error("Send message failed", err);
-    }
-  };
-
+  }, [token, userId, users]);
+  const getCurrentUserName = useCallback((users, userId) => {
+    const user = users.find((u) => String(u.userId) === String(userId));
+    return user ? user.userName : "You";
+  }, []);
+  // Send message via SignalR
+  const handleSendMessage = useCallback(
+    async (text) => {
+      if (!text.trim()) {
+        console.warn("Empty message, not sending.");
+        return;
+      }
+      if (!connectionRef.current) {
+        console.error("No SignalR connection available.");
+        setConnectionError("No connection available. Please try again.");
+        return;
+      }
+      if (
+        connectionRef.current.state !== signalR.HubConnectionState.Connected
+      ) {
+        console.error(
+          "SignalR not connected, current state:",
+          connectionRef.current.state
+        );
+        setConnectionError("Not connected. Please wait or refresh.");
+        return;
+      }
+      try {
+        console.log("Sending message to:", selectedUser, text);
+        await connectionRef.current.invoke("SendMessage", selectedUser, text);
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: prev.length + 1,
+            senderId: userId,
+            receiverId: selectedUser,
+            senderName: getCurrentUserName(users, userId),
+            text,
+            timestamp: new Date().toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+          },
+        ]);
+      } catch (err) {
+        console.error("Send message failed:", err);
+        setConnectionError(`Failed to send message: ${err.message}`);
+      }
+    },
+    [selectedUser, userId, users, getCurrentUserName]
+  );
   return (
     <div className="container-fluid chat-page">
       <div className="row h-100">
@@ -189,12 +276,16 @@ const Chat = () => {
             zIndex: 2,
           }}
         >
-          <ChatSidebar
-            users={users}
-            selectedUser={selectedUser}
-            onSelectUser={setSelectedUser}
-            setMessages={setMessages}
-          />
+          {isLoading ? (
+            <div>Loading conversations...</div>
+          ) : (
+            <ChatSidebar
+              users={users}
+              selectedUser={selectedUser}
+              onSelectUser={setSelectedUser}
+              setMessages={setMessages}
+            />
+          )}
         </div>
         {/* Main Chat Area */}
         <div
@@ -213,22 +304,53 @@ const Chat = () => {
               borderTopRightRadius: 18,
             }}
           >
-            <img
-              src={
-                users.find((u) => u.id === selectedUser)?.profilePicture
-                  ? "https://localhost:7159" +
-                    users.find((u) => u.id === selectedUser)?.profilePicture
-                  : "/assets/user.png"
-              }
-              alt="User"
-              width={44}
-              height={44}
-              className="border rounded-circle me-3"
-              style={{
-                objectFit: "cover",
-                background: "#f5f2e9",
-              }}
-            />
+            {/* Connection status indicator */}
+            <div style={{ marginRight: 16 }}>
+              {connection ? (
+                connection.state === signalR.HubConnectionState.Connected ? (
+                  <span style={{ color: "green", fontWeight: 600 }}>
+                    ● Connected
+                  </span>
+                ) : connection.state ===
+                  signalR.HubConnectionState.Connecting ? (
+                  <span style={{ color: "orange", fontWeight: 600 }}>
+                    ● Connecting...
+                  </span>
+                ) : (
+                  <span style={{ color: "red", fontWeight: 600 }}>
+                    ● Disconnected
+                  </span>
+                )
+              ) : (
+                <span style={{ color: "gray", fontWeight: 600 }}>
+                  ● Not initialized
+                </span>
+              )}
+            </div>
+            {users.find((u) => u.userId === selectedUser)?.profilePicture ? (
+              <img
+                src={`https://localhost:7159${
+                  users.find((u) => u.userId === selectedUser)?.profilePicture
+                }`}
+                alt="User"
+                width={44}
+                height={44}
+                className="border rounded-circle me-3"
+                style={{
+                  objectFit: "cover",
+                  background: "#f5f2e9",
+                }}
+              />
+            ) : (
+              <FaUserAlt
+                size={44}
+                className="border rounded-circle me-3"
+                style={{
+                  padding: "10px",
+                  background: "#f5f2e9",
+                }}
+              />
+            )}
             <div>
               <div
                 className="fw-bold"
@@ -237,39 +359,56 @@ const Chat = () => {
                   color: "var(--color-brand)",
                 }}
               >
-                {users.find((u) => u.id === selectedUser)
-                  ? `${users.find((u) => u.id === selectedUser).firstName} ${
-                      users.find((u) => u.id === selectedUser).lastName
-                    }`
-                  : "Select a user"}
+                {users.find((u) => u.userId === selectedUser)?.userName ||
+                  "Select a user"}
               </div>
               <div className="small text-muted">
-                {users.find((u) => u.id === selectedUser)?.email || ""}
+                {users.find((u) => u.userId === selectedUser)?.email || ""}
               </div>
             </div>
           </div>
+          {/* Connection Error */}
+          {/* {connectionError && (
+            <div className="m-2 alert alert-danger">
+              {connectionError}
+              <button
+                className="btn btn-sm btn-primary ms-2"
+                onClick={() =>
+                  connection
+                    ?.start()
+                    .catch((e) => console.error("Retry failed:", e))
+                }
+              >
+                Retry
+              </button>
+            </div>
+          )} */}
           {/* Messages + Input */}
           <div className="flex-grow-1 d-flex flex-column">
             {selectedUser ? (
-              <>
-                <div
-                  className="overflow-auto flex-grow-1 chat-messages-area"
-                  style={{
-                    background: "var(--color-bg-beige)",
-                  }}
-                >
-                  <ChatMessages messages={messages} userId={userId} />
-                </div>
-                <div
-                  className="p-2 chat-input-area border-top"
-                  style={{
-                    background: "#fff",
-                    borderBottomRightRadius: 18,
-                  }}
-                >
-                  <ChatInput onSend={handleSendMessage} />
-                </div>
-              </>
+              isLoading ? (
+                <div>Loading messages...</div>
+              ) : (
+                <>
+                  <div
+                    className="overflow-auto flex-grow-1 chat-messages-area"
+                    style={{
+                      background: "var(--color-bg-beige)",
+                    }}
+                  >
+                    <ChatMessages messages={messages} userId={userId} />
+                  </div>
+                  <div
+                    className="p-2 chat-input-area border-top"
+                    style={{
+                      background: "#fff",
+                      borderBottomRightRadius: 18,
+                    }}
+                  >
+                    <ChatInput onSend={handleSendMessage} />
+                  </div>
+                </>
+              )
             ) : (
               <div
                 className="flex-grow-1 d-flex align-items-center justify-content-center text-muted"
