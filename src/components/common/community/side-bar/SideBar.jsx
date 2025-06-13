@@ -3,7 +3,6 @@ import { Offcanvas } from "react-bootstrap";
 import { FiMenu, FiChevronLeft } from "react-icons/fi";
 import { FaUserPlus, FaUserMinus } from "react-icons/fa";
 import PropTypes from "prop-types";
-
 import { useToast } from "../../../../hooks/useToast";
 import "./styles.css";
 import { useSelector } from "react-redux";
@@ -13,6 +12,7 @@ export default function SideBar({ communityTypes = [], onSelectCommunity }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { showSuccess, showError } = useToast();
   const { token } = useSelector((state) => state.auth);
+
   function handleJoinLeave(community, action) {
     const url = `https://localhost:7159/api/Community/${community.id}/${action}`;
     fetch(url, {
@@ -48,88 +48,92 @@ export default function SideBar({ communityTypes = [], onSelectCommunity }) {
 
       {/* Desktop Sidebar */}
       <div
-        className={`pt-3 bg-white shadow-lg desktop-sidebar d-none d-lg-flex flex-column vh-100 position-fixed ${
+        className={`pt-4 bg-white shadow-lg desktop-sidebar d-none d-lg-flex flex-column vh-100 position-fixed ${
           isCollapsed ? "collapsed" : ""
         }`}
-        style={{ width: isCollapsed ? 70 : 240, transition: "width 0.3s" }}
       >
-        <div className="px-3 mb-3 d-flex justify-content-end">
+        <div className="px-3 mb-4 d-flex justify-content-end">
           <button
             className="collapse-btn"
             onClick={() => setIsCollapsed(!isCollapsed)}
             aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-            style={{ background: "none", border: "none", cursor: "pointer" }}
           >
             <FiChevronLeft
               className={`${isCollapsed ? "rotate-180" : ""}`}
-              style={{ transition: "transform 0.3s" }}
+              size={24}
             />
           </button>
         </div>
-        {/* Communities as filteration */}
+        {/* Communities as filtration */}
         <div className="px-3 sidebar-communities">
           <ul className="list-unstyled">
-            <li className="mb-2">
+            <li className="mb-3">
               <button
-                className="px-0 btn btn-link text-start w-100 d-flex align-items-center"
-                style={{
-                  color: "#5d4037",
-                  fontWeight: 500,
-                  textDecoration: "none",
-                }}
+                className="sideBarItem w-100 d-flex align-items-center"
                 onClick={() => onSelectCommunity && onSelectCommunity(null)}
               >
-                <span className={isCollapsed ? "d-none" : ""}>
-                  All Communities
-                </span>
+                {isCollapsed ? (
+                  <span className="icon">🌐</span>
+                ) : (
+                  <>
+                    <span className="icon">🌐</span>
+                    <span className="menu-text">All Communities</span>
+                  </>
+                )}
               </button>
             </li>
             {communityTypes.length === 0 && (
-              <li className="text-muted">
+              <li className="px-3 text-muted">
                 <span className={isCollapsed ? "d-none" : ""}>
                   No communities
                 </span>
               </li>
             )}
             {communityTypes.map((community) => (
-              <li className="mb-2" key={community.id}>
+              <li className="mb-3" key={community.id}>
                 <div className="d-flex align-items-center justify-content-between">
                   <button
-                    className="px-0 btn btn-link text-start w-100 d-flex align-items-center"
-                    style={{
-                      color: "#5d4037",
-                      fontWeight: 500,
-                      textDecoration: "none",
-                    }}
+                    className="sideBarItem w-100 d-flex align-items-center"
                     onClick={() =>
                       onSelectCommunity && onSelectCommunity(community.id)
                     }
+                    title={isCollapsed ? community.name : ""}
                   >
-                    <span className={isCollapsed ? "d-none" : ""}>
-                      {community.name}
-                    </span>
+                    <img
+                      src={`https://localhost:7159/${community.imageUrl}`}
+                      alt={community.name}
+                      style={{
+                        width: isCollapsed ? 40 : 32,
+                        height: isCollapsed ? 40 : 32,
+                        borderRadius: "50%",
+                        objectFit: "cover",
+                        border: "1px solid #e2e8f0",
+                        marginRight: isCollapsed ? 0 : 12,
+                      }}
+                    />
+                    {!isCollapsed && (
+                      <span className="menu-text">{community.name}</span>
+                    )}
                   </button>
-                  {/* Hide Join/Leave Icon when collapsed */}
-                  {!isCollapsed &&
-                    (community.isMember ? (
-                      <button
-                        className="w-auto px-2 py-1 btn btn-link ms-2"
-                        title="Leave"
-                        onClick={() => handleJoinLeave(community, "leave")}
-                        style={{ color: "#b71c1c" }}
-                      >
-                        <FaUserMinus size={18} />
-                      </button>
-                    ) : (
-                      <button
-                        className="w-auto px-2 py-1 btn btn-link ms-2"
-                        title="Join"
-                        onClick={() => handleJoinLeave(community, "join")}
-                        style={{ color: "#1976d2" }}
-                      >
-                        <FaUserPlus size={18} />
-                      </button>
-                    ))}
+                  {!isCollapsed && (
+                    <button
+                      className="btn-side-bar join-leave-btn"
+                      title={community.isMember ? "Leave" : "Join"}
+                      onClick={() =>
+                        handleJoinLeave(
+                          community,
+                          community.isMember ? "leave" : "join"
+                        )
+                      }
+                      style={{ border: "none", backgroundColor: "transparent" }}
+                    >
+                      {community.isMember ? (
+                        <FaUserMinus size={20} color="#b91c1c" />
+                      ) : (
+                        <FaUserPlus size={20} color="#2563eb" />
+                      )}
+                    </button>
+                  )}
                 </div>
               </li>
             ))}
@@ -137,93 +141,79 @@ export default function SideBar({ communityTypes = [], onSelectCommunity }) {
         </div>
       </div>
 
-      {/* Main Content Wrapper */}
-      <div className={`main-content ${isCollapsed ? "expanded" : ""}`}>
-        {/* Mobile Sidebar */}
-        <Offcanvas
-          show={show}
-          onHide={() => setShow(false)}
-          backdrop="static"
-          className="mobile-sidebar"
-        >
-          <Offcanvas.Header closeButton>
-            <Offcanvas.Title>Communities</Offcanvas.Title>
-          </Offcanvas.Header>
-          <Offcanvas.Body>
-            <ul className="list-unstyled">
-              <li>
-                <button
-                  className="px-0 btn btn-link text-start w-100"
-                  style={{
-                    color: "#5d4037",
-                    fontWeight: 500,
-                    textDecoration: "none",
-                  }}
-                  onClick={() => {
-                    setShow(false);
-                    onSelectCommunity && onSelectCommunity(null);
-                  }}
-                >
-                  All Communities
-                </button>
-              </li>
-              {communityTypes.length === 0 && (
-                <li className="text-muted">No communities</li>
-              )}
-              {communityTypes.map((community) => (
-                <li key={community.id}>
-                  <div className="d-flex align-items-center justify-content-between">
-                    <button
-                      className="px-0 btn btn-link text-start w-100"
+      {/* Mobile Sidebar */}
+      <Offcanvas
+        show={show}
+        onHide={() => setShow(false)}
+        backdrop="static"
+        className="mobile-sidebar"
+      >
+        <Offcanvas.Header closeButton>
+          <Offcanvas.Title>Communities</Offcanvas.Title>
+        </Offcanvas.Header>
+        <Offcanvas.Body>
+          <ul className="list-unstyled">
+            <li className="mb-3">
+              <button
+                className="sideBarItem w-100 d-flex align-items-center"
+                onClick={() => {
+                  setShow(false);
+                  onSelectCommunity && onSelectCommunity(null);
+                }}
+              >
+                <span className="icon">🌐</span>
+                <span className="menu-text">All Communities</span>
+              </button>
+            </li>
+            {communityTypes.length === 0 && (
+              <li className="text-muted">No communities</li>
+            )}
+            {communityTypes.map((community) => (
+              <li className="mb-3" key={community.id}>
+                <div className="d-flex align-items-center justify-content-between">
+                  <button
+                    className="sideBarItem w-100 d-flex align-items-center"
+                    onClick={() => {
+                      setShow(false);
+                      onSelectCommunity && onSelectCommunity(community.id);
+                    }}
+                  >
+                    <img
+                      src={`https://localhost:7159/${community.imageUrl}`}
+                      alt={community.name}
                       style={{
-                        color: "#5d4037",
-                        fontWeight: 500,
-                        textDecoration: "none",
+                        width: 36,
+                        height: 36,
+                        borderRadius: "50%",
+                        objectFit: "cover",
+                        border: "1px solid #e2e8f0",
+                        marginRight: 12,
                       }}
-                      onClick={() => {
-                        setShow(false);
-                        onSelectCommunity && onSelectCommunity(community.id);
-                      }}
-                    >
-                      {community.name}
-                    </button>
-                    {/* Join/Leave Button */}
+                    />
+                    <span className="menu-text">{community.name}</span>
+                  </button>
+                  <button
+                    className="btn-side-bar join-leave-btn"
+                    onClick={() =>
+                      handleJoinLeave(
+                        community,
+                        community.isMember ? "leave" : "join"
+                      )
+                    }
+                    style={{ border: "none", backgroundColor: "transparent" }}
+                  >
                     {community.isMember ? (
-                      <button
-                        className="btn btn-outline-danger btn-sm ms-2"
-                        style={{ minWidth: 60 }}
-                        onClick={() =>
-                          onSelectCommunity &&
-                          onSelectCommunity({
-                            id: community.id,
-                            action: "leave",
-                          })
-                        }
-                      >
-                        Leave
-                      </button>
+                      <FaUserMinus size={20} color="#b91c1c" />
                     ) : (
-                      <button
-                        className="btn btn-outline-primary btn-sm ms-2"
-                        style={{ minWidth: 60 }}
-                        onClick={() =>
-                          onSelectCommunity &&
-                          onSelectCommunity({
-                            id: community.id,
-                            action: "join",
-                          })
-                        }
-                      >
-                        Join
-                      </button>
+                      <FaUserPlus size={20} color="#2563eb" />
                     )}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </Offcanvas.Body>
-        </Offcanvas>
-      </div>
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </Offcanvas.Body>
+      </Offcanvas>
     </div>
   );
 }
@@ -233,6 +223,8 @@ SideBar.propTypes = {
     PropTypes.shape({
       id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
       name: PropTypes.string.isRequired,
+      imageUrl: PropTypes.string,
+      isMember: PropTypes.bool,
     })
   ),
   onSelectCommunity: PropTypes.func,
