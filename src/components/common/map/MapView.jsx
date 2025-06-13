@@ -6,12 +6,14 @@ import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick"; // 📦 Slider
 import styles from "./Map.module.css";
 import BookPopup from "./bookpopup/BookPopup";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useCallback } from "react";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import { useToast } from "../../../hooks/useToast";
 
 // Component to fit bounds
 function FitBounds({ bounds }) {
   const map = useMap();
-
   useEffect(() => {
     if (bounds?.length > 0) {
       try {
@@ -30,6 +32,9 @@ FitBounds.propTypes = {
 };
 
 function MapView({ requests }) {
+  const { userName, token } = useSelector((state) => state.auth);
+  const { showSuccess, showError } = useToast();
+
   const defaultPosition = useMemo(
     () => ({ lat: 30.033333, lng: 31.233334 }),
     []
@@ -86,6 +91,45 @@ function MapView({ requests }) {
     };
   }, [requests, defaultPosition]);
 
+  // Accept handler
+  const handleAccept = useCallback(
+    async (request) => {
+      try {
+        // 1. Accept exchange
+        await axios.post(
+          "https://localhost:7159/api/Exchange/accept",
+          { requestId: request.id },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        // 2. Send chat message
+        const message = `I'm ${userName} and I have a book ${request.bookTitle} that you wanted.`;
+        const receiverId = request.senderUserId;
+        await axios.post(
+          "https://localhost:7159/api/Chat/send",
+          { receiverId, message },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        showSuccess("Book exchange accepted and message sent!");
+      } catch (error) {
+        showError(
+          error?.response?.data?.message || error.message || "An error occurred"
+        );
+      }
+    },
+    [token, userName, showSuccess, showError]
+  );
+
   const sliderSettings = {
     infinite: false,
     speed: 300,
@@ -125,12 +169,10 @@ function MapView({ requests }) {
                         title={request.bookTitle}
                         author={request.authorName}
                         senderProfilePhoto={request.senderProfilePhoto}
-                        senderUserId={request.senderId}
+                        senderUserId={request.senderUserId}
                         senderUserName={request.senderUserName}
                         requestDate={request.requestDate}
-                        onAccept={() => {
-                          console.log("Accepted book exchange!", request);
-                        }}
+                        onAccept={() => handleAccept(request)}
                       />
                     </div>
                   ))}
