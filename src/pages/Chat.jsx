@@ -7,18 +7,19 @@ import "../styles/Chat.css";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { FaUserAlt } from "react-icons/fa";
+import axios from "axios";
 
 const HUB_URL = "https://localhost:7159/chatHub";
 
 const Chat = () => {
   const { userId } = useParams();
+  const { id: loggedInUserId, token } = useSelector((state) => state.auth);
   const [users, setUsers] = useState([]);
   const [messages, setMessages] = useState([]);
   const [selectedUser, setSelectedUser] = useState(userId || null);
   const [connection, setConnection] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [connectionError, setConnectionError] = useState(null);
-  const { token } = useSelector((state) => state.auth);
   const connectionRef = useRef(null); // لتخزين الـ connection
 
   // Fetch conversations
@@ -218,38 +219,31 @@ const Chat = () => {
     const user = users.find((u) => String(u.userId) === String(userId));
     return user ? user.userName : "You";
   }, []);
-  // Send message via SignalR
+  // Send message via API instead of SignalR invoke
   const handleSendMessage = useCallback(
     async (text) => {
       if (!text.trim()) {
         console.warn("Empty message, not sending.");
         return;
       }
-      if (!connectionRef.current) {
-        console.error("No SignalR connection available.");
-        setConnectionError("No connection available. Please try again.");
-        return;
-      }
-      if (
-        connectionRef.current.state !== signalR.HubConnectionState.Connected
-      ) {
-        console.error(
-          "SignalR not connected, current state:",
-          connectionRef.current.state
-        );
-        setConnectionError("Not connected. Please wait or refresh.");
-        return;
-      }
       try {
-        console.log("Sending message to:", selectedUser, text);
-        await connectionRef.current.invoke("SendMessage", selectedUser, text);
+        await axios.post(
+          "https://localhost:7159/api/Chat/send",
+          { receiverId: selectedUser, message: text },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
         setMessages((prev) => [
           ...prev,
           {
             id: prev.length + 1,
-            senderId: userId,
+            senderId: loggedInUserId,
             receiverId: selectedUser,
-            senderName: getCurrentUserName(users, userId),
+            senderName: getCurrentUserName(users, loggedInUserId),
             text,
             timestamp: new Date().toLocaleTimeString([], {
               hour: "2-digit",
@@ -262,7 +256,7 @@ const Chat = () => {
         setConnectionError(`Failed to send message: ${err.message}`);
       }
     },
-    [selectedUser, userId, users, getCurrentUserName]
+    [selectedUser, loggedInUserId, users, getCurrentUserName, token]
   );
   return (
     <div className="container-fluid chat-page">
@@ -396,7 +390,7 @@ const Chat = () => {
                       background: "var(--color-bg-beige)",
                     }}
                   >
-                    <ChatMessages messages={messages} userId={userId} />
+                    <ChatMessages messages={messages} userId={loggedInUserId} />
                   </div>
                   <div
                     className="p-2 chat-input-area border-top"

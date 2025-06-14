@@ -16,6 +16,7 @@ const registerSchema = Joi.object({
   lastName: Joi.string().min(2).max(30).required(),
   username: Joi.string().alphanum().min(3).max(20).required(),
   gender: Joi.string().valid("male", "female").required(),
+  dateOfBirth: Joi.date().less("now").required(),
 });
 
 export default function Register() {
@@ -30,6 +31,7 @@ export default function Register() {
     lastName: "",
     username: "",
     gender: "",
+    dateOfBirth: "",
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -61,6 +63,7 @@ export default function Register() {
         lastName: "",
         username: "",
         gender: "",
+        dateOfBirth: "",
       });
 
       setTimeout(() => {
@@ -149,6 +152,19 @@ export default function Register() {
             <option value="male">Male</option>
             <option value="female">Female</option>
           </Form.Select>
+        </Form.Group>
+
+        <Form.Group className="mb-4">
+          <Form.Label>Date of Birth</Form.Label>
+          <Form.Control
+            name="dateOfBirth"
+            type="date"
+            placeholder="Select your date of birth"
+            value={user.dateOfBirth}
+            onChange={handleChange}
+            required
+            className="form-control"
+          />
         </Form.Group>
 
         <Form.Group className="mb-4" controlId="formBasicPassword">

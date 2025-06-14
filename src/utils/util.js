@@ -8,7 +8,9 @@ function createdAt() {
 }
 
 function timeAgo(dateString) {
-  return dayjs(dateString).fromNow();
+  // Add 3 hours to the input date before calculating relative time
+  const adjusted = dayjs(dateString).add(3, "hour");
+  return adjusted.fromNow();
 }
 
 export { createdAt, timeAgo };

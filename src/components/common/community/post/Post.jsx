@@ -189,7 +189,7 @@ export default function Post({
   };
 
   const handleDelete = async () => {
-    if (!window.confirm("Are you sure you want to delete this post?")) return;
+    // Remove confirm dialog
     try {
       const response = await fetch(
         `https://localhost:7159/api/Community/posts/${id}`,
@@ -214,8 +214,7 @@ export default function Post({
   };
 
   const handleDeleteComment = async (commentId) => {
-    if (!window.confirm("Are you sure you want to delete this comment?"))
-      return;
+    // Remove confirm dialog
     try {
       const response = await fetch(
         `https://localhost:7159/api/Community/comments/${commentId}`,
@@ -340,7 +339,7 @@ export default function Post({
             className="gap-2 d-flex align-items-center interaction-button"
             onClick={handleShowComments}
           >
-            <Chat /> {commentsCount} Comments
+            <Chat /> {commentCount} Comments
           </Button>
         </div>
 

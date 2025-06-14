@@ -12,6 +12,7 @@ import {
   REGISTER,
 } from "redux-persist";
 import wishlistReducer from "./wishlist/wishlistSlice";
+import notificationReducer from "./notification/notificationSlice";
 
 const persistConfig = {
   key: "root",
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
   activity,
   auth,
   wishlist: wishlistReducer,
+  notification: notificationReducer, // Remove persistReducer for notification
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

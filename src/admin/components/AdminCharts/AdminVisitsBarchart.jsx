@@ -73,18 +73,18 @@ const VisitsChart = () => {
           <YAxis />
           <Tooltip />
           <Legend />
-          <Bar dataKey="Jan" fill={colors[0]} />
-          <Bar dataKey="Feb" fill={colors[1]} />
-          <Bar dataKey="Mar" fill={colors[2]} />
-          <Bar dataKey="April" fill={colors[3]} />
-          <Bar dataKey="May" fill={colors[4]} />
+          <Bar dataKey="jan" fill={colors[0]} />
+          <Bar dataKey="feb" fill={colors[1]} />
+          <Bar dataKey="mar" fill={colors[2]} />
+          <Bar dataKey="april" fill={colors[3]} />
+          <Bar dataKey="may" fill={colors[4]} />
           <Bar dataKey="june" fill={colors[5]} />
           <Bar dataKey="july" fill={colors[6]} />
-          <Bar dataKey="Augast" fill={colors[7]} />
-          <Bar dataKey="September" fill={colors[8]} />
-          <Bar dataKey="october" fill={colors[9]} />
-          <Bar dataKey="November" fill={colors[10]} />
-          <Bar dataKey="December" fill={colors[11]} />
+          <Bar dataKey="aug" fill={colors[7]} />
+          <Bar dataKey="sept" fill={colors[8]} />
+          <Bar dataKey="oct" fill={colors[9]} />
+          <Bar dataKey="nov" fill={colors[10]} />
+          <Bar dataKey="dec" fill={colors[11]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

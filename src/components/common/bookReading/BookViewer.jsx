@@ -46,6 +46,10 @@ const supportedLanguages = [
   { code: "it", name: "Italian" },
   { code: "ja", name: "Japanese" },
   { code: "zh-cn", name: "Chinese (Simplified)" },
+  { code: "hi", name: "Hindi" },
+  { code: "tr", name: "Turkish" },
+  { code: "pt", name: "Portuguese" },
+  { code: "ru", name: "Russian" },
 ];
 
 const MAX_STICKY_NOTES = 10;
@@ -93,9 +97,13 @@ const BookViewer = ({ id, userId }) => {
     const fetchBookUrl = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(`http://localhost:3000/book/${id}`);
+        const response = await fetch(
+          `https://localhost:7159/api/BookDownload/${id}`
+        );
         if (!response.ok) throw new Error("Failed to load book");
         const data = await response.json();
+        console.log("🟩 data: ", data);
+
         setBookUrl(data.path);
       } catch (error) {
         console.error("Error loading book:", error);
@@ -441,7 +449,7 @@ const BookViewer = ({ id, userId }) => {
         <div className="book-reader-container">
           {bookUrl && !isLoading && (
             <ReactReader
-              url={`http://localhost:3000/${bookUrl}`}
+              url={`https://localhost:7159/${bookUrl}`}
               location={location}
               locationChanged={handleLocationChanged}
               getRendition={handleRendition}

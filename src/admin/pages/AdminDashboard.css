@@ -84,9 +84,7 @@ h5 {
 .admin-dashboard-card {
   flex: 1;
   min-width: 220px;
-  background: #f1f5f9;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   padding: 18px;
 }
 
@@ -99,9 +97,7 @@ h5 {
 .admin-dashboard-postschart {
   flex: 2;
   min-width: 320px;
-  background: #f9fafb;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
   padding: 18px;
   display: flex;
   align-items: center;
@@ -111,9 +107,7 @@ h5 {
 .admin-dashboard-postscard {
   flex: 1;
   min-width: 220px;
-  background: #f9fafb;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
   padding: 18px;
   display: flex;
   align-items: center;

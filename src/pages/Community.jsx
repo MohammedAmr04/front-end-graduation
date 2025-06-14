@@ -141,6 +141,7 @@ export default function Community() {
                   setCommunityType={setCommunityType}
                   setCommunityTypes={setCommunityTypes}
                   onPostSuccess={refetch}
+                  setLocalPosts={setLocalPosts}
                 />
               )}
             </div>

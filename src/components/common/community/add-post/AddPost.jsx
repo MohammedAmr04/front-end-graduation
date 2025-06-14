@@ -13,6 +13,7 @@ export default function AddPost({
   setCommunityType,
   setCommunityTypes,
   onPostSuccess, // ✅ NEW PROP
+  setLocalPosts, // ✅ NEW PROP
 }) {
   const profilePicture = useSelector((state) => state.auth.profilePicture);
   const { token } = useSelector((state) => state.auth);
@@ -110,6 +111,9 @@ export default function AddPost({
         let errorMsg = "Failed to create post. Please try again.";
         try {
           const data = await response.json();
+          if (data) {
+            setLocalPosts((prev) => [data, ...prev]);
+          }
           if (data && data.error) {
             errorMsg = data.error;
           }

@@ -2,6 +2,10 @@ import { Container, Nav, Navbar, Dropdown } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../../../store/Auth/authSlice";
+import {
+  addNotification,
+  clearNotifications,
+} from "../../../store/notification/notificationSlice";
 import logo from "/src/assets/Group 4.svg";
 import { FaUserCircle, FaHeart } from "react-icons/fa";
 import { FiBell } from "react-icons/fi";
@@ -17,8 +21,10 @@ export default function Header() {
   const { isLoggedIn, token, id, profilePicture, userName } = useSelector(
     (state) => state.auth
   );
+  const notifications = useSelector(
+    (state) => state.notification.notifications
+  );
   const [hasNotification, setHasNotification] = useState(false);
-  const [notifications, setNotifications] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const connectionRef = useRef(null);
 
@@ -37,7 +43,7 @@ export default function Header() {
       .then((res) => (res.ok ? res.json() : []))
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
-          setNotifications(data);
+          data.forEach((notif) => dispatch(addNotification(notif)));
           setHasNotification(true);
         }
       })
@@ -52,7 +58,7 @@ export default function Header() {
 
     connection.on("ReceiveNotification", (notification) => {
       setHasNotification(true);
-      setNotifications((prev) => [notification, ...prev]);
+      dispatch(addNotification(notification));
     });
 
     connection
@@ -79,6 +85,7 @@ export default function Header() {
 
   const handleLogout = () => {
     dispatch(logout());
+    dispatch(clearNotifications());
     navigate("/login");
   };
 
@@ -206,12 +213,15 @@ export default function Header() {
                               background:
                                 notification.notificationType === "PostRejected"
                                   ? "#fff3f3"
-                                  : notification.notificationType === "PostAccepted"
+                                  : notification.notificationType ===
+                                    "PostAccepted"
                                   ? "#f3fff3"
                                   : "#fff",
                             }}
                           >
-                            <div style={{ width: 40, height: 40, flexShrink: 0 }}>
+                            <div
+                              style={{ width: 40, height: 40, flexShrink: 0 }}
+                            >
                               <img
                                 src={`https://localhost:7159${notification.actorProfilePicture}`}
                                 alt={notification.actorUserName}
@@ -221,9 +231,11 @@ export default function Header() {
                                   borderRadius: "50%",
                                   objectFit: "cover",
                                   border:
-                                    notification.notificationType === "PostRejected"
+                                    notification.notificationType ===
+                                    "PostRejected"
                                       ? "2px solid #e57373"
-                                      : notification.notificationType === "PostAccepted"
+                                      : notification.notificationType ===
+                                        "PostAccepted"
                                       ? "2px solid #4caf50"
                                       : "2px solid #eee",
                                 }}
@@ -234,9 +246,11 @@ export default function Header() {
                                 style={{
                                   fontWeight: 600,
                                   color:
-                                    notification.notificationType === "PostRejected"
+                                    notification.notificationType ===
+                                    "PostRejected"
                                       ? "#e57373"
-                                      : notification.notificationType === "PostAccepted"
+                                      : notification.notificationType ===
+                                        "PostAccepted"
                                       ? "#388e3c"
                                       : undefined,
                                 }}

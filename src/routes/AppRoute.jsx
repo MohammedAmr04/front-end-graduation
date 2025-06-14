@@ -145,7 +145,12 @@ const router = createBrowserRouter([
             element: <ManageUsers />,
           },
           {
+            index: true,
             path: "admindashboard",
+            element: <AdminDashboard />,
+          },
+          {
+            index: true,
             element: <AdminDashboard />,
           },
         ],
