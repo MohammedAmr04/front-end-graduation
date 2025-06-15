@@ -7,7 +7,7 @@ import { login } from "../store/Auth/authSlice";
 import { useNavigate } from "react-router-dom";
 import Joi from "joi";
 import { useToast } from "../hooks/useToast";
-
+import { jwtDecode } from "jwt-decode";
 const schema = Joi.object({
   email: Joi.string()
     .email({ tlds: { allow: false } })
@@ -57,7 +57,6 @@ export default function Login() {
     e.preventDefault();
     const validationErrors = validateForm();
     setErrors(validationErrors);
-
     if (validationErrors) return;
 
     setLoading(true); // 🆕 أول لما يبدأ الإرسال خلي اللودينج true
@@ -71,20 +70,41 @@ export default function Login() {
         }
       );
       showSuccess("Login Successful");
-      dispatch(login(response.data));
-      setTimeout(() => {
+      // Decode JWT to extract role
+      const token = response.data.token;
+      let role = "";
+      if (token) {
+        const decoded = jwtDecode(token);
+        role =
+          decoded[
+            "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+          ] || "";
+      }
+      dispatch(login({ ...response.data, role }));
+      console.log("token: ", token);
+      if (role === "Admin") {
+        navigate("/admin");
+      } else {
         navigate("/");
-      }, 2000);
+      }
     } catch (error) {
-      showError("Error during login");
-      console.error(
-        "Error during login:",
-        error.response?.data || error.message
-      );
-      setErrors({
-        submit:
-          error.response?.data?.message || "Login failed. Please try again.",
-      });
+      // Check for account blocked error
+      const apiError = error.response?.data;
+      if (
+        apiError?.statusCode === 403 &&
+        apiError?.message === "Account Blocked" &&
+        Array.isArray(apiError.errors) &&
+        apiError.errors.length > 0
+      ) {
+        showError(apiError.errors[0]);
+        setErrors({ submit: apiError.errors[0] });
+      } else {
+        showError("Error during login");
+        setErrors({
+          submit: apiError?.message || "Login failed. Please try again.",
+        });
+      }
+      console.error("Error during login:", apiError);
     } finally {
       setLoading(false); // 🆕 سواء نجح أو فشل رجع اللودينج false
     }
@@ -155,6 +175,11 @@ export default function Login() {
           <span className="text-black-50">{`Don't have an account?`}</span>{" "}
           <Link to="/register" className="text-primary">
             Register now
+          </Link>
+        </p>
+        <p className="mt-2 text-center">
+          <Link to="/forgot-password" className="text-primary">
+            Forgot Password?
           </Link>
         </p>
       </Form>

@@ -9,7 +9,7 @@ import axios from "axios";
 export default function HeaderProfile({ profile, me }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { token } = useSelector((state) => state.auth);
+  const { token, role } = useSelector((state) => state.auth);
   const { coverPhotoUrl, firstName, lastName, profilePhotoUrl, userId } =
     profile || {};
 
@@ -165,8 +165,26 @@ export default function HeaderProfile({ profile, me }) {
             >
               <Link to="dashboard">Dashboard</Link>
             </li>
+            {me && (role === "Moderator" || role === "Admin") && (
+              <li
+                className={
+                  location.pathname.endsWith("/manage") ? "active-nav" : ""
+                }
+              >
+                <Link to="manage">Manage</Link>
+              </li>
+            )}
           </ul>
         </div>
+        {/* {me && role === "Moderator" && (
+          <button
+            className="w-auto mt-3 btn btn-warning ms-3"
+            style={{ fontSize: "0.95rem", padding: "6px 16px" }}
+            onClick={() => navigate("/admin/managecommunity")}
+          >
+            Manage
+          </button>
+        )} */}
       </Container>
     </div>
   );

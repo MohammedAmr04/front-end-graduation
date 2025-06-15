@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux"; // <-- import useSelector
+import { useToast } from "../../hooks/useToast";
 import "./ManageCommunity.css";
 import { timeAgo } from "../../utils/util";
 
@@ -13,9 +14,13 @@ const ManageCommunity = () => {
     name: "",
     description: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   // Get token from authSlice in Redux store
   const token = useSelector((state) => state.auth.token);
+  const { showSuccess, showError } = useToast();
 
   // Get all communities
   useEffect(() => {
@@ -48,26 +53,26 @@ const ManageCommunity = () => {
   };
 
   // Save edits
-  const handleSave = async () => {
-    try {
-      await axios.put(`${API_URL}/${editCommunity}`, updateCommunity, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setCommunities(
-        communities.map((community) =>
-          community.id === editCommunity
-            ? { ...community, ...updateCommunity }
-            : community
-        )
-      );
-      setEditCommunity(null);
-      alert("Community updated");
-    } catch (error) {
-      console.error("Error updating community", error);
-    }
-  };
+  // const handleSave = async () => {
+  //   try {
+  //     await axios.put(`${API_URL}/${editCommunity}`, updateCommunity, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     setCommunities(
+  //       communities.map((community) =>
+  //         community.id === editCommunity
+  //           ? { ...community, ...updateCommunity }
+  //           : community
+  //       )
+  //     );
+  //     setEditCommunity(null);
+  //     alert("Community updated");
+  //   } catch (error) {
+  //     console.error("Error updating community", error);
+  //   }
+  // };
 
   const handleCancel = () => {
     setEditCommunity(null);
@@ -83,11 +88,48 @@ const ManageCommunity = () => {
       })
       .then(() => {
         setCommunities(communities.filter((community) => community.id !== id));
-        alert("Community deleted successfully");
+        showSuccess("Community deleted successfully");
       })
       .catch((error) => {
+        showError(error.response?.data || "Error deleting community");
         console.error("Error deleting community:", error);
       });
+  };
+
+  // Edit community API call (multipart/form-data)
+  // Updated handleSave to work with the edit form state
+  const handleSave = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    setSuccess("");
+    try {
+      // If you want to support image upload, add an image input and handle it here
+      const formData = new FormData();
+      formData.append("Name", updateCommunity.name);
+      formData.append("Description", updateCommunity.description);
+      // If you have an image: formData.append("ImageFile", imageFile || "");
+      await axios.put(`${API_URL}/${editCommunity}`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      setCommunities(
+        communities.map((community) =>
+          community.id === editCommunity
+            ? { ...community, ...updateCommunity }
+            : community
+        )
+      );
+      setEditCommunity(null);
+      setSuccess("Community updated successfully!");
+    } catch (error) {
+      setError(error.response?.data || "Failed to edit community");
+      console.error("Failed editing community", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -285,13 +327,25 @@ const ManageCommunity = () => {
               style={{ marginBottom: 18 }}
             />
             <div className="form-buttons" style={{ justifyContent: "center" }}>
-              <button className="save-community-btn" onClick={handleSave}>
-                Save
+              <button
+                className="save-community-btn"
+                onClick={handleSave}
+                disabled={loading}
+              >
+                {loading ? "Saving..." : "Save"}
               </button>
-              <button className="cancel-community-btn" onClick={handleCancel}>
+              <button
+                className="cancel-community-btn"
+                onClick={handleCancel}
+                disabled={loading}
+              >
                 Cancel
               </button>
             </div>
+            {error && <div style={{ color: "red", marginTop: 8 }}>{error}</div>}
+            {success && (
+              <div style={{ color: "green", marginTop: 8 }}>{success}</div>
+            )}
           </div>
         </div>
       )}

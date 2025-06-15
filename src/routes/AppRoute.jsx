@@ -5,6 +5,7 @@ import MainLayout from "../layouts/MainLayout";
 import AdminLayout from "../layouts/AdminLayout";
 import ErrorPage from "../pages/ErrorPage";
 import Loader from "../components/common/loader/Loader";
+import ManageProfileUsers from "../components/common/profile/manageusers/ManageProfileUsers";
 
 const Login = lazy(() => import("../pages/Login"));
 const Home = lazy(() => import("../pages/Home"));
@@ -35,6 +36,7 @@ const AdminDashboard = lazy(() => import("../admin/pages/AdminDashboard"));
 const BookReading = lazy(() => import("../pages/BookReading/BookReading"));
 const Chat = lazy(() => import("../pages/Chat"));
 const Wishlist = lazy(() => import("../pages/wishlist/Wishlist"));
+const ForgotPassword = lazy(() => import("../pages/ForgotPassword"));
 
 const router = createBrowserRouter([
   {
@@ -111,6 +113,10 @@ const router = createBrowserRouter([
             element: <PostsProfile />,
           },
           {
+            path: "manage",
+            element: <ManageProfileUsers />,
+          },
+          {
             path: "dashboard",
             element: <DashboardProfile />,
           },
@@ -162,6 +168,10 @@ const router = createBrowserRouter([
       {
         path: "chat/:userId",
         element: <Chat />,
+      },
+      {
+        path: "forgot-password",
+        element: <ForgotPassword />,
       },
     ],
   },

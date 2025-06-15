@@ -53,7 +53,7 @@ const AddCommunity = () => {
 
   return (
     <div className="add-community">
-      <div className="heading-container mb-5">
+      <div className="mb-5 heading-container">
         <h2 className="community-heading">
           <span className="heading-text">Add Community</span>
           <div className="heading-underline"></div>

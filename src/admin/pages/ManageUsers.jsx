@@ -93,8 +93,8 @@ const ManageUsers = () => {
   // Handle remove moderator
   const handleRemoveModerator = async (userId, communityId) => {
     try {
-      await axios.delete(
-        `${COMMUNITY_API_URL}/moderators/remove?communityId=${communityId}&userId=${userId}`,
+      await axios.post(
+        `${COMMUNITY_API_URL}/moderators/remove?communityId=${+communityId}&userId=${userId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -115,11 +115,11 @@ const ManageUsers = () => {
     }
   };
 
-  // Handle block user in community
-  const handleBlockInCommunity = async (userId, communityId) => {
+  // Handle block user from site
+  const handleBlockSite = async (userId) => {
     try {
       await axios.post(
-        `${COMMUNITY_API_URL}/${communityId}/ban/${userId}`,
+        `https://localhost:7159/api/Admin/ban-site/${userId}`,
         {},
         {
           headers: {
@@ -132,10 +132,34 @@ const ManageUsers = () => {
           user.id === userId ? { ...user, isBlocked: true } : user
         )
       );
-      showSuccess("User blocked in community successfully");
+      showSuccess("User blocked from site successfully");
     } catch (error) {
-      showError("Error blocking user in community", "error");
-      console.error("Error blocking user in community:", error);
+      showError("Error blocking user from site", "error");
+      console.error("Error blocking user from site:", error);
+    }
+  };
+
+  // Handle unblock user from site
+  const handleUnblockSite = async (userId) => {
+    try {
+      await axios.post(
+        `https://localhost:7159/api/Admin/unban-site/${userId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setUsers(
+        users.map((user) =>
+          user.id === userId ? { ...user, isBlocked: false } : user
+        )
+      );
+      showSuccess("User unblocked from site successfully");
+    } catch (error) {
+      showError("Error unblocking user from site", "error");
+      console.error("Error unblocking user from site:", error);
     }
   };
 
@@ -405,39 +429,6 @@ const ManageUsers = () => {
               )}
             </div>
             <div style={{ marginTop: 18 }}>
-              <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-                <select
-                  className="community-select"
-                  value={
-                    selectedCommunity[user.id + "_block"] ||
-                    user.communityId ||
-                    ""
-                  }
-                  onChange={(e) =>
-                    setSelectedCommunity({
-                      ...selectedCommunity,
-                      [user.id + "_block"]: e.target.value,
-                    })
-                  }
-                  disabled={user.isBlocked}
-                  style={{
-                    marginRight: 8,
-                    minWidth: 120,
-                    background: "var(--color-bg-light)",
-                    color: "var(--color-brand)",
-                    border: "1px solid var(--color-bg-light-alt)",
-                    borderRadius: 6,
-                    padding: "4px 8px",
-                  }}
-                >
-                  <option value="">Select community to block</option>
-                  {communities.map((community) => (
-                    <option key={community.id} value={community.id}>
-                      {community.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
               <button
                 className={user.isBlocked ? "unblock-btn" : "block-btn"}
                 style={{
@@ -455,23 +446,13 @@ const ManageUsers = () => {
                   transition: "background 0.2s",
                 }}
                 onClick={() =>
-                  handleBlockInCommunity(
-                    user.id,
-                    selectedCommunity[user.id + "_block"]
-                  )
-                }
-                disabled={
-                  user.isBlocked || !selectedCommunity[user.id + "_block"]
-                }
-                title={
                   user.isBlocked
-                    ? "Already blocked"
-                    : !selectedCommunity[user.id + "_block"]
-                    ? "Select a community to block"
-                    : "Block in community"
+                    ? handleUnblockSite(user.id)
+                    : handleBlockSite(user.id)
                 }
+                title={user.isBlocked ? "Unblock from site" : "Block from site"}
               >
-                Block in Community
+                {user.isBlocked ? "Unblock from Site" : "Block from Site"}
               </button>
             </div>
           </div>

@@ -8,7 +8,7 @@ import { useToast } from "../../../../hooks/useToast";
 
 export default function PostsProfile() {
   const [isOpen, setIsOpen] = useState(false); // Toggle AddPost form
-  const { profile, me } = useOutletContext();
+  const { profile, me } = useOutletContext() || {};
   const { token } = useSelector((state) => state.auth);
   const [communityType, setCommunityType] = useState("");
   const [communityTypes, setCommunityTypes] = useState([]);
@@ -32,7 +32,7 @@ export default function PostsProfile() {
     fetchData();
   }, [token]);
 
-  const { posts } = profile;
+  const posts = Array.isArray(profile?.posts) ? profile.posts : [];
   return (
     <div className="community-content">
       <div className="py-2 container-fluid">
@@ -60,9 +60,11 @@ export default function PostsProfile() {
             />
           )}{" "}
           <div className={isOpen ? "" : "pt-5"}>
-            {posts.map((post, index) => (
-              <Post key={index} {...post} />
-            ))}
+            {posts.length > 0 ? (
+              posts.map((post, index) => <Post key={index} {...post} />)
+            ) : (
+              <div className="text-center text-muted">No posts found.</div>
+            )}
           </div>
         </div>
       </div>

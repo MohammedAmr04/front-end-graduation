@@ -10,7 +10,7 @@ import {
 } from "../../../store/wishlist/wishlistSlice";
 
 export default function BookCard({ item }) {
-  const { title, author, id } = item;
+  const { title, author, id, cover, newCover } = item;
   const { id: userId } = useSelector((state) => state.auth);
   const wishlist = useSelector((state) => state.wishlist.items);
   const isInWishlist = wishlist.some((book) => book.id === id);
@@ -41,7 +41,11 @@ export default function BookCard({ item }) {
           )}
         </button>
         <img
-          src={`https://www.gutenberg.org/cache/epub/${id}/pg${id}.cover.medium.jpg`}
+          src={
+            cover
+              ? `https://localhost:7159/images/${cover}`
+              : `https://www.gutenberg.org/cache/epub/${id}/pg${id}.cover.medium.jpg`
+          }
           alt={title}
           loading="lazy"
           className="rounded-3 book-img-responsive"
@@ -72,5 +76,7 @@ BookCard.propTypes = {
     title: PropTypes.string.isRequired,
     id: PropTypes.number.isRequired,
     author: PropTypes.string,
+    cover: PropTypes.string,
+    newCover: PropTypes.string,
   }).isRequired,
 };

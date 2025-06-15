@@ -7,9 +7,10 @@ const initialState = {
   lastName: "",
   email: "",
   gender: "",
-  profilePicture: "", 
+  profilePicture: "",
   id: "",
   token: null,
+  role: "", // Add role to state
 };
 
 export const authSlice = createSlice({
@@ -26,6 +27,7 @@ export const authSlice = createSlice({
       state.email = action.payload.email;
       state.gender = action.payload.gender;
       state.token = action.payload.token;
+      state.role = action.payload.role || ""; // Set role from payload
     },
     logout: (state) => {
       state.isLoggedIn = false;
@@ -37,6 +39,7 @@ export const authSlice = createSlice({
       state.gender = "";
       state.profilePicture = "";
       state.token = null;
+      state.role = ""; // Clear role
     },
   },
 });

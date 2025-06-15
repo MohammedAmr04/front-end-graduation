@@ -46,7 +46,11 @@ const Book = () => {
       <div className={styles.bookDetailsCard} data-aos="fade-up">
         <div>
           <img
-            src={`https://www.gutenberg.org/cache/epub/${id}/pg${id}.cover.medium.jpg`}
+            src={
+              book.cover
+                ? `https://localhost:7159//images/${book.cover}`
+                : `https://www.gutenberg.org/cache/epub/${id}/pg${id}.cover.medium.jpg`
+            }
             alt={book.title}
             className={styles.bookCover}
             data-aos="zoom-in"

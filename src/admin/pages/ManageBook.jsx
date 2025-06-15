@@ -3,6 +3,7 @@ import { useFetchBooks } from "../../hooks/useFetchBooks";
 import axios from "axios";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import "./ManageBook.css";
+import { useSelector } from "react-redux";
 
 const PAGE_SIZE = 10;
 
@@ -12,6 +13,7 @@ const ManageBook = () => {
     currentPage,
     PAGE_SIZE
   );
+  const token = useSelector((state) => state.auth.token);
   const [editBook, seteditBook] = useState(null);
   const [updateBook, setupdateBook] = useState({
     title: "",
@@ -22,16 +24,29 @@ const ManageBook = () => {
   });
   const [coverFile, setCoverFile] = useState(null);
 
-  // Edit function
-  const handleEdit = (book) => {
-    seteditBook(book.id);
-    setupdateBook({
-      title: book.title,
-      author: book.author,
-      category: book.category,
-      summary: book.summary,
-    });
-    setCoverFile(null);
+  // Edit function (fetch book details by id)
+  const handleEdit = async (book) => {
+    try {
+      const response = await axios.get(
+        `https://localhost:7159/api/Books/${book.id}`,
+        {
+          headers: {
+            ...(token && { Authorization: `Bearer ${token}` }),
+          },
+        }
+      );
+      const data = response.data;
+      seteditBook(data.id);
+      setupdateBook({
+        title: data.title || "",
+        author: data.author || "",
+        category: data.category || "",
+        summary: data.summary || "",
+      });
+      setCoverFile(null);
+    } catch (error) {
+      console.error("Error fetching book details", error);
+    }
   };
 
   // Handle input changes
@@ -44,23 +59,24 @@ const ManageBook = () => {
     setCoverFile(e.target.files[0]);
   };
 
-  // Save updated book
+  // Save updated book (send all fields as multipart/form-data)
   const handleSave = async () => {
     try {
       const data = new FormData();
-      data.append("title", updateBook.title);
-      data.append("author", updateBook.author);
-      data.append("category", updateBook.category);
-      data.append("summary", updateBook.summary);
-      if (coverFile) data.append("cover", coverFile);
-      const token = localStorage.getItem("token");
-      await axios.put(`https://localhost:7159/api/Books/${editBook}`, data, {
+      data.append("Id", editBook);
+      data.append("Title", updateBook.title);
+      data.append("Category", updateBook.category);
+      data.append("Author", updateBook.author);
+      data.append("Summary", updateBook.summary);
+      data.append("Cover", ""); // Always send, even if empty
+      if (coverFile) data.append("NewCover", coverFile);
+      else data.append("NewCover", "");
+      await axios.put(`https://localhost:7159/api/Books`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
           ...(token && { Authorization: `Bearer ${token}` }),
         },
       });
-      // No need to update books state directly, just refresh page
       seteditBook(null);
       setCoverFile(null);
     } catch (error) {
@@ -70,7 +86,6 @@ const ManageBook = () => {
 
   // Delete book
   const handleDelete = (id) => {
-    const token = localStorage.getItem("token");
     axios
       .delete(`https://localhost:7159/api/Books/${id}`, {
         headers: {
@@ -178,7 +193,13 @@ const ManageBook = () => {
                         <td>
                           {
                             <img
-                              src={`https://www.gutenberg.org/cache/epub/${book.id}/pg${book.id}.cover.medium.jpg`}
+                              src={
+                                book.cover || book.newCover
+                                  ? `https://localhost:7159/${
+                                      book.cover || book.newCover
+                                    }`
+                                  : `https://www.gutenberg.org/cache/epub/${book.id}/pg${book.id}.cover.medium.jpg`
+                              }
                               alt={book.title}
                               className="book-cover-img"
                             />
@@ -293,6 +314,9 @@ const ManageBook = () => {
                   }}
                   encType="multipart/form-data"
                 >
+                  <div style={{ marginBottom: 8, fontWeight: "bold" }}>
+                    ID: {editBook}
+                  </div>
                   <input
                     type="text"
                     name="title"
@@ -322,10 +346,11 @@ const ManageBook = () => {
                   ></textarea>
                   <input
                     type="file"
-                    name="cover"
+                    name="newCover"
                     accept="image/*"
                     onChange={handleCoverChange}
                   />
+
                   <button className="saveBook" type="submit">
                     Save
                   </button>
