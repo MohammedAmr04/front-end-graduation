@@ -39,7 +39,6 @@
     "jwt-decode": "^4.0.0",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.501.0",
-    "pdfjs-dist": "^3.4.120",
     "prop-types": "^15.8.1",
     "react": "^19.0.0-rc.1",
     "react-bootstrap": "^2.10.8",
